@@ -1,0 +1,15 @@
+server:
+  port: 8080
+spring:
+  profiles:
+    active: dev
+  application:
+    name: risk-assessment
+  datasource:
+    url: jdbc:mysql://${risk.mysql.ip}:${risk.mysql.port}/${risk.mysql.db}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    password: ${risk.mysql.password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${risk.mysql.username}
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

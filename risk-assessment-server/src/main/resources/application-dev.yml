@@ -1,0 +1,7 @@
+risk:
+  mysql:
+    url: localhost
+    username: root
+    password: 17568913095zlp
+    port: 3306
+    db: 
