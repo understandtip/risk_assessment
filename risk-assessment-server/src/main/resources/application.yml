@@ -5,11 +5,20 @@ spring:
     active: dev
   application:
     name: risk-assessment
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
   datasource:
     url: jdbc:mysql://${risk.mysql.ip}:${risk.mysql.port}/${risk.mysql.db}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     password: ${risk.mysql.password}
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${risk.mysql.username}
+logging:
+  level:
+    org.springframework.web: INFO
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  jackson:
+    serialization:
+      write-dates-as-timestamps: true

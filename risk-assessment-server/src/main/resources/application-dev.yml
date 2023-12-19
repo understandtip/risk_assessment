@@ -1,7 +1,7 @@
 risk:
   mysql:
-    url: localhost
+    ip: localhost
     username: root
     password: 17568913095zlp
     port: 3306
-    db: 
+    db: risk_assessment
