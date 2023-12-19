@@ -24,6 +24,27 @@ public class RiskDao extends ServiceImpl<RiskMapper, Risk> {
    * @return
    */
   public List<Risk> getRiskFromCategory(Integer categoryId) {
-    return this.lambdaQuery().eq(Risk::getCategoryId, categoryId).list();
+    return this.lambdaQuery().eq(Risk::getCategoryId, categoryId).eq(Risk::getParentId, 0).list();
+  }
+
+  /**
+   * 判断有没有子风险
+   *
+   * @param id
+   * @return
+   */
+  public boolean checkChild(Integer id) {
+    Integer count = this.lambdaQuery().eq(Risk::getParentId, id).count();
+    return count != 0;
+  }
+
+  /**
+   * 查询子风险记录
+   *
+   * @param id
+   * @return
+   */
+  public List<Risk> getChild(Integer id) {
+    return this.lambdaQuery().eq(Risk::getParentId, id).list();
   }
 }

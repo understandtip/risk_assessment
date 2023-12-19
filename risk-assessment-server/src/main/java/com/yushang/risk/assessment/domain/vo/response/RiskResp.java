@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @Author：zlp @Package：com.yushang.risk.assessment.domain.vo.response @Project：risk_assessment
  *
@@ -36,6 +38,9 @@ public class RiskResp {
   /** 周期id */
   @ApiModelProperty(notes = "周期id")
   private Integer cycleId;
+  /** 子风险集合 */
+  @ApiModelProperty(notes = "子风险集合")
+  private List<RiskResp> childrenRiskList;
   /** 额外信息 */
   @ApiModelProperty(notes = "额外信息")
   private String extraInfo;

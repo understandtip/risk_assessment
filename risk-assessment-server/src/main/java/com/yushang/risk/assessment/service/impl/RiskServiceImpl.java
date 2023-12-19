@@ -1,5 +1,6 @@
 package com.yushang.risk.assessment.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.yushang.risk.assessment.dao.RiskDao;
 import com.yushang.risk.assessment.domain.entity.Risk;
 import com.yushang.risk.assessment.domain.vo.response.RiskResp;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.xml.ws.ResponseWrapper;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,7 +42,7 @@ public class RiskServiceImpl implements RiskService {
    */
   @Override
   public List<RiskResp> getRiskList() {
-    List<Risk> riskList = riskDao.list();
+    List<Risk> riskList = riskDao.list(new LambdaQueryWrapper<Risk>().eq(Risk::getParentId, 0));
     return riskList.stream().map(this::dealRiskId).collect(Collectors.toList());
   }
 
@@ -54,6 +56,17 @@ public class RiskServiceImpl implements RiskService {
     BeanUtils.copyProperties(risk, riskResp);
     String s = String.format("%04d", risk.getId());
     riskResp.setRiskId(RiskConstant.RISK_ID_PRE + s);
+    // 判断有没有子风险
+    boolean b = riskDao.checkChild(risk.getId());
+    if (b) {
+      // 查出子风险
+      List<Risk> childRisk = riskDao.getChild(risk.getId());
+      List<RiskResp> childRespList = new ArrayList<>();
+
+      childRisk.forEach(child -> childRespList.add(dealRiskId(child)));
+
+      riskResp.setChildrenRiskList(childRespList);
+    }
     return riskResp;
   }
 }

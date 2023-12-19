@@ -45,6 +45,10 @@ public class Risk implements Serializable, Cloneable {
   /** 周期id */
   @ApiModelProperty(notes = "周期id")
   private Integer cycleId;
+  /** 父风险id */
+  @ApiModelProperty(notes = "父风险id")
+  private Integer parentId;
+
   /** 额外信息 */
   @ApiModelProperty(notes = "额外信息")
   private String extraInfo;
