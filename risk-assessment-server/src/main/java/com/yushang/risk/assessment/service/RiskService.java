@@ -1,9 +1,13 @@
 package com.yushang.risk.assessment.service;
 
+import cn.hutool.http.HttpResponse;
 import com.yushang.risk.assessment.domain.entity.Risk;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yushang.risk.assessment.domain.vo.request.GenerateReportReq;
 import com.yushang.risk.assessment.domain.vo.response.RiskResp;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -27,4 +31,12 @@ public interface RiskService {
    * @return
    */
   List<RiskResp> getRiskList();
+
+  /**
+   * 生成测评报告
+   *
+   * @param reportReq
+   * @param response
+   */
+  void generateReport(GenerateReportReq reportReq, HttpServletResponse response) throws IOException;
 }

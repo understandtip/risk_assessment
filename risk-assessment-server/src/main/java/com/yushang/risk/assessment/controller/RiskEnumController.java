@@ -1,9 +1,11 @@
 package com.yushang.risk.assessment.controller;
 
+import cn.hutool.http.HttpResponse;
 import com.yushang.risk.assessment.domain.entity.Category;
 import com.yushang.risk.assessment.domain.entity.Cycle;
 import com.yushang.risk.assessment.domain.entity.Risk;
 import com.yushang.risk.assessment.domain.entity.SecurityAttribute;
+import com.yushang.risk.assessment.domain.vo.request.GenerateReportReq;
 import com.yushang.risk.assessment.domain.vo.response.AttrResp;
 import com.yushang.risk.assessment.domain.vo.response.CycleResp;
 import com.yushang.risk.assessment.domain.vo.response.RiskResp;
@@ -14,13 +16,13 @@ import com.yushang.risk.assessment.service.SecurityAttributeService;
 import com.yushang.risk.common.domain.vo.ApiResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RestController;
-
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -82,6 +84,7 @@ public class RiskEnumController {
     List<RiskResp> list = riskService.getRiskList();
     return ApiResult.success(list);
   }
+
   /**
    * 查询指定分类下的风险集合
    *
@@ -92,5 +95,20 @@ public class RiskEnumController {
   @ApiOperation("查询指定分类下的风险集合")
   public ApiResult<List<RiskResp>> getRiskFromCategory(@PathVariable Integer categoryId) {
     return ApiResult.success(riskService.getRiskList(categoryId));
+  }
+
+  /**
+   * 生成测评报告
+   *
+   * @param reportReq
+   * @return
+   */
+  @PostMapping("/generateReport")
+  @ApiOperation("生成测评报告")
+  public ApiResult<Void> generateReport(
+      @RequestBody @Validated GenerateReportReq reportReq, HttpServletResponse response)
+      throws IOException {
+    riskService.generateReport(reportReq, response);
+    return ApiResult.success();
   }
 }

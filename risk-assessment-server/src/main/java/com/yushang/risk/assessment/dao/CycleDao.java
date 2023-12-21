@@ -33,4 +33,14 @@ public class CycleDao extends ServiceImpl<CycleMapper, Cycle> {
     List<CycleResp> cycleRespList = CycleAdapter.buildCycleResp(cycleList, markList);
     return cycleRespList;
   }
+
+  /**
+   * 根据周期名称模糊查询id
+   *
+   * @param cycleName
+   * @return
+   */
+  public Integer getCycleIdLikeName(String cycleName) {
+    return this.lambdaQuery().like(Cycle::getName, cycleName).one().getId();
+  }
 }

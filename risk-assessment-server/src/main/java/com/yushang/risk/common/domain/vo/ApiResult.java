@@ -1,6 +1,7 @@
 package com.yushang.risk.common.domain.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.yushang.risk.common.exception.ErrorEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -48,13 +49,13 @@ public class ApiResult<T> {
     return result;
   }
 
-  // public static <T> ApiResult<T> fail(ErrorEnum errorEnum) {
-  //   ApiResult<T> result = new ApiResult<T>();
-  //   result.setSuccess(Boolean.FALSE);
-  //   result.setErrCode(errorEnum.getErrorCode());
-  //   result.setErrMsg(errorEnum.getErrorMsg());
-  //   return result;
-  // }
+  public static <T> ApiResult<T> fail(ErrorEnum errorEnum) {
+    ApiResult<T> result = new ApiResult<T>();
+    result.setSuccess(Boolean.FALSE);
+    result.setErrCode(errorEnum.getErrorCode());
+    result.setErrMsg(errorEnum.getErrorMsg());
+    return result;
+  }
 
   public boolean isSuccess() {
     return this.success;

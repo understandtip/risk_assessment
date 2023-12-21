@@ -41,7 +41,11 @@ public class RiskResp {
   /** 子风险集合 */
   @ApiModelProperty(notes = "子风险集合")
   private List<RiskResp> childrenRiskList;
+  /** 风险得分信息 */
+  @ApiModelProperty(notes = "风险得分信息")
+  private List<GradeVo> gradeVoList;
   /** 额外信息 */
   @ApiModelProperty(notes = "额外信息")
   private String extraInfo;
+  
 }
