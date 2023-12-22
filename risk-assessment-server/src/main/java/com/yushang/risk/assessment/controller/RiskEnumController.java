@@ -1,5 +1,6 @@
 package com.yushang.risk.assessment.controller;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.http.HttpResponse;
 import com.yushang.risk.assessment.domain.entity.Category;
 import com.yushang.risk.assessment.domain.entity.Cycle;
@@ -16,13 +17,18 @@ import com.yushang.risk.assessment.service.SecurityAttributeService;
 import com.yushang.risk.common.domain.vo.ApiResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -105,10 +111,27 @@ public class RiskEnumController {
    */
   @PostMapping("/generateReport")
   @ApiOperation("生成测评报告")
-  public ApiResult<Void> generateReport(
+  public ResponseEntity<byte[]> generateReport(
       @RequestBody @Validated GenerateReportReq reportReq, HttpServletResponse response)
       throws IOException {
-    riskService.generateReport(reportReq, response);
-    return ApiResult.success();
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+    // 设置响应内容类型
+    response.setContentType("application/octet-stream");
+    response.addHeader(
+        "Content-Disposition",
+        "attachment; filename=" + URLEncoder.encode(FileUtil.getName("目标文档.docx"), "UTF-8"));
+
+    // 往输出流中填充文件
+    riskService.generateReport(reportReq, response, outputStream);
+
+    // 将输出流中的字节内容转换为字节数组
+    byte[] content = outputStream.toByteArray();
+
+    // 设置响应头信息
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentLength(content.length);
+
+    return new ResponseEntity<>(content, headers, HttpStatus.OK);
   }
 }

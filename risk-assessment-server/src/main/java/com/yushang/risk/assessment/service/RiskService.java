@@ -1,12 +1,10 @@
 package com.yushang.risk.assessment.service;
 
-import cn.hutool.http.HttpResponse;
-import com.yushang.risk.assessment.domain.entity.Risk;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.yushang.risk.assessment.domain.vo.request.GenerateReportReq;
 import com.yushang.risk.assessment.domain.vo.response.RiskResp;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -37,6 +35,9 @@ public interface RiskService {
    *
    * @param reportReq
    * @param response
+   * @param outputStream
    */
-  void generateReport(GenerateReportReq reportReq, HttpServletResponse response) throws IOException;
+  void generateReport(
+      GenerateReportReq reportReq, HttpServletResponse response, ByteArrayOutputStream outputStream)
+      throws IOException;
 }

@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.deepoove.poi.XWPFTemplate;
 import com.deepoove.poi.config.Configure;
 import com.deepoove.poi.plugin.table.LoopRowTableRenderPolicy;
-import com.deepoove.poi.policy.ListRenderPolicy;
 import com.yushang.risk.assessment.dao.CycleDao;
 import com.yushang.risk.assessment.dao.GradeDao;
 import com.yushang.risk.assessment.dao.RiskDao;
@@ -24,6 +23,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -65,14 +65,13 @@ public class RiskServiceImpl implements RiskService {
 
   /**
    * 生成测评报告
-   *
-   * @param reportReq
+   *  @param reportReq
    * @param response
+   * @param outputStream
    */
   @Override
-  public void generateReport(GenerateReportReq reportReq, HttpServletResponse response)
+  public void generateReport(GenerateReportReq reportReq, HttpServletResponse response, ByteArrayOutputStream outputStream)
       throws IOException {
-    ServletOutputStream outputStream = response.getOutputStream();
     // 设置响应内容类型
     response.setContentType("application/octet-stream");
     response.setHeader("Content-Disposition", "attachment; filename=generated.docx");
@@ -136,7 +135,7 @@ public class RiskServiceImpl implements RiskService {
     // 渲染数据
     XWPFTemplate.compile("C:\\Users\\zlp\\Desktop\\公司材料\\数据安全检查模板.docx", configure)
         .render(finalMap)
-        .writeToFile("C:\\Users\\zlp\\Desktop\\公司材料\\target.docx");
+            .writeAndClose(outputStream);
   }
 
   /**

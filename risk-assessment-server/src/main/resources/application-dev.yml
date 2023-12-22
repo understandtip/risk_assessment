@@ -5,3 +5,7 @@ risk:
     password: 17568913095zlp
     port: 3306
     db: risk_assessment
+  redis:
+    host: 47.109.79.60
+    port: 6379
+    password: 17568913095zlp

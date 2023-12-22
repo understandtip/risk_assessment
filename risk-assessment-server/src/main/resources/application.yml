@@ -13,6 +13,16 @@ spring:
     password: ${risk.mysql.password}
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${risk.mysql.username}
+  redis:
+    port: ${risk.redis.port}
+    password: ${risk.redis.password}
+    host: ${risk.redis.host}
+    database: 2
+    lettuce:
+      pool:
+        max-idle: 16
+        max-active: 32
+        min-idle: 8
 logging:
   level:
     org.springframework.web: INFO
