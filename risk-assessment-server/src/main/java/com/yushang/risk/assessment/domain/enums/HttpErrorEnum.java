@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * @Author：zlp @Package：com.abin.mallchat.common.common.exception @Project：mallchat-zlp
+ * @Author：zlp
  *
  * @name：HttpErrorEnum @Date：2023/11/3 0:10 @Filename：HttpErrorEnum
  */

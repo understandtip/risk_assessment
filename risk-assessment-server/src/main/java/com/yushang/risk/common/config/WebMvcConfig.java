@@ -14,7 +14,7 @@ import javax.annotation.Resource;
  *
  * @name：FilterConfig @Date：2023/12/25 9:20 @Filename：FilterConfig
  */
-@Configuration
+// @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
   @Resource private LoginInterceptor loginInterceptor;
 

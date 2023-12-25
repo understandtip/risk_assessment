@@ -1,6 +1,7 @@
 package com.yushang.risk.assessment.service.impl;
 
 import com.yushang.risk.assessment.service.LoginService;
+import com.yushang.risk.common.annotation.MyRedissonLock;
 import com.yushang.risk.common.constant.RedisKey;
 import com.yushang.risk.common.util.JwtUtils;
 import com.yushang.risk.common.util.RedisUtils;
@@ -8,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.swing.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -27,10 +27,16 @@ public class LoginServiceImpl implements LoginService {
    * @return
    */
   @Override
+  @MyRedissonLock(key = "#uid")
   public String login(Integer uid) {
     String token = jwtUtils.createToken(uid);
     // 删除之前的token,防止多账号同时登录
     String key = RedisKey.getKey(RedisKey.USER_REDIS_TOKEN_PREFIX, uid);
+    try {
+      Thread.sleep(50000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
     RedisUtils.del(key);
     RedisUtils.set(key, token, REDIS_TOKEN_EXPIRE_TIME, TimeUnit.DAYS);
     return token;

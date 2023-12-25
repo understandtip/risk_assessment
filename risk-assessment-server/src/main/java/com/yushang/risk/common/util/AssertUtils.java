@@ -14,7 +14,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 
 /**
- * 断言异常工具类 @Author：zlp @Package：com.abin.mallchat.common.common.util @Project：mallchat-zlp
+ * 断言异常工具类
  *
  * @name：AssertUtils @Date：2023/11/4 8:48 @Filename：AssertUtils
  */

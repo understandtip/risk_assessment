@@ -7,6 +7,7 @@ import com.deepoove.poi.plugin.table.LoopRowTableRenderPolicy;
 import com.yushang.risk.assessment.domain.vo.request.GenerateReportReq;
 import com.yushang.risk.assessment.service.RiskService;
 import com.yushang.risk.common.domain.vo.ApiResult;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -34,10 +36,11 @@ import java.util.stream.Collectors;
  * @name：MyTestController @Date：2023/12/21 9:14 @Filename：MyTestController
  */
 @RestController
+@RequestMapping("/test")
 public class MyTestController {
   @Resource private RiskService riskService;
 
-  @PostMapping("/test")
+  @PostMapping("/download")
   public ResponseEntity<byte[]> download(HttpServletResponse response) throws Exception {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -59,5 +62,12 @@ public class MyTestController {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentLength(content.length);
     return new ResponseEntity<>(content, headers, HttpStatus.OK);
+  }
+
+  @GetMapping("/reids/cache")
+  @Cacheable(cacheNames = "test")
+  public String redisCache(String uid) {
+
+    return "Hello World";
   }
 }
