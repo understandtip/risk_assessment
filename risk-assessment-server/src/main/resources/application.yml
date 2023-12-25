@@ -17,7 +17,7 @@ spring:
     port: ${risk.redis.port}
     password: ${risk.redis.password}
     host: ${risk.redis.host}
-    database: 2
+    database: 0
     lettuce:
       pool:
         max-idle: 16

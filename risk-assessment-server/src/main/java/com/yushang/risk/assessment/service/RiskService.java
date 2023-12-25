@@ -6,6 +6,7 @@ import com.yushang.risk.assessment.domain.vo.response.RiskResp;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -34,10 +35,8 @@ public interface RiskService {
    * 生成测评报告
    *
    * @param reportReq
-   * @param response
    * @param outputStream
    */
-  void generateReport(
-      GenerateReportReq reportReq, HttpServletResponse response, ByteArrayOutputStream outputStream)
+  void generateReport(GenerateReportReq reportReq, ByteArrayOutputStream outputStream)
       throws IOException;
 }

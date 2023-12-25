@@ -1,11 +1,11 @@
 risk:
   mysql:
-    ip: localhost
+    ip: 43.139.167.19
     username: root
-    password: 17568913095zlp
-    port: 3306
+    password: yushang001
+    port: 3307
     db: risk_assessment
   redis:
-    host: 47.109.79.60
+    host: 43.139.167.19
     port: 6379
-    password: 17568913095zlp
+    password: yushang001

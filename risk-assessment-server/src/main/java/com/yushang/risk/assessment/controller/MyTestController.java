@@ -4,6 +4,8 @@ import cn.hutool.core.io.FileUtil;
 import com.deepoove.poi.XWPFTemplate;
 import com.deepoove.poi.config.Configure;
 import com.deepoove.poi.plugin.table.LoopRowTableRenderPolicy;
+import com.yushang.risk.assessment.domain.vo.request.GenerateReportReq;
+import com.yushang.risk.assessment.service.RiskService;
 import com.yushang.risk.common.domain.vo.ApiResult;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -11,14 +13,20 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 /**
  * @Author：zlp @Package：com.yushang.risk @Project：risk_assessment
@@ -27,37 +35,29 @@ import java.util.HashMap;
  */
 @RestController
 public class MyTestController {
-  @GetMapping("/test")
-  public ResponseEntity<byte[]> download(HttpServletResponse response) {
-    try {
-      ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+  @Resource private RiskService riskService;
 
-      // 设置响应内容类型
-      response.setContentType("application/octet-stream");
-      response.addHeader(
-          "Content-Disposition",
-          "attachment; filename=" + URLEncoder.encode(FileUtil.getName("目标文档.docx"), "UTF-8"));
+  @PostMapping("/test")
+  public ResponseEntity<byte[]> download(HttpServletResponse response) throws Exception {
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-      // 构建要渲染的数据
-      HashMap<String, Object> finalMap = new HashMap<>();
-      finalMap.put("version", "周亮平");
+    // 设置响应内容类型
+    response.setContentType("application/octet-stream");
+    response.addHeader(
+        "Content-Disposition",
+        "attachment; filename=" + URLEncoder.encode(FileUtil.getName("目标文档.docx"), "UTF-8"));
 
-      // 渲染数据并将内容写入到输出流
-      XWPFTemplate.compile("C:\\Users\\zlp\\Desktop\\公司材料\\数据安全检查模板.docx")
-          .render(finalMap)
-          .writeAndClose(outputStream);
+    GenerateReportReq req = new GenerateReportReq();
+    req.setProjectId(0);
+    req.setRiskList(new ArrayList<>());
+    riskService.generateReport(req, outputStream);
 
-      // 将输出流中的字节内容转换为字节数组
-      byte[] content = outputStream.toByteArray();
+    // 将输出流中的字节内容转换为字节数组
+    byte[] content = outputStream.toByteArray();
 
-      // 设置响应头信息
-      HttpHeaders headers = new HttpHeaders();
-      headers.setContentLength(content.length);
-
-      return new ResponseEntity<>(content, headers, HttpStatus.OK);
-    } catch (IOException e) {
-      e.printStackTrace();
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    // 设置响应头信息
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentLength(content.length);
+    return new ResponseEntity<>(content, headers, HttpStatus.OK);
   }
 }

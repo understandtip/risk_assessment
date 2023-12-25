@@ -25,6 +25,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -65,16 +66,13 @@ public class RiskServiceImpl implements RiskService {
 
   /**
    * 生成测评报告
-   *  @param reportReq
-   * @param response
+   *
+   * @param reportReq
    * @param outputStream
    */
   @Override
-  public void generateReport(GenerateReportReq reportReq, HttpServletResponse response, ByteArrayOutputStream outputStream)
+  public void generateReport(GenerateReportReq reportReq, ByteArrayOutputStream outputStream)
       throws IOException {
-    // 设置响应内容类型
-    response.setContentType("application/octet-stream");
-    response.setHeader("Content-Disposition", "attachment; filename=generated.docx");
     HashMap<String, Object> finalMap = new HashMap<>(64);
     // 填充数据
     finalMap.put("projectName", "测试项目");
@@ -135,7 +133,7 @@ public class RiskServiceImpl implements RiskService {
     // 渲染数据
     XWPFTemplate.compile("C:\\Users\\zlp\\Desktop\\公司材料\\数据安全检查模板.docx", configure)
         .render(finalMap)
-            .writeAndClose(outputStream);
+        .writeAndClose(outputStream);
   }
 
   /**

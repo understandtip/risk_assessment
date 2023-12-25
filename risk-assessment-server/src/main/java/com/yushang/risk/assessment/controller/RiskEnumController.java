@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,6 +41,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/risk")
 @Api(tags = "风险枚举接口")
+@CrossOrigin
 public class RiskEnumController {
   @Resource private CategoryService categoryService;
   @Resource private RiskService riskService;
@@ -111,7 +113,7 @@ public class RiskEnumController {
    */
   @PostMapping("/generateReport")
   @ApiOperation("生成测评报告")
-  public ResponseEntity<byte[]> generateReport(
+  public byte[] generateReport(
       @RequestBody @Validated GenerateReportReq reportReq, HttpServletResponse response)
       throws IOException {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -122,16 +124,11 @@ public class RiskEnumController {
         "Content-Disposition",
         "attachment; filename=" + URLEncoder.encode(FileUtil.getName("目标文档.docx"), "UTF-8"));
 
-    // 往输出流中填充文件
-    riskService.generateReport(reportReq, response, outputStream);
+    riskService.generateReport(reportReq, outputStream);
 
     // 将输出流中的字节内容转换为字节数组
     byte[] content = outputStream.toByteArray();
 
-    // 设置响应头信息
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentLength(content.length);
-
-    return new ResponseEntity<>(content, headers, HttpStatus.OK);
+    return content;
   }
 }
