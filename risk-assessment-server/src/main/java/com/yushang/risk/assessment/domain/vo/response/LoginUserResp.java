@@ -48,4 +48,7 @@ public class LoginUserResp {
   /** 使用的邀请码 */
   @ApiModelProperty(notes = "使用的邀请码")
   private String useCode;
+  /** 登录成功返回token */
+  @ApiModelProperty(notes = "token")
+  private String token;
 }

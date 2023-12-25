@@ -18,6 +18,7 @@ import com.yushang.risk.assessment.domain.vo.response.RiskResp;
 import com.yushang.risk.assessment.service.RiskService;
 import com.yushang.risk.common.constant.RiskConstant;
 import org.springframework.beans.BeanUtils;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -131,7 +132,8 @@ public class RiskServiceImpl implements RiskService {
 
     Configure configure = Configure.builder().bind("tab", new LoopRowTableRenderPolicy()).build();
     // 渲染数据
-    XWPFTemplate.compile("C:\\Users\\zlp\\Desktop\\公司材料\\数据安全检查模板.docx", configure)
+    ClassPathResource classPathResource = new ClassPathResource("template/数据安全检查模板.docx");
+    XWPFTemplate.compile(classPathResource.getInputStream(), configure)
         .render(finalMap)
         .writeAndClose(outputStream);
   }

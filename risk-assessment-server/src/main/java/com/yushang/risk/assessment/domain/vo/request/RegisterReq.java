@@ -1,9 +1,10 @@
 package com.yushang.risk.assessment.domain.vo.request;
 
-import com.sun.istack.internal.NotNull;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * @Author：zlp @Package：com.yushang.risk.assessment.domain.vo.request @Project：risk_assessment

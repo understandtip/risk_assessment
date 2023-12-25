@@ -43,6 +43,7 @@ import java.util.List;
 @Api(tags = "风险枚举接口")
 @CrossOrigin
 public class RiskEnumController {
+
   @Resource private CategoryService categoryService;
   @Resource private RiskService riskService;
   @Resource private CycleService cycleService;
@@ -127,8 +128,6 @@ public class RiskEnumController {
     riskService.generateReport(reportReq, outputStream);
 
     // 将输出流中的字节内容转换为字节数组
-    byte[] content = outputStream.toByteArray();
-
-    return content;
+    return outputStream.toByteArray();
   }
 }

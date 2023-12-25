@@ -9,3 +9,6 @@ risk:
     host: 43.139.167.19
     port: 6379
     password: yushang001
+yushang:
+  jwt:
+    secret: 12srtgdf213

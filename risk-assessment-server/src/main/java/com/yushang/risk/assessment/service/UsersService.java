@@ -31,9 +31,13 @@ public interface UsersService {
 
   /**
    * 登录
+   *
    * @param loginReq
    * @param session
    * @return
    */
   LoginUserResp login(LoginReq loginReq, HttpSession session);
+
+  /** 用户退出登录 */
+  void exit();
 }

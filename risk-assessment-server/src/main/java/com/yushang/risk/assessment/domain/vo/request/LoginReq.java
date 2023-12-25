@@ -1,6 +1,6 @@
 package com.yushang.risk.assessment.domain.vo.request;
 
-import com.sun.istack.internal.NotNull;
+import javax.validation.constraints.NotNull;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

@@ -32,3 +32,6 @@ mybatis-plus:
   jackson:
     serialization:
       write-dates-as-timestamps: true
+yushang:
+  jwt:
+    secret: ${yushang.jwt.secret}

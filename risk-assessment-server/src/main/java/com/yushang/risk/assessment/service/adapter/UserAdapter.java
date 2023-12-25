@@ -34,7 +34,7 @@ public class UserAdapter {
    * @param user
    * @return
    */
-  public static LoginUserResp buildLoginUserResp(User user) {
+  public static LoginUserResp buildLoginUserResp(User user, String token) {
     return LoginUserResp.builder()
         .id(user.getId())
         .username(user.getUsername())
@@ -44,6 +44,7 @@ public class UserAdapter {
         .loginTime(LocalDateTime.now())
         .invitationCode(user.getInvitationCode())
         .useCode(user.getUseCode())
+        .token(token)
         .build();
   }
 }

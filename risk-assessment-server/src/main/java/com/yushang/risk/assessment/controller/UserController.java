@@ -78,4 +78,16 @@ public class UserController {
     LoginUserResp resp = usersService.login(loginReq, session);
     return ApiResult.success(resp);
   }
+
+  /**
+   * 用户退出
+   *
+   * @return
+   */
+  @PutMapping("/exit")
+  @ApiOperation("用户退出登录")
+  public ApiResult<Void> exit() {
+    usersService.exit();
+    return ApiResult.success();
+  }
 }
