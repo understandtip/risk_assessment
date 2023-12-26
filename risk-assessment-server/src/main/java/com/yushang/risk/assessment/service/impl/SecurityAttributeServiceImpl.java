@@ -10,6 +10,7 @@ import com.yushang.risk.assessment.domain.entity.SecurityAttribute;
 import com.yushang.risk.assessment.domain.vo.response.AttrResp;
 import com.yushang.risk.assessment.service.SecurityAttributeService;
 import com.yushang.risk.assessment.service.adapter.AttrAdapter;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -32,6 +33,7 @@ public class SecurityAttributeServiceImpl implements SecurityAttributeService {
    * @return
    */
   @Override
+  @Cacheable(cacheNames = "attrList")
   public List<AttrResp> getAttrList() {
     List<SecurityAttribute> attrList = securityAttributeDao.list();
     List<Integer> attrIds =

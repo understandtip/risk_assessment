@@ -81,4 +81,11 @@ public class NormalTest {
     System.out.println("PasswordUtils.encryptPassword(\"123456\") = " + s);
     System.out.println("PasswordUtils.decryptPassword(s) = " + PasswordUtils.decryptPassword(s));
   }
+
+  @Test
+  void test01() {
+    String s = "1/fosajdflajksdfl";
+    int index = s.lastIndexOf("/");
+    System.out.println("s.substring(index) = " + s.substring(index + 1));
+  }
 }

@@ -3,6 +3,7 @@ package com.yushang.risk.assessment.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.deepoove.poi.XWPFTemplate;
 import com.deepoove.poi.config.Configure;
+import com.deepoove.poi.data.Pictures;
 import com.deepoove.poi.plugin.table.LoopRowTableRenderPolicy;
 import com.yushang.risk.assessment.dao.CycleDao;
 import com.yushang.risk.assessment.dao.GradeDao;
@@ -16,19 +17,23 @@ import com.yushang.risk.assessment.domain.vo.request.GenerateReportReq;
 import com.yushang.risk.assessment.domain.vo.response.GradeVo;
 import com.yushang.risk.assessment.domain.vo.response.RiskResp;
 import com.yushang.risk.assessment.service.RiskService;
+import com.yushang.risk.common.config.ThreadPoolConfig;
 import com.yushang.risk.common.constant.RiskConstant;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -37,11 +42,16 @@ import java.util.stream.Collectors;
  * @name：RiskServiceImpl @Date：2023/12/18 16:13 @Filename：RiskServiceImpl
  */
 @Service
+@Slf4j
 public class RiskServiceImpl implements RiskService {
   @Resource private RiskDao riskDao;
   @Resource private RiskGradeDao riskGradeDao;
   @Resource private GradeDao gradeDao;
   @Resource private CycleDao cycleDao;
+
+  @Qualifier(ThreadPoolConfig.COMMON_EXECUTOR)
+  @Resource
+  private ThreadPoolTaskExecutor threadPoolTaskExecutor;
   /**
    * 查询指定分类下的风险集合
    *
@@ -49,9 +59,20 @@ public class RiskServiceImpl implements RiskService {
    * @return
    */
   @Override
+  @Cacheable(cacheNames = "categoryRisk", key = "#categoryId")
   public List<RiskResp> getRiskList(Integer categoryId) {
     List<Risk> riskList = riskDao.getRiskFromCategory(categoryId);
-    return riskList.stream().map(this::dealRiskToRiskResp).collect(Collectors.toList());
+    return riskList.stream()
+        .map(
+            (risk -> {
+              try {
+                return threadPoolTaskExecutor.submit(() -> this.dealRiskToRiskResp(risk)).get();
+              } catch (Exception e) {
+                log.error("查询指定分类下的风险集合 报错了", e);
+                return null;
+              }
+            }))
+        .collect(Collectors.toList());
   }
 
   /**
@@ -60,9 +81,20 @@ public class RiskServiceImpl implements RiskService {
    * @return
    */
   @Override
+  @Cacheable(cacheNames = "riskList")
   public List<RiskResp> getRiskList() {
     List<Risk> riskList = riskDao.list(new LambdaQueryWrapper<Risk>().eq(Risk::getParentId, 0));
-    return riskList.stream().map(this::dealRiskToRiskResp).collect(Collectors.toList());
+    return riskList.stream()
+        .map(
+            (risk -> {
+              try {
+                return threadPoolTaskExecutor.submit(() -> this.dealRiskToRiskResp(risk)).get();
+              } catch (Exception e) {
+                log.error("查询指定分类下的风险集合 报错了", e);
+                return null;
+              }
+            }))
+        .collect(Collectors.toList());
   }
 
   /**
@@ -95,6 +127,7 @@ public class RiskServiceImpl implements RiskService {
     finalMap.put("tab", tabList);
     // logo
     finalMap.put("logo", "logo图片");
+    finalMap.put("gradePic", Pictures.ofUrl(reportReq.getPicUrl()).create());
     // 处理请求数据
     List<GenerateReportReq.riskReq> riskList = reportReq.getRiskList();
     Map<Integer, List<RiskReqDto>> riskDataMap = this.dealRiskReqData(riskList);
@@ -209,13 +242,17 @@ public class RiskServiceImpl implements RiskService {
       // 查出子风险
       List<Risk> childRisk = riskDao.getChild(risk.getId());
       List<RiskResp> childRespList = new ArrayList<>();
-
-      childRisk.forEach(child -> childRespList.add(dealRiskToRiskResp(child)));
+      // 异步查询子风险(包含递归)
+      childRisk.forEach(
+          child ->
+              CompletableFuture.runAsync(
+                  () -> childRespList.add(dealRiskToRiskResp(child)), threadPoolTaskExecutor));
 
       riskResp.setChildrenRiskList(childRespList);
     }
     // 查询风险对应分数情况
     List<RiskGrade> riskGradeList = riskGradeDao.getGradeByRiskId(risk.getId());
+    List<Grade> gradeList = gradeDao.list();
     // 查询出等级名称
     List<GradeVo> gradeVoList =
         riskGradeList.stream()
@@ -223,7 +260,14 @@ public class RiskServiceImpl implements RiskService {
                 riskGrade -> {
                   GradeVo gradeVo = new GradeVo();
                   gradeVo.setId(riskGrade.getId());
-                  gradeVo.setName(gradeDao.getById(riskGrade.getGradeId()).getName());
+                  String gradeName = "";
+                  for (Grade grade : gradeList) {
+                    if (grade.getId().equals(riskGrade.getGradeId())) {
+                      gradeName = grade.getName();
+                      break;
+                    }
+                  }
+                  gradeVo.setName(gradeName);
                   gradeVo.setScore(riskGrade.getScore());
                   return gradeVo;
                 })

@@ -32,6 +32,10 @@ mybatis-plus:
   jackson:
     serialization:
       write-dates-as-timestamps: true
+minio:
+  endpoint: ${minio.endpoint}
+  accessKey: ${minio.accessKey}
+  secretKey: ${minio.secreKey}
 yushang:
   jwt:
     secret: ${yushang.jwt.secret}

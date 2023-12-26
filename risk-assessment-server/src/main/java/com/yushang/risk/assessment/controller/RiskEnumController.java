@@ -79,7 +79,6 @@ public class RiskEnumController {
    */
   @GetMapping("/getAttrList")
   @ApiOperation(value = "获取所有安全属性集合")
-  @Cacheable(cacheNames = "attrList")
   public ApiResult<List<AttrResp>> getAttrList() {
     List<AttrResp> list = securityAttributeService.getAttrList();
     return ApiResult.success(list);
@@ -91,7 +90,6 @@ public class RiskEnumController {
    */
   @GetMapping("/getRiskList")
   @ApiOperation(value = "获取所有风险集合")
-  @Cacheable(cacheNames = "riskList")
   public ApiResult<List<RiskResp>> getRiskList() {
     List<RiskResp> list = riskService.getRiskList();
     return ApiResult.success(list);
@@ -105,7 +103,6 @@ public class RiskEnumController {
    */
   @GetMapping("/getRiskList/{categoryId}")
   @ApiOperation("查询指定分类下的风险集合")
-  @Cacheable(cacheNames = "categoryRisk", key = "#categoryId")
   public ApiResult<List<RiskResp>> getRiskFromCategory(@PathVariable Integer categoryId) {
     return ApiResult.success(riskService.getRiskList(categoryId));
   }

@@ -12,3 +12,7 @@ risk:
 yushang:
   jwt:
     secret: 12srtgdf213
+minio:
+  endpoint: http://43.139.167.19:9000
+  accessKey: admin
+  secretKey: yushang001

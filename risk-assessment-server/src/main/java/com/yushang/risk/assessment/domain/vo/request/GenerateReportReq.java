@@ -26,6 +26,10 @@ public class GenerateReportReq {
   @NotNull
   private List<riskReq> riskList;
 
+  @ApiModelProperty(notes = "饼图图片地址")
+  @NotNull
+  private String picUrl;
+
   @Data
   @NoArgsConstructor
   @AllArgsConstructor

@@ -22,7 +22,6 @@ public class RiskGradeDao extends ServiceImpl<RiskGradeMapper, RiskGrade> {
    * @return
    */
   public List<RiskGrade> getGradeByRiskId(Integer riskId) {
-
     return this.lambdaQuery().eq(RiskGrade::getRiskId, riskId).list();
   }
 }
