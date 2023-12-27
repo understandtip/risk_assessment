@@ -3,6 +3,7 @@ package com.yushang.risk;
 import com.yushang.risk.common.util.PasswordUtils;
 import com.yushang.risk.common.util.RedisUtils;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 
 import java.util.Random;
 

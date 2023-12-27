@@ -10,4 +10,5 @@ import lombok.Data;
 @Data
 public class RequestDataInfo {
   private Integer uid;
+  private String ip;
 }

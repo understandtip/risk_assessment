@@ -11,6 +11,7 @@ import io.minio.PutObjectOptions;
 import io.minio.Result;
 import io.minio.messages.Item;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -30,6 +31,9 @@ import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.util.*;
 
+/**
+ * @author zlp
+ */
 @Slf4j
 @RestController
 @RequestMapping("/api/minio")
@@ -52,8 +56,8 @@ public class MinioController {
   //   }
   //   return items;
   // }
-
   @PostMapping("/upload")
+  @ApiOperation("minio文件上传")
   public ApiResult<List<String>> upload(
       @RequestParam(name = "file", required = false) MultipartFile[] file) {
 
@@ -81,34 +85,35 @@ public class MinioController {
     return ApiResult.success(orgfileNameList);
   }
 
-  @PostMapping("/download/{fileName}")
-  public void download(HttpServletResponse response, @PathVariable("fileName") String fileName) {
-    InputStream in = null;
-    try {
-      ObjectStat stat = minioClient.statObject(MINIO_BUCKET, fileName);
-      response.setContentType(stat.contentType());
-      response.setHeader(
-          "Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
-
-      in = minioClient.getObject(MINIO_BUCKET, fileName);
-      IOUtils.copy(in, response.getOutputStream());
-    } catch (Exception e) {
-      log.error(e.getMessage());
-    } finally {
-      if (in != null) {
-        try {
-          in.close();
-        } catch (IOException e) {
-          log.error(e.getMessage());
-        }
-      }
-    }
-  }
+  // @PostMapping("/download/{fileName}")
+  // public void download(HttpServletResponse response, @PathVariable("fileName") String fileName) {
+  //   InputStream in = null;
+  //   try {
+  //     ObjectStat stat = minioClient.statObject(MINIO_BUCKET, fileName);
+  //     response.setContentType(stat.contentType());
+  //     response.setHeader(
+  //         "Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
+  //
+  //     in = minioClient.getObject(MINIO_BUCKET, fileName);
+  //     IOUtils.copy(in, response.getOutputStream());
+  //   } catch (Exception e) {
+  //     log.error(e.getMessage());
+  //   } finally {
+  //     if (in != null) {
+  //       try {
+  //         in.close();
+  //       } catch (IOException e) {
+  //         log.error(e.getMessage());
+  //       }
+  //     }
+  //   }
+  // }
 
   @DeleteMapping("/delete/{fileName}")
+  @ApiOperation("minio删除文件")
   public ApiResult<Void> delete(@PathVariable("fileName") String fileName) {
     try {
-      minioClient.removeObject(MINIO_BUCKET, fileName);
+      minioClient.removeObject(MINIO_BUCKET, "/0/" + fileName);
     } catch (Exception e) {
       log.error("minio文件删除抛出异常", e);
       return ApiResult.fail(CommonErrorEnum.BUSINESS_ERROR.getCode(), "文件删除失败，请稍后重试");

@@ -4,9 +4,11 @@ import com.yushang.risk.assessment.domain.vo.request.LoginReq;
 import com.yushang.risk.assessment.domain.vo.request.RegisterReq;
 import com.yushang.risk.assessment.domain.vo.response.LoginUserResp;
 import com.yushang.risk.assessment.service.UsersService;
+import com.yushang.risk.common.annotation.FrequencyControl;
 import com.yushang.risk.common.domain.vo.ApiResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +31,6 @@ import java.io.OutputStream;
 public class UserController {
   @Resource private UsersService usersService;
 
-  // todo使用频控注解实现
   /**
    * 用户来获取随机验证码
    *
@@ -40,6 +41,7 @@ public class UserController {
    */
   @GetMapping("/getCode")
   @ApiOperation("获取随机验证码(以图片的形式展示)")
+  @FrequencyControl(time = 10, count = 3, target = FrequencyControl.Target.PUBLIC)
   public void getCode(HttpSession session, HttpServletResponse response) throws IOException {
     Object[] objs = usersService.getCode(session.getId());
     // 将图片输出给浏览器

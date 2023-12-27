@@ -40,9 +40,11 @@ public class LoginInterceptor implements HandlerInterceptor {
       HttpErrorEnum.ACCESS_DENIED.sendHttpError(response);
       return false;
     }
+    String ip = getClientIpAddress(request);
     // token正确
     RequestDataInfo info = new RequestDataInfo();
     info.setUid(uid);
+    info.setIp(ip);
     RequestHolder.set(info);
     return true;
   }
@@ -85,5 +87,33 @@ public class LoginInterceptor implements HandlerInterceptor {
     if (!split[0].equals(AUTHORIZATION_SCHAME) || StringUtils.isEmpty(split[1])) return null;
 
     return loginService.getValidUid(split[1]);
+  }
+
+  /**
+   * 获取请求ip地址
+   *
+   * @param request
+   * @return
+   */
+  public String getClientIpAddress(HttpServletRequest request) {
+    String ipAddress = request.getHeader("X-Forwarded-For");
+
+    if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+      ipAddress = request.getHeader("Proxy-Client-IP");
+    }
+    if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+      ipAddress = request.getHeader("WL-Proxy-Client-IP");
+    }
+    if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+      ipAddress = request.getHeader("HTTP_CLIENT_IP");
+    }
+    if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+      ipAddress = request.getHeader("HTTP_X_FORWARDED_FOR");
+    }
+    if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+      ipAddress = request.getRemoteAddr();
+    }
+
+    return ipAddress;
   }
 }
