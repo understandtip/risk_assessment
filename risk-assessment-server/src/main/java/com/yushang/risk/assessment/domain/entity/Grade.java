@@ -1,11 +1,10 @@
 package com.yushang.risk.assessment.domain.entity;
 
 import java.math.BigDecimal;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
+
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.time.LocalDateTime;
-import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 
 import io.swagger.annotations.ApiModel;
@@ -39,4 +38,8 @@ public class Grade implements Serializable, Cloneable {
   /** 更新时间 */
   @ApiModelProperty(notes = "更新时间")
   private LocalDateTime updatedTime;
+  /** 逻辑删除 */
+  @ApiModelProperty(notes = "逻辑删除")
+  @TableLogic
+  private String isDeleted;
 }

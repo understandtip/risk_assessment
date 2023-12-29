@@ -3,29 +3,29 @@ package com.yushang.risk.assessment.service.impl;
 import com.yushang.risk.assessment.dao.RoleDao;
 import com.yushang.risk.assessment.dao.UserRoleDao;
 import com.yushang.risk.assessment.dao.UsersDao;
-import com.yushang.risk.assessment.domain.entity.Role;
 import com.yushang.risk.assessment.domain.entity.User;
-import com.yushang.risk.assessment.domain.entity.UserRole;
 import com.yushang.risk.assessment.domain.vo.request.LoginReq;
 import com.yushang.risk.assessment.domain.vo.request.RegisterReq;
+import com.yushang.risk.assessment.domain.vo.request.UpdatePassReq;
 import com.yushang.risk.assessment.domain.vo.response.LoginUserResp;
+import com.yushang.risk.assessment.domain.vo.response.UserResp;
 import com.yushang.risk.assessment.service.LoginService;
 import com.yushang.risk.assessment.service.UsersService;
 import com.yushang.risk.assessment.service.adapter.UserAdapter;
 import com.yushang.risk.common.constant.RedisKey;
-import com.yushang.risk.common.enums.UserRoleEnum;
 import com.yushang.risk.common.exception.BusinessException;
 import com.yushang.risk.common.exception.CommonErrorEnum;
 import com.yushang.risk.common.util.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
 import java.awt.*;
-import java.util.List;
+import java.security.SecureRandom;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * @Author：zlp @Package：com.yushang.risk.assessment.service.impl @Project：risk_assessment
@@ -47,22 +47,22 @@ public class UsersServiceImpl implements UsersService {
   /**
    * 获取随机验证码(放到Redis中存储)
    *
-   * @param sessionId
+   * @param ip
    * @return
    */
   @Override
-  public Object[] getCode(String sessionId) {
+  public Object[] getCode(String ip) {
     // 把旧的验证码删除,生成新的返回
-    RedisUtils.del(RedisKey.getKey(RedisKey.USER_REDIS_CODE_PREFIX, sessionId));
+    RedisUtils.del(RedisKey.getKey(RedisKey.USER_REDIS_CODE_PREFIX, ip));
     // 这个根据自己的需要设置对应的参数来实现个性化
     // 返回的数组第一个参数是生成的验证码，第二个参数是生成的图片
     Object[] objs =
         VerifyCodeUtil.newBuilder()
             .setWidth(120) // 设置图片的宽度
             .setHeight(35) // 设置图片的高度
-            .setSize(6) // 设置字符的个数
-            .setLines(10) // 设置干扰线的条数
-            .setFontSize(25) // 设置字体的大小
+            .setSize(5) // 设置字符的个数
+            .setLines(3) // 设置干扰线的条数
+            .setFontSize(30) // 设置字体的大小
             .setTilt(true) // 设置是否需要倾斜
             .setBackgroundColor(Color.WHITE) // 设置验证码的背景颜色
             .build() // 构建VerifyUtil项目
@@ -70,7 +70,7 @@ public class UsersServiceImpl implements UsersService {
     String code = (String) objs[0];
     log.info("code:{}", code);
     RedisUtils.set(
-        RedisKey.getKey(RedisKey.USER_REDIS_CODE_PREFIX, sessionId),
+        RedisKey.getKey(RedisKey.USER_REDIS_CODE_PREFIX, ip),
         code,
         USER_CODE_EXPIRE_TIME,
         TimeUnit.MINUTES);
@@ -81,25 +81,29 @@ public class UsersServiceImpl implements UsersService {
    * 注册
    *
    * @param registerReq
-   * @param session
+   * @param request
    */
   @Override
-  public void register(RegisterReq registerReq, HttpSession session) {
+  public void register(RegisterReq registerReq, HttpServletRequest request) {
     // 校验验证码
-    this.verifyCode(registerReq.getCode(), session.getId());
+    this.verifyCode(registerReq.getCode(), IpUtils.getClientIpAddress(request));
     // 用户名不能重复
     User user = usersDao.getByField(User::getUsername, registerReq.getUserName());
     AssertUtils.isEmpty(user, "用户名已经存在了");
     // 邀请码
     this.verifyInvitationCode(registerReq.getInvitationCode());
+    // TODO 保存到申请表中,由后台管理员处理申请
     // 存储数据库
+    // TODO 只有后台管理员批准之后,才能添加到数据库,下面要注释
     String newPassword;
     try {
       newPassword = PasswordUtils.encryptPassword(registerReq.getPassword());
     } catch (Exception e) {
       throw new BusinessException(CommonErrorEnum.SYSTEM_ERROR.getErrorCode(), "密码加密失败,抛出异常");
     }
-    User saveUser = UserAdapter.buildSaveUser(registerReq, newPassword);
+    // 生成邀请码
+    String myInvitationCode = generateRandomString();
+    User saveUser = UserAdapter.buildSaveUser(registerReq, newPassword, myInvitationCode);
     usersDao.save(saveUser);
   }
 
@@ -107,15 +111,16 @@ public class UsersServiceImpl implements UsersService {
    * 登录
    *
    * @param loginReq
-   * @param session
+   * @param request
    * @return
    */
   @Override
-  public LoginUserResp login(LoginReq loginReq, HttpSession session) {
+  public LoginUserResp login(LoginReq loginReq, HttpServletRequest request) {
     // 校验验证码
-    this.verifyCode(loginReq.getCode(), session.getId());
+    this.verifyCode(loginReq.getCode(), IpUtils.getClientIpAddress(request));
     // 校验账户基本信息
-    User user = usersDao.getByField(User::getUsername, loginReq.getUserName());
+    User user = usersDao.getNormalByUsername(loginReq.getUserName());
+    AssertUtils.assertNotNull(user, "用户已被封禁，请联系管理员");
     String password;
     try {
       password = PasswordUtils.decryptPassword(user.getPassword());
@@ -139,6 +144,73 @@ public class UsersServiceImpl implements UsersService {
   }
 
   /**
+   * 获取用户信息
+   *
+   * @param uid
+   * @return
+   */
+  @Override
+  public UserResp getUserInfo(Integer uid) {
+    User user = usersDao.getById(uid);
+    UserResp userResp = new UserResp();
+    BeanUtils.copyProperties(user, userResp);
+    return userResp;
+  }
+
+  /**
+   * 修改密码
+   *
+   * @param passReq
+   * @param request
+   */
+  @Override
+  public void updatePassword(UpdatePassReq passReq, HttpServletRequest request) {
+    // TODO 与前端协调密码的加密处理
+    // 校验验证码
+    this.verifyCode(passReq.getCode(), IpUtils.getClientIpAddress(request));
+    // 修改密码
+    User user = usersDao.getById(RequestHolder.get().getUid());
+    String password;
+    try {
+      password = PasswordUtils.decryptPassword(user.getPassword());
+    } catch (Exception e) {
+      throw new BusinessException(CommonErrorEnum.SYSTEM_ERROR.getErrorCode(), "密码解密异常");
+    }
+    AssertUtils.equal(passReq.getPassword(), password, "密码错误");
+    String newPass;
+    try {
+      newPass = PasswordUtils.encryptPassword(passReq.getNewPassword());
+    } catch (Exception e) {
+      throw new BusinessException(CommonErrorEnum.SYSTEM_ERROR.getErrorCode(), "新密码加密异常");
+    }
+    AssertUtils.isTrue(usersDao.updatePass(user.getId(), newPass), "修改密码失败");
+    // 清除token
+    RedisUtils.del(RedisKey.getKey(RedisKey.USER_REDIS_TOKEN_PREFIX, user.getId()));
+  }
+
+  /**
+   * 随机生成邀请码
+   *
+   * @return
+   */
+  private String generateRandomString() {
+    final String CHAR_LOWER = "abcdefghijklmnopqrstuvwxyz";
+    final String CHAR_UPPER = CHAR_LOWER.toUpperCase();
+    final String DIGITS = "0123456789";
+
+    final String ALPHA_NUMERIC = CHAR_LOWER + CHAR_UPPER + DIGITS;
+    SecureRandom random = new SecureRandom();
+    StringBuilder sb = new StringBuilder(6);
+
+    for (int i = 0; i < 6; i++) {
+      int randomIndex = random.nextInt(ALPHA_NUMERIC.length());
+      sb.append(ALPHA_NUMERIC.charAt(randomIndex));
+    }
+
+    return sb.toString();
+  }
+
+  /**
    * 校验邀请码
    *
    * @param invitationCode
@@ -147,26 +219,26 @@ public class UsersServiceImpl implements UsersService {
     User user = usersDao.getByField(User::getInvitationCode, invitationCode);
     AssertUtils.isNotEmpty(user, "无效的邀请码");
 
-    List<UserRole> userRoleList = userRoleDao.getByUserId(user.getId());
+    /*  List<UserRole> userRoleList = userRoleDao.getByUserId(user.getId());
     Role admin = roleDao.getByField(Role::getName, UserRoleEnum.ADMIN.getDesc());
 
     List<UserRole> collect =
         userRoleList.stream()
             .filter(userRole -> userRole.getRoleId().equals(admin.getId()))
             .collect(Collectors.toList());
-    AssertUtils.isNotEmpty(collect, "无效的邀请码");
+    AssertUtils.isNotEmpty(collect, "无效的邀请码"); */
   }
 
   /**
    * 校验验证码
    *
    * @param code
-   * @param sessionId
+   * @param ip
    * @return
    */
-  private void verifyCode(String code, String sessionId) {
-    String s = RedisUtils.getStr(RedisKey.getKey(RedisKey.USER_REDIS_CODE_PREFIX, sessionId));
+  private void verifyCode(String code, String ip) {
+    String s = RedisUtils.getStr(RedisKey.getKey(RedisKey.USER_REDIS_CODE_PREFIX, ip));
     AssertUtils.isNotEmpty(s, "验证码已过期，请重新输入。");
-    AssertUtils.equal(code, s, "验证码错误，请重新输入。");
+    AssertUtils.equal(code.toLowerCase(Locale.ROOT), s.toLowerCase(Locale.ROOT), "验证码错误，请重新输入。");
   }
 }

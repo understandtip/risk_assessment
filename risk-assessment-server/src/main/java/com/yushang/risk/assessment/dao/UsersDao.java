@@ -2,6 +2,7 @@ package com.yushang.risk.assessment.dao;
 
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.yushang.risk.assessment.domain.entity.User;
+import com.yushang.risk.assessment.domain.enums.UserStatusEnum;
 import com.yushang.risk.assessment.mapper.UsersMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.poi.ss.formula.functions.Function;
@@ -36,5 +37,28 @@ public class UsersDao extends ServiceImpl<UsersMapper, User> {
    */
   public void updateLoginTime(Integer id) {
     this.lambdaUpdate().eq(User::getId, id).set(User::getLoginTime, LocalDateTime.now()).update();
+  }
+
+  /**
+   * 根据用户名查询用户
+   *
+   * @param userName
+   * @return
+   */
+  public User getNormalByUsername(String userName) {
+    return this.lambdaQuery()
+        .eq(User::getUsername, userName)
+        .eq(User::getStatus, UserStatusEnum.NORMAL.getCode())
+        .one();
+  }
+
+  /**
+   * 修改用户密码
+   *
+   * @param id
+   * @param newPass
+   */
+  public boolean updatePass(Integer id, String newPass) {
+    return this.lambdaUpdate().eq(User::getId, id).set(User::getPassword, newPass).update();
   }
 }

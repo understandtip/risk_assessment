@@ -23,6 +23,10 @@ spring:
         max-idle: 16
         max-active: 32
         min-idle: 8
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 100MB
 logging:
   level:
     org.springframework.web: INFO

@@ -88,4 +88,13 @@ public class NormalTest {
     int index = s.lastIndexOf("/");
     System.out.println("s.substring(index) = " + s.substring(index + 1));
   }
+
+  @Test
+  void test02() {
+    System.out.println("a() = " + a());
+  }
+
+  boolean a() {
+    return false && false;
+  }
 }

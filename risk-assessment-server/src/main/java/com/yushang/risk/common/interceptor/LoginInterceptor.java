@@ -1,8 +1,12 @@
 package com.yushang.risk.common.interceptor;
 
+import com.yushang.risk.assessment.dao.UsersDao;
 import com.yushang.risk.assessment.domain.dto.RequestDataInfo;
+import com.yushang.risk.assessment.domain.entity.User;
 import com.yushang.risk.assessment.domain.enums.HttpErrorEnum;
 import com.yushang.risk.assessment.service.LoginService;
+import com.yushang.risk.common.util.AssertUtils;
+import com.yushang.risk.common.util.IpUtils;
 import com.yushang.risk.common.util.JwtUtils;
 import com.yushang.risk.common.util.RequestHolder;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +27,7 @@ import java.io.IOException;
 @Component
 public class LoginInterceptor implements HandlerInterceptor {
   @Resource private LoginService loginService;
+  @Resource private UsersDao usersDao;
   /** token在请求头中对应的key */
   public static final String AUTHORIZATION = "Authorization";
 
@@ -40,7 +45,9 @@ public class LoginInterceptor implements HandlerInterceptor {
       HttpErrorEnum.ACCESS_DENIED.sendHttpError(response);
       return false;
     }
-    String ip = getClientIpAddress(request);
+    User user = usersDao.getById(uid);
+    AssertUtils.isNotEmpty(user, "用户不存在");
+    String ip = IpUtils.getClientIpAddress(request);
     // token正确
     RequestDataInfo info = new RequestDataInfo();
     info.setUid(uid);
@@ -89,31 +96,4 @@ public class LoginInterceptor implements HandlerInterceptor {
     return loginService.getValidUid(split[1]);
   }
 
-  /**
-   * 获取请求ip地址
-   *
-   * @param request
-   * @return
-   */
-  public String getClientIpAddress(HttpServletRequest request) {
-    String ipAddress = request.getHeader("X-Forwarded-For");
-
-    if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
-      ipAddress = request.getHeader("Proxy-Client-IP");
-    }
-    if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
-      ipAddress = request.getHeader("WL-Proxy-Client-IP");
-    }
-    if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
-      ipAddress = request.getHeader("HTTP_CLIENT_IP");
-    }
-    if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
-      ipAddress = request.getHeader("HTTP_X_FORWARDED_FOR");
-    }
-    if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
-      ipAddress = request.getRemoteAddr();
-    }
-
-    return ipAddress;
-  }
 }

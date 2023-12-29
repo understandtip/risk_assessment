@@ -1,4 +1,4 @@
-package com.yushang.risk.common.enums;
+package com.yushang.risk.assessment.domain.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

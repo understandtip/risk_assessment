@@ -58,6 +58,7 @@ public class MinioController {
   // }
   @PostMapping("/upload")
   @ApiOperation("minio文件上传")
+  // TODO 限流频控
   public ApiResult<List<String>> upload(
       @RequestParam(name = "file", required = false) MultipartFile[] file) {
 

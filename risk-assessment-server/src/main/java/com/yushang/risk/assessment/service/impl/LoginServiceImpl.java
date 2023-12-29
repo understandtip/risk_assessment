@@ -21,7 +21,7 @@ public class LoginServiceImpl implements LoginService {
   public static final int REDIS_TOKEN_EXPIRE_TIME = 3;
   @Resource private JwtUtils jwtUtils;
   /**
-   * 登录成功,获取token(todo:分布式锁保证线程安全)
+   * 登录成功,获取token
    *
    * @param uid
    * @return
@@ -32,11 +32,7 @@ public class LoginServiceImpl implements LoginService {
     String token = jwtUtils.createToken(uid);
     // 删除之前的token,防止多账号同时登录
     String key = RedisKey.getKey(RedisKey.USER_REDIS_TOKEN_PREFIX, uid);
-    try {
-      Thread.sleep(50000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+
     RedisUtils.del(key);
     RedisUtils.set(key, token, REDIS_TOKEN_EXPIRE_TIME, TimeUnit.DAYS);
     return token;

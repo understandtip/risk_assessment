@@ -1,34 +1,21 @@
 package com.yushang.risk.assessment.controller;
 
 import cn.hutool.core.io.FileUtil;
-import com.deepoove.poi.XWPFTemplate;
-import com.deepoove.poi.config.Configure;
-import com.deepoove.poi.plugin.table.LoopRowTableRenderPolicy;
 import com.yushang.risk.assessment.domain.vo.request.GenerateReportReq;
 import com.yushang.risk.assessment.service.RiskService;
-import com.yushang.risk.common.domain.vo.ApiResult;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.net.URLEncoder;
-import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.stream.Collectors;
 
 /**
  * @Author：zlp @Package：com.yushang.risk @Project：risk_assessment
@@ -65,9 +52,7 @@ public class MyTestController {
   }
 
   @GetMapping("/reids/cache")
-  @Cacheable(cacheNames = "test")
   public String redisCache(String uid) {
-
     return "Hello World";
   }
 }

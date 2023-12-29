@@ -1,9 +1,6 @@
 package com.yushang.risk.common.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -11,6 +8,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @name：FrequencyControl @Date：2023/12/26 14:30 @Filename：FrequencyControl
  */
+@Repeatable(FrequencyControlContainer.class)
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FrequencyControl {

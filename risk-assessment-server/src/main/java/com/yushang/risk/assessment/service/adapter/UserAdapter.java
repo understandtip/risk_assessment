@@ -18,13 +18,15 @@ public class UserAdapter {
    *
    * @param registerReq
    * @param newPassword
+   * @param myInvitationCode
    * @return
    */
-  public static User buildSaveUser(RegisterReq registerReq, String newPassword) {
+  public static User buildSaveUser(RegisterReq registerReq, String newPassword, String myInvitationCode) {
     return User.builder()
         .username(registerReq.getUserName())
         .password(newPassword)
         .useCode(registerReq.getInvitationCode())
+            .invitationCode(myInvitationCode) 
         .build();
   }
 
