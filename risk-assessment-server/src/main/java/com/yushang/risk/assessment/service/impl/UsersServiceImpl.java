@@ -18,6 +18,7 @@ import com.yushang.risk.common.annotation.OptLog;
 import com.yushang.risk.common.constant.RedisKey;
 import com.yushang.risk.common.exception.BusinessException;
 import com.yushang.risk.common.exception.CommonErrorEnum;
+import com.yushang.risk.common.exception.SystemException;
 import com.yushang.risk.common.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -99,15 +100,17 @@ public class UsersServiceImpl implements UsersService {
     // TODO 保存到申请表中,由后台管理员处理申请
     // 存储数据库
     // TODO 只有后台管理员批准之后,才能添加到数据库,下面要注释
-    String newPassword;
+    // 第一阶段解密
+    String password = AesUtil.decryptPassword(registerReq.getPassword());
     try {
-      newPassword = PasswordUtils.encryptPassword(registerReq.getPassword());
+      // 第二阶段加密
+      password = PasswordUtils.encryptPassword(password);
     } catch (Exception e) {
-      throw new BusinessException(CommonErrorEnum.SYSTEM_ERROR.getErrorCode(), "密码加密失败,抛出异常");
+      throw new SystemException(CommonErrorEnum.SYSTEM_ERROR.getErrorCode(), "密码加密失败,抛出异常");
     }
     // 生成邀请码
     String myInvitationCode = generateRandomString();
-    User saveUser = UserAdapter.buildSaveUser(registerReq, newPassword, myInvitationCode);
+    User saveUser = UserAdapter.buildSaveUser(registerReq, password, myInvitationCode);
     usersDao.save(saveUser);
   }
 
@@ -130,9 +133,9 @@ public class UsersServiceImpl implements UsersService {
     try {
       password = PasswordUtils.decryptPassword(user.getPassword());
     } catch (Exception e) {
-      throw new BusinessException(CommonErrorEnum.SYSTEM_ERROR.getErrorCode(), "密码解密异常");
+      throw new SystemException(CommonErrorEnum.SYSTEM_ERROR.getErrorCode(), "密码解密异常");
     }
-    AssertUtils.equal(loginReq.getPassword(), password, "密码错误");
+    AssertUtils.equal(AesUtil.decryptPassword(loginReq.getPassword()), password, "密码错误");
     // 修改登录时间
     usersDao.updateLoginTime(user.getId());
     // 获取token
@@ -179,7 +182,7 @@ public class UsersServiceImpl implements UsersService {
    */
   @Override
   public void updatePassword(UpdatePassReq passReq, HttpServletRequest request) {
-    // TODO 与前端协调密码的加密处理
+    // 与前端协调密码的加密处理
     // 校验验证码
     this.verifyCode(passReq.getCode(), IpUtils.getClientIpAddress(request));
     // 修改密码
@@ -188,14 +191,14 @@ public class UsersServiceImpl implements UsersService {
     try {
       password = PasswordUtils.decryptPassword(user.getPassword());
     } catch (Exception e) {
-      throw new BusinessException(CommonErrorEnum.SYSTEM_ERROR.getErrorCode(), "密码解密异常");
+      throw new SystemException(CommonErrorEnum.SYSTEM_ERROR.getErrorCode(), "密码解密异常");
     }
-    AssertUtils.equal(passReq.getPassword(), password, "密码错误");
+    AssertUtils.equal(AesUtil.decryptPassword(passReq.getPassword()), password, "密码错误");
     String newPass;
     try {
-      newPass = PasswordUtils.encryptPassword(passReq.getNewPassword());
+      newPass = PasswordUtils.encryptPassword(AesUtil.decryptPassword(passReq.getNewPassword()));
     } catch (Exception e) {
-      throw new BusinessException(CommonErrorEnum.SYSTEM_ERROR.getErrorCode(), "新密码加密异常");
+      throw new SystemException(CommonErrorEnum.SYSTEM_ERROR.getErrorCode(), "新密码加密异常");
     }
     AssertUtils.isTrue(usersDao.updatePass(user.getId(), newPass), "修改密码失败");
     // 清除token

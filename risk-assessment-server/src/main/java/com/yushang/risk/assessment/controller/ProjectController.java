@@ -91,6 +91,6 @@ public class ProjectController {
     boolean b = projectService.removeProject(projectIds);
     return b
         ? ApiResult.success()
-        : ApiResult.fail(CommonErrorEnum.SYSTEM_ERROR.getCode(), "项目删除失败");
+        : ApiResult.fail(CommonErrorEnum.BUSINESS_ERROR.getCode(), "项目删除失败");
   }
 }
