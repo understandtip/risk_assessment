@@ -3,15 +3,18 @@ package com.yushang.risk.assessment.service.impl;
 import com.yushang.risk.assessment.dao.RoleDao;
 import com.yushang.risk.assessment.dao.UserRoleDao;
 import com.yushang.risk.assessment.dao.UsersDao;
+import com.yushang.risk.assessment.domain.dto.RequestDataInfo;
 import com.yushang.risk.assessment.domain.entity.User;
 import com.yushang.risk.assessment.domain.vo.request.LoginReq;
 import com.yushang.risk.assessment.domain.vo.request.RegisterReq;
 import com.yushang.risk.assessment.domain.vo.request.UpdatePassReq;
+import com.yushang.risk.assessment.domain.vo.request.UserReq;
 import com.yushang.risk.assessment.domain.vo.response.LoginUserResp;
 import com.yushang.risk.assessment.domain.vo.response.UserResp;
 import com.yushang.risk.assessment.service.LoginService;
 import com.yushang.risk.assessment.service.UsersService;
 import com.yushang.risk.assessment.service.adapter.UserAdapter;
+import com.yushang.risk.common.annotation.OptLog;
 import com.yushang.risk.common.constant.RedisKey;
 import com.yushang.risk.common.exception.BusinessException;
 import com.yushang.risk.common.exception.CommonErrorEnum;
@@ -24,6 +27,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.awt.*;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -115,6 +119,7 @@ public class UsersServiceImpl implements UsersService {
    * @return
    */
   @Override
+  @OptLog(target = OptLog.Target.LOGIN)
   public LoginUserResp login(LoginReq loginReq, HttpServletRequest request) {
     // 校验验证码
     this.verifyCode(loginReq.getCode(), IpUtils.getClientIpAddress(request));
@@ -132,15 +137,24 @@ public class UsersServiceImpl implements UsersService {
     usersDao.updateLoginTime(user.getId());
     // 获取token
     String token = loginService.login(user.getId());
+    RequestDataInfo dataInfo = new RequestDataInfo();
+    dataInfo.setUid(user.getId());
+    RequestHolder.set(dataInfo);
     return UserAdapter.buildLoginUserResp(user, token);
   }
 
   /** 用户退出登录 */
   @Override
+  @OptLog(target = OptLog.Target.EXIT)
   public void exit() {
     // 清除token
     String key = RedisKey.getKey(RedisKey.USER_REDIS_TOKEN_PREFIX, RequestHolder.get().getUid());
     RedisUtils.del(key);
+    // 记录退出时间
+    User user = new User();
+    user.setId(RequestHolder.get().getUid());
+    user.setExitTime(LocalDateTime.now());
+    usersDao.updateById(user);
   }
 
   /**
@@ -186,6 +200,19 @@ public class UsersServiceImpl implements UsersService {
     AssertUtils.isTrue(usersDao.updatePass(user.getId(), newPass), "修改密码失败");
     // 清除token
     RedisUtils.del(RedisKey.getKey(RedisKey.USER_REDIS_TOKEN_PREFIX, user.getId()));
+  }
+
+  /**
+   * 修改用户个人信息
+   *
+   * @param userReq
+   */
+  @Override
+  public void changeInfo(UserReq userReq) {
+    User user = new User();
+    user.setId(RequestHolder.get().getUid());
+    BeanUtils.copyProperties(userReq, user);
+    usersDao.updateById(user);
   }
 
   /**

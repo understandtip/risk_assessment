@@ -1,7 +1,8 @@
 package com.yushang.risk.assessment.controller;
 
-import com.yushang.risk.assessment.domain.entity.Project;
+import com.yushang.risk.assessment.domain.vo.request.ProjectPageReq;
 import com.yushang.risk.assessment.domain.vo.request.ProjectReq;
+import com.yushang.risk.assessment.domain.vo.response.PageBaseResp;
 import com.yushang.risk.assessment.domain.vo.response.ProjectResp;
 import com.yushang.risk.assessment.service.ProjectService;
 import com.yushang.risk.common.domain.vo.ApiResult;
@@ -27,16 +28,29 @@ public class ProjectController {
   @Resource private ProjectService projectService;
 
   /**
-   * 获取项目列表
+   * 获取项目列表(分页)
    *
    * @return
    */
   @GetMapping("/getList")
-  @ApiOperation("获取项目列表")
-  public ApiResult<List<ProjectResp>> getList() {
+  @ApiOperation("获取项目列表(分页)")
+  public ApiResult<PageBaseResp<ProjectResp>> getList(@Validated ProjectPageReq projectPageReq) {
     Integer uid = RequestHolder.get().getUid();
-    List<ProjectResp> list = projectService.getList(uid);
-    return ApiResult.success(list);
+    PageBaseResp<ProjectResp> page = projectService.getListByPage(uid, projectPageReq);
+    return ApiResult.success(page);
+  }
+
+  /**
+   * 根据项目id获取项目详细信息
+   *
+   * @param projectId
+   * @return
+   */
+  @GetMapping("/getById/{id}")
+  @ApiOperation("根据项目id获取项目详细信息")
+  public ApiResult<ProjectResp> getByProjectId(@PathVariable("id") Integer projectId) {
+    ProjectResp resp = projectService.getByProjectId(projectId);
+    return ApiResult.success(resp);
   }
 
   /**
@@ -68,13 +82,13 @@ public class ProjectController {
   /**
    * 删除项目
    *
-   * @param projectId
+   * @param projectIds
    * @return
    */
-  @DeleteMapping("/removeProject/{id}")
+  @DeleteMapping("/removeProject")
   @ApiOperation("删除项目")
-  public ApiResult<Void> removeProject(@PathVariable("id") Integer projectId) {
-    boolean b = projectService.removeProject(projectId);
+  public ApiResult<Void> removeProject(@RequestBody List<Integer> projectIds) {
+    boolean b = projectService.removeProject(projectIds);
     return b
         ? ApiResult.success()
         : ApiResult.fail(CommonErrorEnum.SYSTEM_ERROR.getCode(), "项目删除失败");

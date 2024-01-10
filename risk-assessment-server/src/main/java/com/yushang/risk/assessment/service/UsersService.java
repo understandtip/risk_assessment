@@ -3,6 +3,7 @@ package com.yushang.risk.assessment.service;
 import com.yushang.risk.assessment.domain.vo.request.LoginReq;
 import com.yushang.risk.assessment.domain.vo.request.RegisterReq;
 import com.yushang.risk.assessment.domain.vo.request.UpdatePassReq;
+import com.yushang.risk.assessment.domain.vo.request.UserReq;
 import com.yushang.risk.assessment.domain.vo.response.LoginUserResp;
 import com.yushang.risk.assessment.domain.vo.response.UserResp;
 
@@ -58,4 +59,11 @@ public interface UsersService {
    * @param request
    */
   void updatePassword(UpdatePassReq passReq, HttpServletRequest request);
+
+  /**
+   * 修改用户个人信息
+   *
+   * @param userReq
+   */
+  void changeInfo(UserReq userReq);
 }

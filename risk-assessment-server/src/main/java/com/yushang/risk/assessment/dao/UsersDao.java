@@ -5,11 +5,10 @@ import com.yushang.risk.assessment.domain.entity.User;
 import com.yushang.risk.assessment.domain.enums.UserStatusEnum;
 import com.yushang.risk.assessment.mapper.UsersMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.poi.ss.formula.functions.Function;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 用户 服务实现类
@@ -50,6 +49,13 @@ public class UsersDao extends ServiceImpl<UsersMapper, User> {
         .eq(User::getUsername, userName)
         .eq(User::getStatus, UserStatusEnum.NORMAL.getCode())
         .one();
+  }
+
+  public List<User> getNormalByRealNameLike(String realName) {
+    return this.lambdaQuery()
+        .like(User::getRealName, realName)
+        .eq(User::getStatus, UserStatusEnum.NORMAL.getCode())
+        .list();
   }
 
   /**

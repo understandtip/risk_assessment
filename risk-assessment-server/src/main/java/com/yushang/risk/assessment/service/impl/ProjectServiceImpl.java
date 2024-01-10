@@ -1,11 +1,14 @@
 package com.yushang.risk.assessment.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yushang.risk.assessment.dao.GenerateRecordDao;
 import com.yushang.risk.assessment.dao.ProjectDao;
 import com.yushang.risk.assessment.dao.UsersDao;
 import com.yushang.risk.assessment.domain.entity.Project;
 import com.yushang.risk.assessment.domain.entity.User;
+import com.yushang.risk.assessment.domain.vo.request.ProjectPageReq;
 import com.yushang.risk.assessment.domain.vo.request.ProjectReq;
+import com.yushang.risk.assessment.domain.vo.response.PageBaseResp;
 import com.yushang.risk.assessment.domain.vo.response.ProjectResp;
 import com.yushang.risk.assessment.service.ProjectService;
 import com.yushang.risk.common.util.AssertUtils;
@@ -32,19 +35,25 @@ public class ProjectServiceImpl implements ProjectService {
    * 获取项目列表
    *
    * @param uid
+   * @param projectPageReq
    * @return
    */
   @Override
-  public List<ProjectResp> getList(Integer uid) {
-    List<Project> list = projectDao.getListByField(Project::getAuthorId, uid);
-    return list.stream()
-        .map(
-            project -> {
-              ProjectResp resp = new ProjectResp();
-              BeanUtils.copyProperties(project, resp);
-              return resp;
-            })
-        .collect(Collectors.toList());
+  public PageBaseResp<ProjectResp> getListByPage(Integer uid, ProjectPageReq projectPageReq) {
+    Page<Project> listByPage = projectDao.getListByPage(uid, projectPageReq);
+    if (listByPage == null || listByPage.getRecords().isEmpty()) return PageBaseResp.empty();
+
+    List<ProjectResp> collect =
+        listByPage.getRecords().stream()
+            .map(
+                project -> {
+                  ProjectResp resp = new ProjectResp();
+                  BeanUtils.copyProperties(project, resp);
+                  return resp;
+                })
+            .collect(Collectors.toList());
+
+    return PageBaseResp.init(listByPage, collect);
   }
 
   /**
@@ -79,15 +88,29 @@ public class ProjectServiceImpl implements ProjectService {
   /**
    * 删除项目
    *
-   * @param projectId
+   * @param projectIds
    * @return
    */
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public boolean removeProject(Integer projectId) {
-    boolean b = projectDao.removeById(projectId);
+  public boolean removeProject(List<Integer> projectIds) {
+    boolean b = projectDao.removeByIds(projectIds);
     // 删除该项目下的报告记录
-    boolean b1 = generateRecordDao.removeByProjectId(projectId);
+    boolean b1 = generateRecordDao.removeByProjectId(projectIds);
     return b && b1;
+  }
+
+  /**
+   * 根据项目id获取项目详细信息
+   *
+   * @param projectId
+   * @return
+   */
+  @Override
+  public ProjectResp getByProjectId(Integer projectId) {
+    Project project = projectDao.getById(projectId);
+    ProjectResp resp = new ProjectResp();
+    BeanUtils.copyProperties(project, resp);
+    return resp;
   }
 }

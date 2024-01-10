@@ -19,16 +19,17 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GenerateReportReq {
-  @ApiModelProperty(notes = "项目id,没有项目,就不传")
+  @ApiModelProperty(notes = "项目id")
+  @NotNull
   private Integer projectId;
 
   @ApiModelProperty(notes = "风险集合")
   @NotNull
   private List<riskReq> riskList;
 
-  @ApiModelProperty(notes = "饼图图片地址")
+  @ApiModelProperty(notes = "饼图图片名称")
   @NotNull
-  private String picUrl;
+  private String picFileName;
 
   @Data
   @NoArgsConstructor

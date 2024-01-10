@@ -1,5 +1,6 @@
 package com.yushang.risk.assessment.domain.vo.request;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -39,6 +40,7 @@ public class ProjectReq {
   private String logo;
   /** 说明信息 */
   @ApiModelProperty(notes = "说明信息")
+  @TableField("`explain`")
   private String explain;
   /** 涉及系统 */
   @NotNull

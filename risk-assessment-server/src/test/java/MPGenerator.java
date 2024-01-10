@@ -54,7 +54,7 @@ public class MPGenerator {
     // 字段和表注解
     strategyConfig.setEntityTableFieldAnnotationEnable(true);
     // todo 这里修改需要自动生成的表结构
-    strategyConfig.setInclude("generate_record");
+    strategyConfig.setInclude("user_log");
     // 自动填充字段,在项目开发过程中,例如创建时间，修改时间,每次，都需要我们来指定，太麻烦了,设置为自动填充规则，就不需要我们赋值咯
     List<TableFill> list = new ArrayList<TableFill>();
     TableFill tableFill1 = new TableFill("created_time", FieldFill.INSERT);
@@ -74,6 +74,6 @@ public class MPGenerator {
     dataSourceConfig.setUsername("root");
     dataSourceConfig.setPassword("yushang001");
     dataSourceConfig.setUrl(
-        "jdbc:mysql://43.139.167.19:3307/risk_assessment?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC");
+        "jdbc:mysql://43.138.167.55:3307/risk_assessment?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC");
   }
 }

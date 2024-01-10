@@ -92,8 +92,6 @@ public class LoginInterceptor implements HandlerInterceptor {
     // 使用空格作为分隔符进行分割
     String[] split = authorization.split("\\s+");
     if (!split[0].equals(AUTHORIZATION_SCHAME) || StringUtils.isEmpty(split[1])) return null;
-
     return loginService.getValidUid(split[1]);
   }
-
 }

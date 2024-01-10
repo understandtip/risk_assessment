@@ -3,7 +3,7 @@ package com.yushang.risk.common.thread;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @Author：zlp @Package：com.abin.mallchat.common.common.thread @Project：mallchat-zlp
+ * @Author：zlp
  *
  * @name：MyCaughtExceptionHandler @Date：2023/10/31 14:11 @Filename：MyCaughtExceptionHandler
  */

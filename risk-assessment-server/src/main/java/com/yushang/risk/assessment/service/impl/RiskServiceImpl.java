@@ -5,20 +5,21 @@ import com.deepoove.poi.XWPFTemplate;
 import com.deepoove.poi.config.Configure;
 import com.deepoove.poi.data.Pictures;
 import com.deepoove.poi.plugin.table.LoopRowTableRenderPolicy;
-import com.yushang.risk.assessment.dao.CycleDao;
-import com.yushang.risk.assessment.dao.GradeDao;
-import com.yushang.risk.assessment.dao.RiskDao;
-import com.yushang.risk.assessment.dao.RiskGradeDao;
+import com.yushang.risk.assessment.dao.*;
+import com.yushang.risk.assessment.domain.dto.RequestDataInfo;
 import com.yushang.risk.assessment.domain.dto.RiskReqDto;
-import com.yushang.risk.assessment.domain.entity.Grade;
-import com.yushang.risk.assessment.domain.entity.Risk;
-import com.yushang.risk.assessment.domain.entity.RiskGrade;
+import com.yushang.risk.assessment.domain.entity.*;
 import com.yushang.risk.assessment.domain.vo.request.GenerateReportReq;
+import com.yushang.risk.assessment.domain.vo.request.ProjectPageReq;
 import com.yushang.risk.assessment.domain.vo.response.GradeVo;
 import com.yushang.risk.assessment.domain.vo.response.RiskResp;
+import com.yushang.risk.assessment.service.MinioService;
 import com.yushang.risk.assessment.service.RiskService;
+import com.yushang.risk.assessment.service.adapter.RecordAdapter;
 import com.yushang.risk.common.config.ThreadPoolConfig;
+import com.yushang.risk.common.config.minio.MinioProp;
 import com.yushang.risk.common.constant.RiskConstant;
+import com.yushang.risk.common.util.RequestHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,12 +29,12 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -48,6 +49,10 @@ public class RiskServiceImpl implements RiskService {
   @Resource private RiskGradeDao riskGradeDao;
   @Resource private GradeDao gradeDao;
   @Resource private CycleDao cycleDao;
+  @Resource private MinioService minioService;
+  @Resource private GenerateRecordDao generateRecordDao;
+  @Resource private ProjectDao projectDao;
+  @Resource private MinioProp minioProp;
 
   @Qualifier(ThreadPoolConfig.COMMON_EXECUTOR)
   @Resource
@@ -106,12 +111,14 @@ public class RiskServiceImpl implements RiskService {
   @Override
   public void generateReport(GenerateReportReq reportReq, ByteArrayOutputStream outputStream)
       throws IOException {
+    Project project = projectDao.getById(reportReq.getProjectId());
+
     HashMap<String, Object> finalMap = new HashMap<>(64);
     // 填充数据
-    finalMap.put("projectName", "测试项目");
-    finalMap.put("version", "V1.0");
-    finalMap.put("classification", "A级");
-    finalMap.put("producer", "测试用户");
+    finalMap.put("projectName", project.getName());
+    finalMap.put("version", project.getVersion());
+    finalMap.put("classification", project.getClassification());
+    finalMap.put("producer", project.getAuthorName());
     Date generatedTime = new Date();
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     String nowTime = dateFormat.format(generatedTime);
@@ -120,14 +127,20 @@ public class RiskServiceImpl implements RiskService {
     List<Map<String, Object>> tabList = new ArrayList<>();
     Map<String, Object> tabMap = new HashMap<>();
     tabMap.put("historyTime", nowTime);
-    tabMap.put("historyVersion", "V1.0");
-    tabMap.put("historyExplain", "说明文字");
-    tabMap.put("historyAuthor", "测试用户");
+    tabMap.put("historyVersion", project.getVersion());
+    tabMap.put("historyExplain", project.getExplain());
+    tabMap.put("historyAuthor", project.getAuthorName());
     tabList.add(tabMap);
     finalMap.put("tab", tabList);
+    finalMap.put("testingCompany", project.getTestingCompany());
     // logo
-    finalMap.put("logo", "logo图片");
-    finalMap.put("gradePic", Pictures.ofUrl(reportReq.getPicUrl()).create());
+
+    finalMap.put(
+        "logo0", Pictures.ofUrl(minioService.getFilePath(project.getLogo())).size(80, 30).create());
+    finalMap.put(
+        "logo", Pictures.ofUrl(minioService.getFilePath(project.getLogo())).size(250, 70).create());
+    finalMap.put(
+        "gradePic", Pictures.ofUrl(minioService.getFilePath(reportReq.getPicFileName())).create());
     // 处理请求数据
     List<GenerateReportReq.riskReq> riskList = reportReq.getRiskList();
     Map<Integer, List<RiskReqDto>> riskDataMap = this.dealRiskReqData(riskList);
@@ -162,13 +175,28 @@ public class RiskServiceImpl implements RiskService {
             finalMap.put("var" + cycleId, varList);
           }
         });
-
     Configure configure = Configure.builder().bind("tab", new LoopRowTableRenderPolicy()).build();
     // 渲染数据
     ClassPathResource classPathResource = new ClassPathResource("template/数据安全检查模板.docx");
     XWPFTemplate.compile(classPathResource.getInputStream(), configure)
         .render(finalMap)
-        .writeAndClose(outputStream);
+        .write(outputStream);
+    byte[] bytes = outputStream.toByteArray();
+    outputStream.close();
+    RequestDataInfo dataInfo = RequestHolder.get();
+    threadPoolTaskExecutor.execute(
+        () -> {
+          RequestHolder.set(dataInfo);
+          // 保存报告到Minio
+          String fileName =
+              MinioService.MINIO_PORT + "/" + System.currentTimeMillis() + "_评测报告.docx";
+
+          String url = minioService.upload(new ByteArrayInputStream(bytes), fileName);
+          //  往生成报告记录表中插入数据
+          GenerateRecord record =
+              RecordAdapter.buildGenerateRecord(project, RequestHolder.get().getUid(), fileName);
+          generateRecordDao.save(record);
+        });
   }
 
   /**

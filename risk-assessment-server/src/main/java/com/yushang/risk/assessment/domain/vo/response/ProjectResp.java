@@ -1,5 +1,6 @@
 package com.yushang.risk.assessment.domain.vo.response;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -13,6 +14,9 @@ import java.time.LocalDateTime;
  */
 @Data
 public class ProjectResp {
+  /** 主键id */
+  @ApiModelProperty(notes = "主键id")
+  private Integer id;
   /** 项目名称 */
   @ApiModelProperty(notes = "项目名称")
   private String name;
@@ -22,6 +26,10 @@ public class ProjectResp {
   /** 密级 */
   @ApiModelProperty(notes = "密级")
   private String classification;
+  /** 创建时间 */
+  @ApiModelProperty(notes = "创建时间")
+  private LocalDateTime createdTime;
+
   /** 版本编号 */
   @ApiModelProperty(notes = "版本编号")
   private Double version;
@@ -30,6 +38,7 @@ public class ProjectResp {
   private String logo;
   /** 说明信息 */
   @ApiModelProperty(notes = "说明信息")
+  @TableField("`explain`")
   private String explain;
   /** 制作人姓名 */
   @ApiModelProperty(notes = "制作人姓名")
@@ -43,9 +52,6 @@ public class ProjectResp {
   /** 测试公司 */
   @ApiModelProperty(notes = "测试公司")
   private String testingCompany;
-  /** 创建时间 */
-  @ApiModelProperty(notes = "创建时间")
-  private LocalDateTime createdTime;
   /** 更新时间 */
   @ApiModelProperty(notes = "更新时间")
   private LocalDateTime updatedTime;

@@ -3,6 +3,7 @@ package com.yushang.risk.assessment.controller;
 import com.yushang.risk.assessment.domain.vo.request.LoginReq;
 import com.yushang.risk.assessment.domain.vo.request.RegisterReq;
 import com.yushang.risk.assessment.domain.vo.request.UpdatePassReq;
+import com.yushang.risk.assessment.domain.vo.request.UserReq;
 import com.yushang.risk.assessment.domain.vo.response.LoginUserResp;
 import com.yushang.risk.assessment.domain.vo.response.UserResp;
 import com.yushang.risk.assessment.service.UsersService;
@@ -47,7 +48,7 @@ public class UserController {
    */
   @GetMapping("/getCode")
   @ApiOperation("获取随机验证码(以图片的形式展示)")
-  @FrequencyControl(time = 10, count = 3, target = FrequencyControl.Target.PUBLIC)
+  @FrequencyControl(time = 3, count = 3, target = FrequencyControl.Target.PUBLIC)
   public void getCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Object[] objs = usersService.getCode(IpUtils.getClientIpAddress(request));
     // 将图片输出给浏览器
@@ -124,6 +125,19 @@ public class UserController {
   public ApiResult<Void> updatePassword(
       @RequestBody @Validated UpdatePassReq passReq, HttpServletRequest request) {
     usersService.updatePassword(passReq, request);
+    return ApiResult.success();
+  }
+
+  /**
+   * 修改用户个人信息
+   *
+   * @param userReq
+   * @return
+   */
+  @PutMapping("/changeInfo")
+  @ApiOperation("修改用户个人信息")
+  public ApiResult<Void> changeInfo(@RequestBody UserReq userReq) {
+    usersService.changeInfo(userReq);
     return ApiResult.success();
   }
 }

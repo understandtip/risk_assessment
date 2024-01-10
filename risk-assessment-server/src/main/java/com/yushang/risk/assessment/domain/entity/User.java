@@ -1,9 +1,7 @@
 package com.yushang.risk.assessment.domain.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.time.LocalDateTime;
 import java.io.Serializable;
 
@@ -67,5 +65,9 @@ public class User implements Serializable, Cloneable {
   /** 逻辑删除 */
   @ApiModelProperty(notes = "逻辑删除")
   @TableLogic
+  @TableField("is_deleted")
   private String isDeleted;
+  /** 退出时间 */
+  @ApiModelProperty(notes = "退出时间")
+  private LocalDateTime exitTime;
 }

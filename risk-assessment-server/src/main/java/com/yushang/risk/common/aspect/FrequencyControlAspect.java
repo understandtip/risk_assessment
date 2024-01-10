@@ -49,12 +49,10 @@ public class FrequencyControlAspect {
       value =
           "@annotation(com.yushang.risk.common.annotation.FrequencyControl)|| @annotation(com.yushang.risk.common.annotation.FrequencyControlContainer)")
   public Object frequencyControlAround(ProceedingJoinPoint joinPoint) throws Throwable {
-
     FrequencyControl[] aops = getMethod(joinPoint).getAnnotationsByType(FrequencyControl.class);
     if (aops == null) {
       return ApiResult.fail(CommonErrorEnum.SYSTEM_ERROR);
     }
-
     Stream.of(aops)
         .forEach(
             frequencyControl -> {

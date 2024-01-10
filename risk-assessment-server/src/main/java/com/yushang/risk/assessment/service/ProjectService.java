@@ -1,6 +1,8 @@
 package com.yushang.risk.assessment.service;
 
+import com.yushang.risk.assessment.domain.vo.request.ProjectPageReq;
 import com.yushang.risk.assessment.domain.vo.request.ProjectReq;
+import com.yushang.risk.assessment.domain.vo.response.PageBaseResp;
 import com.yushang.risk.assessment.domain.vo.response.ProjectResp;
 
 import java.util.List;
@@ -16,9 +18,10 @@ public interface ProjectService {
    * 查看项目列表
    *
    * @param uid
+   * @param projectPageReq
    * @return
    */
-  List<ProjectResp> getList(Integer uid);
+  PageBaseResp<ProjectResp> getListByPage(Integer uid, ProjectPageReq projectPageReq);
 
   /**
    * 新建项目
@@ -37,8 +40,16 @@ public interface ProjectService {
   /**
    * 删除项目
    *
+   * @param projectIds
+   * @return
+   */
+  boolean removeProject(List<Integer> projectIds);
+
+  /**
+   * 根据项目id获取项目详细信息
+   *
    * @param projectId
    * @return
    */
-  boolean removeProject(Integer projectId);
+  ProjectResp getByProjectId(Integer projectId);
 }

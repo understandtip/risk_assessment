@@ -8,7 +8,6 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * 报告记录
@@ -22,20 +21,23 @@ import lombok.EqualsAndHashCode;
 public class GenerateRecord implements Serializable, Cloneable {
   /** 主键id */
   @ApiModelProperty(notes = "主键id")
-  @TableId
+  @TableId(type = IdType.AUTO)
   private Integer id;
   /** 项目id */
   @ApiModelProperty(notes = "项目id")
   private Integer projectId;
   /** 报告名称 */
+  @ApiModelProperty(notes = "项目名称")
+  private String projectName;
+  /** 报告名称 */
   @ApiModelProperty(notes = "报告名称")
   private String name;
   /** 制作人id */
   @ApiModelProperty(notes = "制作人id")
-  private String authorId;
-  /** 测评报告地址 */
-  @ApiModelProperty(notes = "测评报告地址")
-  private String reportUrl;
+  private Integer authorId;
+  /** 测评报告名称 */
+  @ApiModelProperty(notes = "测评报告名称")
+  private String fileName;
   /** 逻辑删除;1:删除 0:未删除 */
   @ApiModelProperty(notes = "逻辑删除  1:删除   0:未删除")
   @TableLogic

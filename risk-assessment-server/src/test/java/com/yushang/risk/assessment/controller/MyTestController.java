@@ -41,7 +41,6 @@ public class MyTestController {
     req.setProjectId(0);
     req.setRiskList(new ArrayList<>());
     riskService.generateReport(req, outputStream);
-
     // 将输出流中的字节内容转换为字节数组
     byte[] content = outputStream.toByteArray();
 
@@ -51,7 +50,7 @@ public class MyTestController {
     return new ResponseEntity<>(content, headers, HttpStatus.OK);
   }
 
-  @GetMapping("/reids/cache")
+  @PostMapping
   public String redisCache(String uid) {
     return "Hello World";
   }

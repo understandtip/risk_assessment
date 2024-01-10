@@ -24,7 +24,7 @@ import lombok.EqualsAndHashCode;
 public class Project implements Serializable, Cloneable {
   /** 主键id */
   @ApiModelProperty(notes = "主键id")
-  @TableId
+  @TableId(type = IdType.AUTO)
   private Integer id;
   /** 项目名称 */
   @ApiModelProperty(notes = "项目名称")
@@ -43,6 +43,7 @@ public class Project implements Serializable, Cloneable {
   private String logo;
   /** 说明信息 */
   @ApiModelProperty(notes = "说明信息")
+  @TableField("`explain`")
   private String explain;
   /** 制作人姓名 */
   @ApiModelProperty(notes = "制作人姓名")

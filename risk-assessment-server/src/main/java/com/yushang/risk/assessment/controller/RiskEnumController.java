@@ -119,15 +119,12 @@ public class RiskEnumController {
       @RequestBody @Validated GenerateReportReq reportReq, HttpServletResponse response)
       throws IOException {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
     // 设置响应内容类型
     response.setContentType("application/octet-stream");
     response.addHeader(
         "Content-Disposition",
         "attachment; filename=" + URLEncoder.encode(FileUtil.getName("目标文档.docx"), "UTF-8"));
-
     riskService.generateReport(reportReq, outputStream);
-
     // 将输出流中的字节内容转换为字节数组
     return outputStream.toByteArray();
   }
