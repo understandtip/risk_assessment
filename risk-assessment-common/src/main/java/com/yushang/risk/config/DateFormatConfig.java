@@ -1,4 +1,4 @@
-package com.yushang.risk.common.config;
+package com.yushang.risk.config;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;

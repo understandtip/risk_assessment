@@ -1,4 +1,4 @@
-package com.yushang.risk.common.config;
+package com.yushang.risk.config;
 
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.cors.CorsConfiguration;

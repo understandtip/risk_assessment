@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.yushang.risk.common.constant.RedisKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -54,7 +55,7 @@ public class CacheConfig {
 
     RedisCacheConfiguration valuesWith =
         RedisCacheConfiguration.defaultCacheConfig()
-            .prefixCacheNameWith("cachable:")
+            .prefixCacheNameWith(RedisKey.PREFIX + ":")
             .disableCachingNullValues() // 禁止缓存null值
             .serializeValuesWith(
                 RedisSerializationContext.SerializationPair.fromSerializer(

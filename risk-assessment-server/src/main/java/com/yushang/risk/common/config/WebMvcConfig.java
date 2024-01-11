@@ -1,6 +1,7 @@
 package com.yushang.risk.common.config;
 
 import com.yushang.risk.common.interceptor.LoginInterceptor;
+import com.yushang.risk.common.interceptor.VisitInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -17,9 +18,13 @@ import javax.annotation.Resource;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
   @Resource private LoginInterceptor loginInterceptor;
+  @Resource private VisitInterceptor visitInterceptor;
 
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
+    // 记录访问数
+    registry.addInterceptor(visitInterceptor).addPathPatterns("/**");
+
     registry
         .addInterceptor(loginInterceptor)
         .addPathPatterns("/api/**")

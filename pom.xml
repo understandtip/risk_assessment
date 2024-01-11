@@ -10,6 +10,7 @@
     <modules>
         <module>risk-assessment-server</module>
         <module>risk-assessment-admin</module>
+        <module>risk-assessment-common</module>
     </modules>
     <packaging>pom</packaging>
     <parent>
