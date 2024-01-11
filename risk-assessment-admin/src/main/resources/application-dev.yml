@@ -1,0 +1,18 @@
+risk:
+  mysql:
+    ip: 43.138.167.55
+    username: root
+    password: yushang001
+    port: 3307
+    db: risk_assessment
+  redis:
+    host: 43.138.167.55
+    port: 6379
+    password: yushang001
+yushang:
+  jwt:
+    secret: 12srtgdf213
+minio:
+  endpoint: http://43.138.167.55:9000
+  accessKey: admin
+  secretKey: yushang001
