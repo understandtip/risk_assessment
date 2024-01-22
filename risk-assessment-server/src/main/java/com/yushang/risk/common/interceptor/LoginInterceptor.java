@@ -36,12 +36,12 @@ public class LoginInterceptor implements HandlerInterceptor {
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
       throws IOException {
+    if (isPublicUri(request.getServletPath())) {
+      return true;
+    }
     Integer uid = this.parseToken(request);
     if (uid == null) {
       // 未登录
-      if (isPublicUri(request.getPathInfo())) {
-        return true;
-      }
       HttpErrorEnum.ACCESS_DENIED.sendHttpError(response);
       return false;
     }
@@ -77,7 +77,9 @@ public class LoginInterceptor implements HandlerInterceptor {
    * @return
    */
   private boolean isPublicUri(String pathInfo) {
-    return false;
+    return pathInfo.contains("getSecurityModel")
+        || pathInfo.contains("getModelDetail")
+        || pathInfo.contains("submitBugReport");
   }
 
   /**

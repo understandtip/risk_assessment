@@ -1,15 +1,18 @@
 package com.yushang.risk.assessment.service;
 
 import com.yushang.risk.common.config.minio.MinioProp;
-import com.yushang.risk.common.domain.vo.ApiResult;
+import com.yushang.risk.common.constant.RiskConstant;
+import com.yushang.risk.common.event.FileDownEvent;
+import com.yushang.risk.common.event.domaih.dto.FileDownDto;
 import com.yushang.risk.common.exception.BusinessException;
-import com.yushang.risk.common.exception.CommonErrorEnum;
 import com.yushang.risk.common.util.RequestHolder;
+import com.yushang.risk.constant.NormalCommonConstant;
 import io.minio.MinioClient;
 import io.minio.ObjectStat;
 import io.minio.PutObjectOptions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -26,11 +29,13 @@ import java.net.URLEncoder;
 @Service
 @Slf4j
 public class MinioService {
+
   @Resource private MinioClient minioClient;
   @Resource private MinioProp minioProp;
+  @Resource private ApplicationEventPublisher applicationEventPublisher;
 
   public static final String MINIO_BUCKET = "yushang";
-  public static final String MINIO_PORT = "port";
+  public static final String MINIO_PORT = NormalCommonConstant.MINIO_PORT;
 
   /**
    * 文件上传
@@ -40,23 +45,32 @@ public class MinioService {
    */
   public String upload(InputStream in, String fileName) {
     try {
-      minioClient.putObject(
-          MINIO_BUCKET,
-          RequestHolder.get().getUid() + "/" + fileName,
-          in,
-          new PutObjectOptions(in.available(), -1));
+      String objectName;
+      if (isPublicFile(fileName)) {
+        objectName = fileName;
+      } else {
+        objectName = RequestHolder.get().getUid() + "/" + fileName;
+      }
+      minioClient.putObject(MINIO_BUCKET, objectName, in, new PutObjectOptions(in.available(), -1));
       in.close();
-      return minioProp.getEndpoint()
-          + "/"
-          + MINIO_BUCKET
-          + "/"
-          + RequestHolder.get().getUid()
-          + "/"
-          + fileName;
+      // 发布下载事件
+      applicationEventPublisher.publishEvent(
+          new FileDownEvent(this, FileDownDto.builder().fileName(fileName).build()));
+      return minioProp.getEndpoint() + "/" + MINIO_BUCKET + "/" + objectName;
     } catch (Exception e) {
       log.error("文件上传失败", e);
       throw new BusinessException("上传失败，请重试");
     }
+  }
+
+  /**
+   * 是否是公开文件上传
+   *
+   * @return
+   * @param fileName
+   */
+  private boolean isPublicFile(String fileName) {
+    return fileName.contains("tem/");
   }
 
   /**
@@ -110,5 +124,9 @@ public class MinioService {
         + RequestHolder.get().getUid()
         + "/"
         + fileName;
+  }
+
+  public String getPublicFilePath(String fileName) {
+    return minioProp.getEndpoint() + "/" + MinioService.MINIO_BUCKET + "/" + fileName;
   }
 }

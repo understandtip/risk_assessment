@@ -2,10 +2,12 @@ package com.yushang.risk;
 
 import com.yushang.risk.common.util.PasswordUtils;
 import com.yushang.risk.common.util.RedisUtils;
+import com.yushang.risk.constant.RedisCommonKey;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 
 import java.util.Random;
+import java.util.Set;
 
 /**
  * @Author：zlp @Package：com.yushang.risk @Project：risk_assessment
@@ -14,10 +16,6 @@ import java.util.Random;
  */
 @org.springframework.boot.test.context.SpringBootTest
 public class SpringBootTest {
-  @Test
-  void testRedis() {
-    RedisUtils.set("k1", "v1");
-  }
 
   public static void main(String[] args) {
     String randomString = generateRandomString();
@@ -36,5 +34,12 @@ public class SpringBootTest {
     }
 
     return stringBuilder.toString();
+  }
+
+  @Test
+  void testRedis() {
+    Set<String> set =
+        RedisUtils.zRange(RedisCommonKey.USER_VISIT_PROJECT_KEY, 0, System.currentTimeMillis());
+    System.out.println("set = " + set);
   }
 }

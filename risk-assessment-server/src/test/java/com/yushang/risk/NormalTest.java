@@ -1,6 +1,8 @@
 package com.yushang.risk;
 
 import com.yushang.risk.common.util.PasswordUtils;
+import com.yushang.risk.common.util.RedisUtils;
+import com.yushang.risk.constant.RedisCommonKey;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +13,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Set;
 
 /**
  * @Author：zlp @Package：com.yushang.risk @Project：risk_assessment

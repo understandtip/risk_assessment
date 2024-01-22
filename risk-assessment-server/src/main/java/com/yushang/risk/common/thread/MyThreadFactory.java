@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 
 import java.util.concurrent.ThreadFactory;
 
+/**
+ * @author zlp
+ */
 @AllArgsConstructor
 public class MyThreadFactory implements ThreadFactory {
   /** 自定义子线程异常捕获器 */

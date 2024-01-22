@@ -1,10 +1,8 @@
 package com.yushang.risk.common.interceptor;
 
-import cn.hutool.core.date.LocalDateTimeUtil;
 import com.yushang.risk.common.util.IpUtils;
 import com.yushang.risk.common.util.RedisUtils;
 import com.yushang.risk.constant.RedisCommonKey;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -24,7 +22,7 @@ public class VisitInterceptor implements HandlerInterceptor {
     String path = request.getRequestURI();
     if (path.contains("api/risk/getCategoryList")) {
       RedisUtils.zAdd(
-          RedisCommonKey.USER_REDIS_CODE_PREFIX,
+          RedisCommonKey.USER_VISIT_PROJECT_KEY,
           IpUtils.getClientIpAddress(request),
           System.currentTimeMillis());
       return true;

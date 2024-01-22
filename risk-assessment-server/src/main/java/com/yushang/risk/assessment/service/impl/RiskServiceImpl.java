@@ -140,7 +140,8 @@ public class RiskServiceImpl implements RiskService {
     finalMap.put(
         "logo", Pictures.ofUrl(minioService.getFilePath(project.getLogo())).size(250, 70).create());
     finalMap.put(
-        "gradePic", Pictures.ofUrl(minioService.getFilePath(reportReq.getPicFileName())).create());
+        "gradePic",
+        Pictures.ofUrl(minioService.getFilePath(reportReq.getPicFileName())).fitSize().create());
     // 处理请求数据
     List<GenerateReportReq.riskReq> riskList = reportReq.getRiskList();
     Map<Integer, List<RiskReqDto>> riskDataMap = this.dealRiskReqData(riskList);

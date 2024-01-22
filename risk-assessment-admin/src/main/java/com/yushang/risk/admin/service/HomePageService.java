@@ -11,4 +11,39 @@ public interface HomePageService {
    * @return
    */
   Long getVisitNum();
+
+  /**
+   * 查询总访问量
+   *
+   * @return
+   */
+  Long getVisitNumAll();
+
+  /**
+   * 获取月增用户数
+   *
+   * @return
+   */
+  Long getAddedUser();
+
+  /**
+   * 获取总增用户数
+   *
+   * @return
+   */
+  Long getAddedUserAll();
+
+  /**
+   * 获取年报告下载数
+   *
+   * @return
+   */
+  Long getDownLoadOfYear();
+
+  /**
+   * 获取总报告下载数
+   *
+   * @return
+   */
+  Long getDownLoadAll();
 }

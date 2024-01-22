@@ -1,6 +1,7 @@
 package com.yushang.risk.assessment.controller;
 
 import com.yushang.risk.assessment.service.MinioService;
+import com.yushang.risk.common.constant.RiskConstant;
 import com.yushang.risk.common.domain.vo.ApiResult;
 import com.yushang.risk.common.exception.CommonErrorEnum;
 import io.swagger.annotations.*;

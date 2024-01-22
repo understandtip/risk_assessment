@@ -7,8 +7,13 @@ package com.yushang.risk.constant;
 public class RedisCommonKey {
 
   private static final String PREFIX = "common:";
-  /** */
-  public static final String USER_REDIS_CODE_PREFIX = PREFIX + "user:visit";
+
+  /** 用户访问key */
+  public static final String USER_VISIT_PROJECT_KEY = PREFIX + "user:visit";
+  /** 用户下载报告key */
+  public static final String USER_DOWNLOAD_FILE_KEY = PREFIX + "user:download:all";
+  /** 用户每天的下载报告数 */
+  public static final String USER_DOWNLOAD_FILE_DAY_KEY = PREFIX + "user:download:day";
   /**
    * 组装Redis的key
    *

@@ -4,6 +4,7 @@ import cn.hutool.core.date.LocalDateTimeUtil;
 import com.yushang.risk.admin.domain.entity.User;
 import com.yushang.risk.admin.mapper.UserMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yushang.risk.common.constant.NormalConstant;
 import org.springframework.stereotype.Service;
 
 /**
@@ -31,5 +32,30 @@ public class UsersDao extends ServiceImpl<UserMapper, User> {
    */
   public void updateLoginTime(Integer id) {
     this.lambdaUpdate().eq(User::getId, id).set(User::getLoginTime, LocalDateTimeUtil.now());
+  }
+
+  /**
+   * 获取月增用户数
+   *
+   * @return
+   */
+  public Long getAddedUser() {
+    Integer count =
+        this.lambdaQuery()
+            .ge(
+                User::getCreatedTime,
+                LocalDateTimeUtil.of(System.currentTimeMillis() - NormalConstant.MONTH_TIME_MSEC))
+            .count();
+    return Long.valueOf(count);
+  }
+
+  /**
+   * 获取总增用户数
+   *
+   * @return
+   */
+  public Long getAddedUserAll() {
+    Integer count = this.lambdaQuery().count();
+    return Long.valueOf(count);
   }
 }

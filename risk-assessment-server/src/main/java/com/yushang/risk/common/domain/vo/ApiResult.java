@@ -53,7 +53,7 @@ public class ApiResult<T> {
     ApiResult<T> result = new ApiResult<T>();
     result.setSuccess(Boolean.FALSE);
     result.setErrCode(errorEnum.getErrorCode());
-    result.setErrMsg(errorEnum.getErrorMsg());
+    result.setErrMsg("");
     return result;
   }
 

@@ -1,6 +1,5 @@
 package com.yushang.risk.admin.controller;
 
-import com.sun.xml.internal.ws.developer.StreamingAttachment;
 import com.yushang.risk.admin.service.HomePageService;
 import com.yushang.risk.common.domain.vo.ApiResult;
 import io.swagger.annotations.Api;
@@ -23,9 +22,44 @@ public class HomePageController {
   @Resource private HomePageService homePageService;
 
   @GetMapping("/getVisitNum")
-  @ApiOperation("获取访问量")
+  @ApiOperation("获取月访问量")
   public ApiResult<Long> getVisitNum() {
     Long count = homePageService.getVisitNum();
+    return ApiResult.success(count);
+  }
+
+  @GetMapping("/getVisitNumAll")
+  @ApiOperation("获取总访问量")
+  public ApiResult<Long> getVisitNumAll() {
+    Long count = homePageService.getVisitNumAll();
+    return ApiResult.success(count);
+  }
+
+  @GetMapping("/getAddedUser")
+  @ApiOperation("获取月增用户数")
+  public ApiResult<Long> getAddedUser() {
+    Long count = homePageService.getAddedUser();
+    return ApiResult.success(count);
+  }
+
+  @GetMapping("/getAddedUserAll")
+  @ApiOperation("获取总增用户数")
+  public ApiResult<Long> getAddedUserAll() {
+    Long count = homePageService.getAddedUserAll();
+    return ApiResult.success(count);
+  }
+
+  @GetMapping("/getDownLoadOfYear")
+  @ApiOperation("获取年报告下载数")
+  public ApiResult<Long> getDownLoadOfYear() {
+    Long count = homePageService.getDownLoadOfYear();
+    return ApiResult.success(count);
+  }
+
+  @GetMapping("/getDownLoadAll")
+  @ApiOperation("获取总报告下载数")
+  public ApiResult<Long> getDownLoadAll() {
+    Long count = homePageService.getDownLoadAll();
     return ApiResult.success(count);
   }
 }

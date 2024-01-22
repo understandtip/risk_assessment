@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /**
  * @Author：zlp @Package：com.yushang.risk.assessment.domain.vo.request @Project：risk_assessment
@@ -19,7 +20,7 @@ public class RegisterReq {
   private String userName;
 
   @ApiModelProperty(notes = "密码")
-  @NotNull
+  @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,15}$", message = "密码格式错误")
   private String password;
 
   @ApiModelProperty(notes = "邀请码")
