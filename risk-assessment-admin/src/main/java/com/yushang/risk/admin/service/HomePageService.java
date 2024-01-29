@@ -1,4 +1,7 @@
 package com.yushang.risk.admin.service;
+
+import java.util.Map;
+
 /**
  * @Author：zlp @Package：com.yushang.risk.admin.service @Project：risk_assessment
  *
@@ -46,4 +49,32 @@ public interface HomePageService {
    * @return
    */
   Long getDownLoadAll();
+
+  /**
+   * 获取周报告生成数
+   *
+   * @return
+   */
+  Long getGeneratePortCount();
+
+  /**
+   * 获取总报告生成数
+   *
+   * @return
+   */
+  Long getGeneratePortCountAll();
+
+  /**
+   * 查询访问趋势
+   *
+   * @return
+   */
+  Map<Object, Object> getVisitTrend();
+
+  /**
+   * 查询生成报告趋势
+   *
+   * @return
+   */
+  Map<Object, Object> getPortTrend();
 }

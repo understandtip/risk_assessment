@@ -1,4 +1,4 @@
-package com.yushang.risk.assessment.domain.entity;
+package com.yushang.risk.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 

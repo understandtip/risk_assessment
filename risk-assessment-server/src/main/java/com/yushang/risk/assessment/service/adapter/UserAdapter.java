@@ -1,6 +1,6 @@
 package com.yushang.risk.assessment.service.adapter;
 
-import com.yushang.risk.assessment.domain.entity.User;
+import com.yushang.risk.domain.entity.User;
 import com.yushang.risk.assessment.domain.vo.request.RegisterReq;
 import com.yushang.risk.assessment.domain.vo.response.LoginUserResp;
 
@@ -21,12 +21,13 @@ public class UserAdapter {
    * @param myInvitationCode
    * @return
    */
-  public static User buildSaveUser(RegisterReq registerReq, String newPassword, String myInvitationCode) {
+  public static User buildSaveUser(
+      RegisterReq registerReq, String newPassword, String myInvitationCode) {
     return User.builder()
         .username(registerReq.getUserName())
         .password(newPassword)
         .useCode(registerReq.getInvitationCode())
-            .invitationCode(myInvitationCode) 
+        .invitationCode(myInvitationCode)
         .build();
   }
 

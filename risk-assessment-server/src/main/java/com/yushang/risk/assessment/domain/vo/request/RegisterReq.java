@@ -20,7 +20,7 @@ public class RegisterReq {
   private String userName;
 
   @ApiModelProperty(notes = "密码")
-  @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,15}$", message = "密码格式错误")
+  @NotNull
   private String password;
 
   @ApiModelProperty(notes = "邀请码")

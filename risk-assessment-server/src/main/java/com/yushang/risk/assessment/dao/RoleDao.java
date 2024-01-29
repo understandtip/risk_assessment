@@ -2,7 +2,6 @@ package com.yushang.risk.assessment.dao;
 
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.yushang.risk.assessment.domain.entity.Role;
-import com.yushang.risk.assessment.domain.entity.User;
 import com.yushang.risk.assessment.mapper.RoleMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;

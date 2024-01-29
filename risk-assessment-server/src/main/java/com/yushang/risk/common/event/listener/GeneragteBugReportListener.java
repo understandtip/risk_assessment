@@ -35,7 +35,7 @@ public class GeneragteBugReportListener {
 
   @TransactionalEventListener(
       value = GenerateBugReportEvent.class,
-      phase = TransactionPhase.BEFORE_COMMIT)
+      phase = TransactionPhase.AFTER_COMMIT)
   public void generateBugReport(GenerateBugReportEvent event) {
     log.info("开始生成pdf");
     SUserDto dto = event.getSUserDto();

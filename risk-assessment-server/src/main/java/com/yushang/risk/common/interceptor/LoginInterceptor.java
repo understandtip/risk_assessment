@@ -2,15 +2,13 @@ package com.yushang.risk.common.interceptor;
 
 import com.yushang.risk.assessment.dao.UsersDao;
 import com.yushang.risk.assessment.domain.dto.RequestDataInfo;
-import com.yushang.risk.assessment.domain.entity.User;
+import com.yushang.risk.domain.entity.User;
 import com.yushang.risk.assessment.domain.enums.HttpErrorEnum;
 import com.yushang.risk.assessment.service.LoginService;
 import com.yushang.risk.common.util.AssertUtils;
 import com.yushang.risk.common.util.IpUtils;
-import com.yushang.risk.common.util.JwtUtils;
 import com.yushang.risk.common.util.RequestHolder;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.function.FailableIntBinaryOperator;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 

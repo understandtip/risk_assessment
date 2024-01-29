@@ -24,10 +24,10 @@ import java.util.Collections;
 public class FileDownLoadTask {
   @Resource private StringRedisTemplate stringRedisTemplate;
 
-  // @Scheduled(cron = "0 59 23 * * ?")
-  @Scheduled(cron = "30 0 0 * * ?")
-  public void dealRedisKey() {
-    log.error("定时任务触发");
+  @Scheduled(cron = "0 0 0 * * ?")
+  public void generatePort() {
+    log.error("文件下载-->定时任务触发");
+
     // 执行 lua 脚本
     DefaultRedisScript<Long> defaultRedisScript = new DefaultRedisScript<>();
     // 指定返回类型

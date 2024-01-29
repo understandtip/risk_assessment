@@ -82,4 +82,10 @@ public class PasswordUtils {
     byte[] encryptedPasswordBytes = hexToBytes(password);
     return decrypt(encryptedPasswordBytes, secretKey);
   }
+
+  /*   public static void main(String[] args) throws Exception {
+    // String s = encryptPassword("ydhcnbmfio0283Z");//0d06bdd3e1ef996f73dc42913dc95439
+    // String s = encryptPassword("123"); // 647c5892867fcfaaf374ebf85e3b97f9
+    System.out.println("s = " + s);
+  } */
 }

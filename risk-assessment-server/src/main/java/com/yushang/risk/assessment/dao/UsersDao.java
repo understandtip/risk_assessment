@@ -1,8 +1,8 @@
 package com.yushang.risk.assessment.dao;
 
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import com.yushang.risk.assessment.domain.entity.User;
-import com.yushang.risk.assessment.domain.enums.UserStatusEnum;
+import com.yushang.risk.domain.entity.User;
+import com.yushang.risk.domain.enums.UserStatusEnum;
 import com.yushang.risk.assessment.mapper.UsersMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;

@@ -1,12 +1,16 @@
 package com.yushang.risk.admin.controller;
 
-import com.yushang.risk.admin.domain.vo.request.LoginReq;
+import com.yushang.risk.admin.domain.vo.request.*;
 import com.yushang.risk.admin.domain.vo.response.LoginUserResp;
+import com.yushang.risk.admin.domain.vo.response.PageBaseResp;
+import com.yushang.risk.admin.domain.vo.response.UserAddResp;
+import com.yushang.risk.admin.domain.vo.response.UserResp;
 import com.yushang.risk.admin.service.UserService;
 import com.yushang.risk.common.domain.vo.ApiResult;
 import com.yushang.risk.common.util.IpUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,5 +67,38 @@ public class UserController {
       @RequestBody @Validated LoginReq loginReq, HttpServletRequest request) {
     LoginUserResp resp = userService.login(loginReq, request);
     return ApiResult.success(resp);
+  }
+
+  @PostMapping("/getUserList")
+  @ApiOperation("获取用户列表(条件+分页)")
+  @PreAuthorize("@ss.hasPermi('sys')")
+  public ApiResult<PageBaseResp<UserResp>> getUserList(
+      @RequestBody PageBaseReq<UserPageReq> userPageReq) {
+    PageBaseResp<UserResp> resp = userService.getUserList(userPageReq);
+    return ApiResult.success(resp);
+  }
+
+  @PostMapping("/addUser")
+  @ApiOperation("新增用户")
+  @PreAuthorize("@ss.hasPermi('sys')")
+  public ApiResult<UserAddResp> addUser(@RequestBody UserReq userReq) {
+    UserAddResp resp = userService.addUser(userReq);
+    return ApiResult.success(resp);
+  }
+
+  @PutMapping("/updateUser")
+  @ApiOperation("修改用户信息")
+  @PreAuthorize("@ss.hasPermi('sys')")
+  public ApiResult<Void> updateUser(@RequestBody @Validated UserReq userReq) {
+    userService.updateUser(userReq);
+    return ApiResult.success();
+  }
+
+  @PutMapping("/updateUserStatus")
+  @ApiOperation("修改用户状态")
+  @PreAuthorize("@ss.hasPermi('sys')")
+  public ApiResult<Void> updateUserStatus(@RequestBody @Validated UserStaReq userStaReq) {
+    userService.updateUserStatus(userStaReq);
+    return ApiResult.success();
   }
 }

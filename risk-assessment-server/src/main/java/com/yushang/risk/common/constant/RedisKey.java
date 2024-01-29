@@ -1,4 +1,7 @@
 package com.yushang.risk.common.constant;
+
+import org.apache.commons.lang3.function.FailableIntBinaryOperator;
+
 /**
  * @Author：zlp @Package：com.yushang.risk.common.constant @Project：risk_assessment
  *
@@ -12,6 +15,9 @@ public class RedisKey {
 
   /** 用户token放入Redis中key 的前缀 */
   public static final String USER_REDIS_TOKEN_PREFIX = PREFIX + "user:token:uid_%d";
+
+  /** 用户访问量 */
+  public static final String USER_VISIT = PREFIX + "user:visit";
 
   /**
    * 组装Redis的key

@@ -1,6 +1,6 @@
 package com.yushang.risk.assessment.mapper;
 
-import com.yushang.risk.assessment.domain.entity.User;
+import com.yushang.risk.domain.entity.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

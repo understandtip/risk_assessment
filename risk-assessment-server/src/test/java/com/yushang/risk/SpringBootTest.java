@@ -38,8 +38,6 @@ public class SpringBootTest {
 
   @Test
   void testRedis() {
-    Set<String> set =
-        RedisUtils.zRange(RedisCommonKey.USER_VISIT_PROJECT_KEY, 0, System.currentTimeMillis());
-    System.out.println("set = " + set);
+    RedisUtils.hset("123", "abc", "zlp");
   }
 }

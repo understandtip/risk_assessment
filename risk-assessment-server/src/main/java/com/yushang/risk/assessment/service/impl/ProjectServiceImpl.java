@@ -5,7 +5,7 @@ import com.yushang.risk.assessment.dao.GenerateRecordDao;
 import com.yushang.risk.assessment.dao.ProjectDao;
 import com.yushang.risk.assessment.dao.UsersDao;
 import com.yushang.risk.assessment.domain.entity.Project;
-import com.yushang.risk.assessment.domain.entity.User;
+import com.yushang.risk.domain.entity.User;
 import com.yushang.risk.assessment.domain.vo.request.ProjectPageReq;
 import com.yushang.risk.assessment.domain.vo.request.ProjectReq;
 import com.yushang.risk.assessment.domain.vo.response.PageBaseResp;

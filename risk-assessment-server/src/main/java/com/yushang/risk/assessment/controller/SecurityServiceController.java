@@ -53,7 +53,7 @@ public class SecurityServiceController {
   }
 
   /**
-   * 提交漏洞项目 TODO 流控/配置线程池——一个线程
+   * 提交漏洞项目 TODO 流控/配置线程池 —— 一个线程
    *
    * @return
    */

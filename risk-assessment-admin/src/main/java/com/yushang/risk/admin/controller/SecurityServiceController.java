@@ -10,11 +10,9 @@ import com.yushang.risk.common.domain.vo.ApiResult;
 import com.yushang.risk.common.exception.CommonErrorEnum;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import javax.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
-import javax.security.auth.message.callback.PrivateKeyCallback;
 
 /**
  * @Author：zlp @Package：com.yushang.risk.admin.controller @Project：risk_assessment

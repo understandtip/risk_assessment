@@ -1,37 +1,27 @@
-package com.yushang.risk.admin.domain.entity;
+package com.yushang.risk.admin.domain.vo.response;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.io.Serializable;
-
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import lombok.*;
 
 /**
- * 用户
+ * @Author：zlp @Package：com.yushang.risk.admin.domain.vo.response @Project：risk_assessment
  *
- * @author zlp
- * @since 2024-01-11
+ * @name：UserResp @Date：2024/1/23 14:15 @Filename：UserResp
  */
 @Data
-@ApiModel(value = "用户", description = "")
-@TableName("users")
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class User implements Serializable, Cloneable {
+public class UserResp {
   /** 主键id */
   @ApiModelProperty(notes = "主键id")
-  @TableId(type = IdType.AUTO)
   private Integer id;
   /** 用户名 */
   @ApiModelProperty(notes = "用户名")
   private String username;
-  /** 密码 */
-  @ApiModelProperty(notes = "密码")
-  private String password;
   /** 用户真实姓名 */
   @ApiModelProperty(notes = "用户真实姓名")
   private String realName;
@@ -59,11 +49,6 @@ public class User implements Serializable, Cloneable {
   /** 更新时间 */
   @ApiModelProperty(notes = "更新时间")
   private LocalDateTime updatedTime;
-  /** 逻辑删除 */
-  @ApiModelProperty(notes = "逻辑删除")
-  @TableLogic
-  @TableField("is_deleted")
-  private String isDeleted;
   /** 退出时间 */
   @ApiModelProperty(notes = "退出时间")
   private LocalDateTime exitTime;

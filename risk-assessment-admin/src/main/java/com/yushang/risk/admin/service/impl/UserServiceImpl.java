@@ -1,28 +1,38 @@
 package com.yushang.risk.admin.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yushang.risk.admin.dao.UserRoleDao;
 import com.yushang.risk.admin.dao.UsersDao;
 import com.yushang.risk.admin.domain.dto.RequestDataInfo;
-import com.yushang.risk.admin.domain.entity.User;
 import com.yushang.risk.admin.domain.entity.UserRole;
 import com.yushang.risk.admin.domain.enums.UserRoleEnum;
-import com.yushang.risk.admin.domain.vo.request.LoginReq;
+import com.yushang.risk.admin.domain.vo.request.*;
 import com.yushang.risk.admin.domain.vo.response.LoginUserResp;
+import com.yushang.risk.admin.domain.vo.response.PageBaseResp;
+import com.yushang.risk.admin.domain.vo.response.UserAddResp;
+import com.yushang.risk.admin.domain.vo.response.UserResp;
 import com.yushang.risk.admin.service.LoginService;
 import com.yushang.risk.admin.service.UserService;
 import com.yushang.risk.admin.service.adapter.UserAdapter;
 import com.yushang.risk.common.constant.RedisKey;
+import com.yushang.risk.common.exception.BusinessException;
 import com.yushang.risk.common.exception.CommonErrorEnum;
 import com.yushang.risk.common.exception.SystemException;
 import com.yushang.risk.common.util.*;
+import com.yushang.risk.domain.entity.User;
+import com.yushang.risk.domain.enums.UserStatusEnum;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.awt.*;
+import java.security.SecureRandom;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @Author：zlp @Package：com.yushang.risk.admin.service.impl @Project：risk_assessment
@@ -104,6 +114,96 @@ public class UserServiceImpl implements UserService {
     dataInfo.setUid(user.getId());
     RequestHolder.set(dataInfo);
     return UserAdapter.buildLoginUserResp(user, token);
+  }
+
+  /**
+   * 获取用户列表(条件+分页)
+   *
+   * @param userPageReq
+   * @return
+   */
+  @Override
+  public PageBaseResp<UserResp> getUserList(PageBaseReq<UserPageReq> userPageReq) {
+    Page<User> page = userPageReq.plusPage();
+    Page<User> userPage = usersDao.getUserListByPage(page, userPageReq.getData());
+    List<UserResp> userResps =
+        userPage.getRecords().stream()
+            .map(
+                user -> {
+                  UserResp resp = new UserResp();
+                  BeanUtils.copyProperties(user, resp);
+                  return resp;
+                })
+            .collect(Collectors.toList());
+
+    return PageBaseResp.init(userPage, userResps);
+  }
+
+  /**
+   * 新增用户
+   *
+   * @param userReq
+   * @return
+   */
+  @Override
+  public UserAddResp addUser(UserReq userReq) {
+    User user = UserAdapter.buildAddUser(userReq);
+    // 初始化密码
+    String pass = generateRandomString();
+    user.setPassword(pass);
+    usersDao.save(user);
+    return UserAddResp.builder().userName(userReq.getUsername()).password(pass).build();
+  }
+
+  /**
+   * 修改用户
+   *
+   * @param userReq
+   */
+  @Override
+  public void updateUser(UserReq userReq) {
+    User user = new User();
+    BeanUtils.copyProperties(userReq, user);
+    usersDao.updateById(user);
+  }
+
+  /**
+   * 修改用户状态
+   *
+   * @param userStaReq
+   */
+  @Override
+  public void updateUserStatus(UserStaReq userStaReq) {
+    Integer status = userStaReq.getStatus();
+    if (status.equals(UserStatusEnum.NORMAL.getCode())
+        && status.equals(UserStatusEnum.BAN.getCode())) {
+      throw new BusinessException("修改状态异常");
+    }
+    usersDao.updateById(
+        User.builder()
+            .id(userStaReq.getId())
+            .status(String.valueOf(userStaReq.getStatus()))
+            .build());
+  }
+
+  private static final String CHARACTERS =
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  /**
+   * 随机生成初始化密码
+   *
+   * @return
+   */
+  private static String generateRandomString() {
+    int length = 8 + new SecureRandom().nextInt(8);
+    StringBuilder randomString = new StringBuilder(length);
+    SecureRandom random = new SecureRandom();
+    for (int i = 0; i < length; i++) {
+      int randomIndex = random.nextInt(CHARACTERS.length());
+      char randomChar = CHARACTERS.charAt(randomIndex);
+      randomString.append(randomChar);
+    }
+
+    return randomString.toString();
   }
 
   /**

@@ -2,7 +2,6 @@ package com.yushang.risk.common.interceptor;
 
 import com.yushang.risk.admin.dao.UsersDao;
 import com.yushang.risk.admin.domain.dto.RequestDataInfo;
-import com.yushang.risk.admin.domain.entity.User;
 import com.yushang.risk.admin.domain.enums.HttpErrorEnum;
 import com.yushang.risk.admin.service.LoginService;
 import com.yushang.risk.common.util.AssertUtils;
@@ -12,6 +11,8 @@ import java.io.IOException;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.yushang.risk.domain.entity.User;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -21,7 +22,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
  *
  * @name：LoginInterceptor @Date：2023/12/25 9:28 @Filename：LoginInterceptor
  */
-@Component
+// @Component
 public class LoginInterceptor implements HandlerInterceptor {
   @Resource private LoginService loginService;
   @Resource private UsersDao usersDao;
@@ -43,6 +44,7 @@ public class LoginInterceptor implements HandlerInterceptor {
       HttpErrorEnum.ACCESS_DENIED.sendHttpError(response);
       return false;
     }
+    //  TODO 校验用户角色信息,是否是管理员
     User user = usersDao.getById(uid);
     AssertUtils.isNotEmpty(user, "用户不存在");
     String ip = IpUtils.getClientIpAddress(request);

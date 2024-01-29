@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -67,7 +68,7 @@ public class HomePageServiceImpl implements HomePageService {
   @Override
   public Long getDownLoadOfYear() {
     Set<String> set =
-        RedisUtils.zRange(
+        RedisUtils.zRangeByScore(
             RedisCommonKey.USER_DOWNLOAD_FILE_KEY,
             System.currentTimeMillis() - NormalConstant.YEAR_TIME_MSEC,
             System.currentTimeMillis());
@@ -77,7 +78,6 @@ public class HomePageServiceImpl implements HomePageService {
           long l = Long.parseLong(val);
           res.updateAndGet(v -> v + l);
         });
-
     return res.get();
   }
 
@@ -89,7 +89,8 @@ public class HomePageServiceImpl implements HomePageService {
   @Override
   public Long getDownLoadAll() {
     Set<String> set =
-        RedisUtils.zRange(RedisCommonKey.USER_DOWNLOAD_FILE_KEY, 0, System.currentTimeMillis());
+        RedisUtils.zRangeByScore(
+            RedisCommonKey.USER_DOWNLOAD_FILE_KEY, 0, System.currentTimeMillis());
     AtomicReference<Long> res = new AtomicReference<>(0L);
     set.forEach(
         val -> {
@@ -97,5 +98,65 @@ public class HomePageServiceImpl implements HomePageService {
           res.updateAndGet(v -> v + l);
         });
     return res.get();
+  }
+
+  /**
+   * 获取周报告生成数
+   *
+   * @return
+   */
+  @Override
+  public Long getGeneratePortCount() {
+    Set<String> set =
+        RedisUtils.zRangeByScore(
+            RedisCommonKey.USER_GENERATE_PORT_KEY,
+            System.currentTimeMillis() - NormalConstant.WEEK_TIME_MSEC,
+            System.currentTimeMillis());
+    AtomicReference<Long> res = new AtomicReference<>(0L);
+    set.forEach(
+        val -> {
+          long l = Long.parseLong(val);
+          res.updateAndGet(v -> v + l);
+        });
+    return res.get();
+  }
+
+  /**
+   * 获取总报告生成数
+   *
+   * @return
+   */
+  @Override
+  public Long getGeneratePortCountAll() {
+    Set<String> set =
+        RedisUtils.zRangeByScore(
+            RedisCommonKey.USER_GENERATE_PORT_KEY, 0, System.currentTimeMillis());
+    AtomicReference<Long> res = new AtomicReference<>(0L);
+    set.forEach(
+        val -> {
+          long l = Long.parseLong(val);
+          res.updateAndGet(v -> v + l);
+        });
+    return res.get();
+  }
+
+  /**
+   * 查询访问趋势
+   *
+   * @return
+   */
+  @Override
+  public Map<Object, Object> getVisitTrend() {
+    return RedisUtils.hmget(RedisCommonKey.USER_VISIT_DAY_KEY);
+  }
+
+  /**
+   * 查询生成报告趋势
+   *
+   * @return
+   */
+  @Override
+  public Map<Object, Object> getPortTrend() {
+    return RedisUtils.hmget(RedisCommonKey.USER_PORT_DAY_KEY);
   }
 }

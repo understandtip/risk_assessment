@@ -1,7 +1,8 @@
 package com.yushang.risk.admin.service.adapter;
 
-import com.yushang.risk.admin.domain.entity.User;
+import com.yushang.risk.admin.domain.vo.request.UserReq;
 import com.yushang.risk.admin.domain.vo.response.LoginUserResp;
+import com.yushang.risk.domain.entity.User;
 
 import java.time.LocalDateTime;
 
@@ -28,6 +29,22 @@ public class UserAdapter {
         .invitationCode(user.getInvitationCode())
         .useCode(user.getUseCode())
         .token(token)
+        .build();
+  }
+
+  /**
+   * 构建添加用户对象
+   *
+   * @param userReq
+   * @return
+   */
+  public static User buildAddUser(UserReq userReq) {
+
+    return User.builder()
+        .username(userReq.getUsername())
+        .realName(userReq.getRealName())
+        .phone(userReq.getPhone())
+        .email(userReq.getEmail())
         .build();
   }
 }

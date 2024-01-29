@@ -1,7 +1,7 @@
 package com.yushang.risk.admin.mapper;
 
-import com.yushang.risk.admin.domain.entity.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.yushang.risk.domain.entity.User;
 
 /**
  * 用户 Mapper 接口

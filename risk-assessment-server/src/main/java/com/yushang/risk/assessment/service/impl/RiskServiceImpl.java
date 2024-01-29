@@ -19,11 +19,14 @@ import com.yushang.risk.assessment.service.adapter.RecordAdapter;
 import com.yushang.risk.common.config.ThreadPoolConfig;
 import com.yushang.risk.common.config.minio.MinioProp;
 import com.yushang.risk.common.constant.RiskConstant;
+import com.yushang.risk.common.event.GeneratePortEvent;
+import com.yushang.risk.common.event.domaih.dto.GeneratePortDto;
 import com.yushang.risk.common.util.RequestHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
@@ -53,6 +56,7 @@ public class RiskServiceImpl implements RiskService {
   @Resource private GenerateRecordDao generateRecordDao;
   @Resource private ProjectDao projectDao;
   @Resource private MinioProp minioProp;
+  @Resource private ApplicationEventPublisher applicationEventPublisher;
 
   @Qualifier(ThreadPoolConfig.COMMON_EXECUTOR)
   @Resource
@@ -184,20 +188,11 @@ public class RiskServiceImpl implements RiskService {
         .write(outputStream);
     byte[] bytes = outputStream.toByteArray();
     outputStream.close();
-    RequestDataInfo dataInfo = RequestHolder.get();
-    threadPoolTaskExecutor.execute(
-        () -> {
-          RequestHolder.set(dataInfo);
-          // 保存报告到Minio
-          String fileName =
-              MinioService.MINIO_PORT + "/" + System.currentTimeMillis() + "_评测报告.docx";
-
-          String url = minioService.upload(new ByteArrayInputStream(bytes), fileName);
-          //  往生成报告记录表中插入数据
-          GenerateRecord record =
-              RecordAdapter.buildGenerateRecord(project, RequestHolder.get().getUid(), fileName);
-          generateRecordDao.save(record);
-        });
+    // 文档生成事件发布
+    applicationEventPublisher.publishEvent(
+        new GeneratePortEvent(
+            this,
+            GeneratePortDto.builder().bytes(bytes).projectId(reportReq.getProjectId()).build()));
   }
 
   /**

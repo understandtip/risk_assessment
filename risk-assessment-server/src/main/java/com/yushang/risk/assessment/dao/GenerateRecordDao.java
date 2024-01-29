@@ -2,10 +2,9 @@ package com.yushang.risk.assessment.dao;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yushang.risk.assessment.domain.entity.GenerateRecord;
-import com.yushang.risk.assessment.domain.entity.User;
+import com.yushang.risk.domain.entity.User;
 import com.yushang.risk.assessment.domain.vo.request.RecordPageReq;
 import com.yushang.risk.assessment.mapper.GenerateRecordMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;

@@ -9,4 +9,6 @@ public class NormalConstant {
   public static final Long MONTH_TIME_MSEC = 24L * 60 * 60 * 1000 * 30;
   /** 一年的毫秒数 */
   public static final Long YEAR_TIME_MSEC = 24L * 60 * 60 * 1000 * 30 * 12;
+  /** 一周的毫秒数 */
+  public static final Long WEEK_TIME_MSEC = 24L * 60 * 60 * 1000 * 7;
 }
