@@ -1,4 +1,4 @@
-package com.yushang.risk.admin.domain.entity;
+package com.yushang.risk.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 
@@ -14,7 +14,7 @@ import lombok.EqualsAndHashCode;
  * 角色
  *
  * @author zlp
- * @since 2024-01-11
+ * @since 2023-12-21
  */
 @Data
 @ApiModel(value = "角色", description = "")
@@ -22,7 +22,7 @@ import lombok.EqualsAndHashCode;
 public class Role implements Serializable, Cloneable {
   /** 主键id */
   @ApiModelProperty(notes = "主键id")
-  @TableId
+  @TableId(type = IdType.AUTO)
   private Integer id;
   /** 角色名称 */
   @ApiModelProperty(notes = "角色名称")
@@ -30,6 +30,9 @@ public class Role implements Serializable, Cloneable {
   /** 创建时间 */
   @ApiModelProperty(notes = "创建时间")
   private LocalDateTime createdTime;
+
+  @ApiModelProperty(notes = "角色状态(0:禁用  1:可用)")
+  private Integer state;
   /** 更新时间 */
   @ApiModelProperty(notes = "更新时间")
   private LocalDateTime updatedTime;

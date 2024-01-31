@@ -43,6 +43,31 @@ public class MyPermissionCheckService {
   }
 
   /**
+   * 验证用户是否具有以下任意一个权限
+   *
+   * @param permissions 以 PERMISSION_NAMES_DELIMETER 为分隔符的权限列表
+   * @return 用户是否具有以下任意一个权限
+   */
+  public boolean hasAnyPermi(String permissions) {
+    if (StringUtils.isEmpty(permissions)) {
+      return false;
+    }
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    SecurityUser principal = (SecurityUser) authentication.getPrincipal();
+    if (CollectionUtils.isEmpty(principal.getPermissions())) {
+      return false;
+    }
+    List<String> authorities = principal.getPermissions();
+
+    for (String permission : permissions.split(PERMISSION_DELIMETER)) {
+      if (permission != null && hasPermissions(authorities, permission)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
    * 判断是否包含权限
    *
    * @param permissions 权限列表

@@ -1,5 +1,6 @@
 package com.yushang.risk.admin.dao;
 
+import com.yushang.risk.admin.domain.vo.request.RoleAllotReq;
 import com.yushang.risk.domain.entity.Permission;
 import com.yushang.risk.domain.entity.RolePermission;
 import com.yushang.risk.admin.mapper.RolePermissionMapper;
@@ -18,7 +19,7 @@ import java.util.List;
  */
 @Service
 public class RolePermissionDao extends ServiceImpl<RolePermissionMapper, RolePermission> {
-    
+
   @Resource private PermissionDao permissionDao;
   /**
    * 根据角色id获取权限信息
@@ -42,5 +43,34 @@ public class RolePermissionDao extends ServiceImpl<RolePermissionMapper, RolePer
                   });
             });
     return perList;
+  }
+
+  /**
+   * 角色分配权限
+   *
+   * @param roleAllotReq
+   */
+  public void allotPermissionByRole(RoleAllotReq roleAllotReq) {
+    // TODO++
+    List<Integer> permissionIds = roleAllotReq.getPermissionIds();
+    List<RolePermission> list = new ArrayList<>();
+    permissionIds.forEach(
+        p -> {
+          RolePermission rolePermission = new RolePermission();
+          rolePermission.setRoleId(roleAllotReq.getRoleId());
+          rolePermission.setPerId(p);
+          list.add(rolePermission);
+        });
+    this.saveBatch(list);
+  }
+
+  /**
+   * 根据角色id查询权限集合
+   *
+   * @param roleId
+   * @return
+   */
+  public List<RolePermission> listByRoleId(Integer roleId) {
+    return this.lambdaQuery().eq(RolePermission::getRoleId, roleId).list();
   }
 }

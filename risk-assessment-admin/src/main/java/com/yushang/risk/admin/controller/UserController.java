@@ -54,23 +54,8 @@ public class UserController {
     response.setHeader("Access-Control-Allow-Credentials", "true");
   }
 
-  /**
-   * 用户登录
-   *
-   * @param loginReq
-   * @param request
-   * @return
-   */
-  @PostMapping("/login")
-  @ApiOperation("登录")
-  public ApiResult<LoginUserResp> login(
-      @RequestBody @Validated LoginReq loginReq, HttpServletRequest request) {
-    LoginUserResp resp = userService.login(loginReq, request);
-    return ApiResult.success(resp);
-  }
-
   @PostMapping("/getUserList")
-  @ApiOperation("获取用户列表(条件+分页)")
+  @ApiOperation("获取用户列表")
   @PreAuthorize("@ss.hasPermi('sys')")
   public ApiResult<PageBaseResp<UserResp>> getUserList(
       @RequestBody PageBaseReq<UserPageReq> userPageReq) {

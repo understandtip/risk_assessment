@@ -12,4 +12,14 @@ import org.springframework.stereotype.Service;
  * @since 2024-01-26
  */
 @Service
-public class PermissionDao extends ServiceImpl<PermissionMapper, Permission> {}
+public class PermissionDao extends ServiceImpl<PermissionMapper, Permission> {
+  /**
+   * 根据pid查询权限信息
+   *
+   * @param
+   * @return
+   */
+  public Permission getByPid(Integer pid) {
+    return this.lambdaQuery().eq(Permission::getPid, pid).one();
+  }
+}

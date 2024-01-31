@@ -22,7 +22,7 @@ import lombok.EqualsAndHashCode;
 public class RolePermission implements Serializable, Cloneable {
   /** 主键id */
   @ApiModelProperty(notes = "主键id")
-  @TableId
+  @TableId(type = IdType.AUTO)
   private Integer id;
   /** 角色id */
   @ApiModelProperty(notes = "角色id")

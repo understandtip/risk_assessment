@@ -1,6 +1,7 @@
 package com.yushang.risk.common.domain.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.yushang.risk.common.exception.CommonErrorEnum;
 import com.yushang.risk.common.exception.ErrorEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -54,6 +55,14 @@ public class ApiResult<T> {
     result.setSuccess(Boolean.FALSE);
     result.setErrCode(errorEnum.getErrorCode());
     result.setErrMsg("");
+    return result;
+  }
+
+  public static <T> ApiResult<T> fail(String errMsg) {
+    ApiResult<T> result = new ApiResult<T>();
+    result.setSuccess(Boolean.FALSE);
+    result.setErrCode(CommonErrorEnum.BUSINESS_ERROR.getCode());
+    result.setErrMsg(errMsg);
     return result;
   }
 

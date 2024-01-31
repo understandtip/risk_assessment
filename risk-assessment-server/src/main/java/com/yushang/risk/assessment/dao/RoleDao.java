@@ -1,9 +1,10 @@
 package com.yushang.risk.assessment.dao;
 
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import com.yushang.risk.assessment.domain.entity.Role;
+import com.yushang.risk.domain.entity.Role;
 import com.yushang.risk.assessment.mapper.RoleMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yushang.risk.domain.enums.RoleStateEnum;
 import org.springframework.stereotype.Service;
 
 /**
@@ -21,6 +22,9 @@ public class RoleDao extends ServiceImpl<RoleMapper, Role> {
    * @return
    */
   public Role getByField(SFunction<Role, ?> function, String value) {
-    return this.lambdaQuery().eq(function, value).one();
+    return this.lambdaQuery()
+        .eq(function, value)
+        .eq(Role::getState, RoleStateEnum.NORMAL.getState())
+        .one();
   }
 }

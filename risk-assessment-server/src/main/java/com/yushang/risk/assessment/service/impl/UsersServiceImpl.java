@@ -235,7 +235,6 @@ public class UsersServiceImpl implements UsersService {
       int randomIndex = random.nextInt(ALPHA_NUMERIC.length());
       sb.append(ALPHA_NUMERIC.charAt(randomIndex));
     }
-
     return sb.toString();
   }
 

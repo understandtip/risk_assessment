@@ -50,7 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .disable()
         // 其他配置...
         .authorizeRequests()
-        .mvcMatchers("/doc.html/**", "capi/user/getCode", "capi/user/login")
+        .mvcMatchers("/doc.html/**", "capi/user/getCode", "capi/acc/login", "/swagger-ui.html/**")
         .permitAll()
         .anyRequest()
         .authenticated()

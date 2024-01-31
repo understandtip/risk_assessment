@@ -42,12 +42,6 @@ public class LoginUserResp {
   /** 登录时间 */
   @ApiModelProperty(notes = "登录时间")
   private LocalDateTime loginTime;
-  /** 邀请码 */
-  @ApiModelProperty(notes = "邀请码")
-  private String invitationCode;
-  /** 使用的邀请码 */
-  @ApiModelProperty(notes = "使用的邀请码")
-  private String useCode;
   /** 登录成功返回token */
   @ApiModelProperty(notes = "token")
   private String token;

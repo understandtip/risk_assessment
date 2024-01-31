@@ -21,6 +21,7 @@ import com.yushang.risk.common.exception.SystemException;
 import com.yushang.risk.common.util.*;
 import com.yushang.risk.domain.entity.User;
 import com.yushang.risk.domain.enums.UserStatusEnum;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -43,8 +44,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserServiceImpl implements UserService {
   @Resource private UsersDao usersDao;
-  @Resource private UserRoleDao userRoleDao;
-  @Resource private LoginService loginService;
 
   /** 用户随机码放入Redis的过期时间 */
   public static final int USER_CODE_EXPIRE_TIME = 2;
@@ -82,41 +81,6 @@ public class UserServiceImpl implements UserService {
   }
 
   /**
-   * 登录
-   *
-   * @param loginReq
-   * @param request
-   * @return
-   */
-  @Override
-  // TODO  @OptLog(target = OptLog.Target.LOGIN)
-  public LoginUserResp login(LoginReq loginReq, HttpServletRequest request) {
-    // 校验验证码
-    this.verifyCode(loginReq.getCode(), IpUtils.getClientIpAddress(request));
-    // 校验账户基本信息
-    User user = usersDao.getNormalByUsername(loginReq.getUserName());
-    AssertUtils.assertNotNull(user, "用户已被封禁，请联系管理员");
-    // 查询是否具有管理员权限
-    UserRole userRole = userRoleDao.getByUserIdAndRole(user.getId(), UserRoleEnum.ADMIN.getCode());
-    AssertUtils.assertNotNull(userRole, "用户无管理员权限");
-    String password;
-    try {
-      password = PasswordUtils.decryptPassword(user.getPassword());
-    } catch (Exception e) {
-      throw new SystemException(CommonErrorEnum.SYSTEM_ERROR.getErrorCode(), "密码解密异常");
-    }
-    AssertUtils.equal(AesUtil.decryptPassword(loginReq.getPassword()), password, "密码错误");
-    // 修改登录时间
-    usersDao.updateLoginTime(user.getId());
-    // 获取token
-    String token = loginService.login(user.getId());
-    RequestDataInfo dataInfo = new RequestDataInfo();
-    dataInfo.setUid(user.getId());
-    RequestHolder.set(dataInfo);
-    return UserAdapter.buildLoginUserResp(user, token);
-  }
-
-  /**
    * 获取用户列表(条件+分页)
    *
    * @param userPageReq
@@ -145,12 +109,14 @@ public class UserServiceImpl implements UserService {
    * @param userReq
    * @return
    */
+  @SneakyThrows
   @Override
   public UserAddResp addUser(UserReq userReq) {
     User user = UserAdapter.buildAddUser(userReq);
     // 初始化密码
     String pass = generateRandomString();
-    user.setPassword(pass);
+    String newPass = PasswordUtils.encryptPassword(pass);
+    user.setPassword(newPass);
     usersDao.save(user);
     return UserAddResp.builder().userName(userReq.getUsername()).password(pass).build();
   }
@@ -193,7 +159,7 @@ public class UserServiceImpl implements UserService {
    *
    * @return
    */
-  private static String generateRandomString() {
+  public static String generateRandomString() {
     int length = 8 + new SecureRandom().nextInt(8);
     StringBuilder randomString = new StringBuilder(length);
     SecureRandom random = new SecureRandom();
@@ -204,18 +170,5 @@ public class UserServiceImpl implements UserService {
     }
 
     return randomString.toString();
-  }
-
-  /**
-   * 校验验证码
-   *
-   * @param code
-   * @param ip
-   * @return
-   */
-  private void verifyCode(String code, String ip) {
-    String s = RedisUtils.getStr(RedisKey.getKey(RedisKey.USER_REDIS_CODE_PREFIX, ip));
-    AssertUtils.isNotEmpty(s, "验证码已过期，请重新输入。");
-    AssertUtils.equal(code.toLowerCase(Locale.ROOT), s.toLowerCase(Locale.ROOT), "验证码错误，请重新输入。");
   }
 }

@@ -1,6 +1,8 @@
 package com.yushang.risk.admin.service.adapter;
 
-import com.yushang.risk.admin.domain.vo.request.UserReq;
+import com.yushang.risk.admin.dao.AccountDao;
+import com.yushang.risk.admin.domain.entity.Account;
+import com.yushang.risk.admin.domain.vo.request.AccountReq;
 import com.yushang.risk.admin.domain.vo.response.LoginUserResp;
 import com.yushang.risk.domain.entity.User;
 
@@ -9,16 +11,17 @@ import java.time.LocalDateTime;
 /**
  * @Author：zlp @Package：com.yushang.risk.admin.service.adapter @Project：risk_assessment
  *
- * @name：UserAdapter @Date：2024/1/11 14:38 @Filename：UserAdapter
+ * @name：AccountAdapter @Date：2024/1/30 14:49 @Filename：AccountAdapter
  */
-public class UserAdapter {
+public class AccountAdapter {
+
   /**
    * 构建登录成功后返回对象
    *
    * @param user
    * @return
    */
-  public static LoginUserResp buildLoginUserResp(User user, String token) {
+  public static LoginUserResp buildLoginUserResp(Account user, String token) {
     return LoginUserResp.builder()
         .id(user.getId())
         .username(user.getUsername())
@@ -31,18 +34,17 @@ public class UserAdapter {
   }
 
   /**
-   * 构建添加用户对象
+   * 构建添加账户对象
    *
-   * @param userReq
+   * @param accountReq
    * @return
    */
-  public static User buildAddUser(UserReq userReq) {
-
-    return User.builder()
-        .username(userReq.getUsername())
-        .realName(userReq.getRealName())
-        .phone(userReq.getPhone())
-        .email(userReq.getEmail())
+  public static Account buildAddAccount(AccountReq accountReq) {
+    return Account.builder()
+        .username(accountReq.getUsername())
+        .realName(accountReq.getRealName())
+        .phone(accountReq.getPhone())
+        .email(accountReq.getEmail())
         .build();
   }
 }

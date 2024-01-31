@@ -1,8 +1,5 @@
 package com.yushang.risk.assessment.service;
 
-import com.yushang.risk.assessment.domain.entity.Role;
-import com.baomidou.mybatisplus.extension.service.IService;
-
 /**
  * 角色 服务类
  *

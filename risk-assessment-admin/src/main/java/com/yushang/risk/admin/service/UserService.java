@@ -24,15 +24,6 @@ public interface UserService {
   Object[] getCode(String ip);
 
   /**
-   * 登录
-   *
-   * @param loginReq
-   * @param request
-   * @return
-   */
-  LoginUserResp login(LoginReq loginReq, HttpServletRequest request);
-
-  /**
    * 获取用户列表(条件+分页)
    *
    * @param userPageReq

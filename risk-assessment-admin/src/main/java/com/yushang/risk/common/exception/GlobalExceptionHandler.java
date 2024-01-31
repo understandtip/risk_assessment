@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
             });
     String msg = errorMsg.substring(0, errorMsg.length() - 1);
     log.error("参数格式错误---->", e);
-    return ApiResult.fail(CommonErrorEnum.PARAM_INVALID.getCode(), msg);
+    return ApiResult.fail(CommonErrorEnum.PARAM_INVALID.getCode(), "");
   }
 
   /**
@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(BusinessException.class)
   public ApiResult<?> businessException(BusinessException e) {
-    log.error("自定义业务异常--->", e);
+    log.error("自定义 业务 异常--->", e);
     return ApiResult.fail(e.getErrorCode(), e.getErrorMsg());
   }
   /**
@@ -57,13 +57,13 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(SystemException.class)
   public ApiResult<?> businessException(SystemException e) {
-    log.error("自定义系统异常--->", e);
+    log.error("自定义 系统 异常--->", e);
     return ApiResult.fail(CommonErrorEnum.SYSTEM_ERROR);
   }
 
   @ExceptionHandler(Throwable.class)
   public ApiResult<?> throwable(Throwable e) {
-    log.error("系统未知异常--->", e);
+    log.error("系统 未知 异常--->", e);
     return ApiResult.fail(CommonErrorEnum.SYSTEM_ERROR);
   }
 }
