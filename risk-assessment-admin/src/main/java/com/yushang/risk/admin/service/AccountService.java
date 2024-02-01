@@ -1,11 +1,7 @@
 package com.yushang.risk.admin.service;
 
-import com.yushang.risk.admin.domain.entity.Account;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.yushang.risk.admin.domain.vo.request.*;
-import com.yushang.risk.admin.domain.vo.response.AccountPageResp;
-import com.yushang.risk.admin.domain.vo.response.LoginUserResp;
-import com.yushang.risk.admin.domain.vo.response.PageBaseResp;
+import com.yushang.risk.admin.domain.vo.response.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -47,7 +43,7 @@ public interface AccountService {
    * @param accountReq
    * @return
    */
-  String addAccount(AccountReq accountReq);
+  AccountAddResp addAccount(AccountReq accountReq);
 
   /**
    * 给账户赋予角色
@@ -62,4 +58,20 @@ public interface AccountService {
    * @param accountReq
    */
   void upAccount(AccountReq accountReq);
+
+  /**
+   * 修改账户状态
+   *
+   * @param accId
+   * @param state
+   */
+  void upAccountState(Integer accId, Integer state);
+
+  /**
+   * 查询账户角色
+   *
+   * @param accId
+   * @return
+   */
+  RoleResp getAccRole(Integer accId);
 }

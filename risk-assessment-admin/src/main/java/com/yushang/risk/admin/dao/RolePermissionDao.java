@@ -6,6 +6,7 @@ import com.yushang.risk.domain.entity.RolePermission;
 import com.yushang.risk.admin.mapper.RolePermissionMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -50,8 +51,10 @@ public class RolePermissionDao extends ServiceImpl<RolePermissionMapper, RolePer
    *
    * @param roleAllotReq
    */
+  @Transactional(rollbackFor = Exception.class)
   public void allotPermissionByRole(RoleAllotReq roleAllotReq) {
-    // TODO++
+    this.lambdaUpdate().eq(RolePermission::getRoleId, roleAllotReq.getRoleId()).remove();
+
     List<Integer> permissionIds = roleAllotReq.getPermissionIds();
     List<RolePermission> list = new ArrayList<>();
     permissionIds.forEach(

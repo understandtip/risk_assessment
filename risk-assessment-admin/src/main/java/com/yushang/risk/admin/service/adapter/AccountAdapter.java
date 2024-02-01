@@ -1,10 +1,8 @@
 package com.yushang.risk.admin.service.adapter;
 
-import com.yushang.risk.admin.dao.AccountDao;
-import com.yushang.risk.admin.domain.entity.Account;
+import com.yushang.risk.domain.entity.Account;
 import com.yushang.risk.admin.domain.vo.request.AccountReq;
 import com.yushang.risk.admin.domain.vo.response.LoginUserResp;
-import com.yushang.risk.domain.entity.User;
 
 import java.time.LocalDateTime;
 

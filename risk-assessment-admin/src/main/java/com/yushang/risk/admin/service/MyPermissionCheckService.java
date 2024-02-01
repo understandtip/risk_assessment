@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import javax.jnlp.PersistenceService;
 import java.util.List;
 
 /**
@@ -75,6 +76,6 @@ public class MyPermissionCheckService {
    * @return 用户是否具备某权限
    */
   private boolean hasPermissions(List<String> permissions, String permission) {
-    return permission.equals(SUPER_ADMIN) || permissions.contains(StringUtils.trim(permission));
+    return permissions.contains(SUPER_ADMIN) || permissions.contains(StringUtils.trim(permission));
   }
 }

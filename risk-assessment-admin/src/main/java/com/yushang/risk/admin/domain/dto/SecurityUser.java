@@ -1,5 +1,6 @@
 package com.yushang.risk.admin.domain.dto;
 
+import com.yushang.risk.domain.entity.Account;
 import com.yushang.risk.domain.entity.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.swing.colorchooser.AbstractColorChooserPanel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -14,7 +16,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class SecurityUser implements UserDetails {
-  private User user;
+  private Account user;
   private List<String> permissions;
   private List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 

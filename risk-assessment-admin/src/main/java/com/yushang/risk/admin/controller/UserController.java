@@ -56,7 +56,7 @@ public class UserController {
 
   @PostMapping("/getUserList")
   @ApiOperation("获取用户列表")
-  @PreAuthorize("@ss.hasPermi('sys')")
+  @PreAuthorize("@ss.hasPermi('sys:pro:get')")
   public ApiResult<PageBaseResp<UserResp>> getUserList(
       @RequestBody PageBaseReq<UserPageReq> userPageReq) {
     PageBaseResp<UserResp> resp = userService.getUserList(userPageReq);
@@ -65,7 +65,7 @@ public class UserController {
 
   @PostMapping("/addUser")
   @ApiOperation("新增用户")
-  @PreAuthorize("@ss.hasPermi('sys')")
+  @PreAuthorize("@ss.hasPermi('sys:user:add')")
   public ApiResult<UserAddResp> addUser(@RequestBody UserReq userReq) {
     UserAddResp resp = userService.addUser(userReq);
     return ApiResult.success(resp);
@@ -73,7 +73,7 @@ public class UserController {
 
   @PutMapping("/updateUser")
   @ApiOperation("修改用户信息")
-  @PreAuthorize("@ss.hasPermi('sys')")
+  @PreAuthorize("@ss.hasPermi('sys:user:upd')")
   public ApiResult<Void> updateUser(@RequestBody @Validated UserReq userReq) {
     userService.updateUser(userReq);
     return ApiResult.success();
@@ -81,7 +81,7 @@ public class UserController {
 
   @PutMapping("/updateUserStatus")
   @ApiOperation("修改用户状态")
-  @PreAuthorize("@ss.hasPermi('sys')")
+  @PreAuthorize("@ss.hasPermi('sys:user:sta')")
   public ApiResult<Void> updateUserStatus(@RequestBody @Validated UserStaReq userStaReq) {
     userService.updateUserStatus(userStaReq);
     return ApiResult.success();

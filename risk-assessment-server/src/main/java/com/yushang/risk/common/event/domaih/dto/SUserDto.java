@@ -1,5 +1,6 @@
 package com.yushang.risk.common.event.domaih.dto;
 
+import com.yushang.risk.assessment.domain.vo.request.SecurityServiceBugBugReq;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,4 +24,6 @@ public class SUserDto {
 
   @ApiModelProperty("提交的漏洞id集合")
   private List<Integer> bugIds;
+
+  private List<SecurityServiceBugBugReq.AddBug> addBugs;
 }

@@ -9,6 +9,7 @@ import java.util.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +25,8 @@ public class MinioController {
 
   @PostMapping("/upload")
   @ApiOperation("minio文件上传")
+  @PreAuthorize("@ss.hasPermi('sys:file:up')")
+
   // TODO 限流频控
   public ApiResult<List<String>> upload(
       @RequestParam(name = "file", required = false) MultipartFile[] file) {
@@ -45,11 +48,13 @@ public class MinioController {
 
   @PostMapping("/download")
   @ApiOperation("minio下载文件")
+  @PreAuthorize("@ss.hasPermi('sys:file:down')")
   public void download(HttpServletResponse response, String fileName) {
     minioService.downLoad(fileName, response);
   }
 
   @DeleteMapping("/delete/{fileName}")
+  @PreAuthorize("@ss.hasPermi('sys:file:del')")
   @ApiOperation("minio删除文件")
   public ApiResult<Void> delete(@PathVariable("fileName") String fileName) {
     minioService.delete(fileName);

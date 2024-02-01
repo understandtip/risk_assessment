@@ -1,5 +1,6 @@
 package com.yushang.risk.admin.service.adapter;
 
+import com.yushang.risk.admin.domain.entity.UserRole;
 import com.yushang.risk.admin.domain.vo.request.UserReq;
 import com.yushang.risk.admin.domain.vo.response.LoginUserResp;
 import com.yushang.risk.domain.entity.User;
@@ -44,5 +45,19 @@ public class UserAdapter {
         .phone(userReq.getPhone())
         .email(userReq.getEmail())
         .build();
+  }
+
+  /**
+   * 构建添加账户时构建的UserRole
+   *
+   * @param uid
+   * @param roleId
+   * @return
+   */
+  public static UserRole buildUserRole(Integer uid, Integer roleId) {
+    UserRole userRole = new UserRole();
+    userRole.setRoleId(roleId);
+    userRole.setUserId(uid);
+    return userRole;
   }
 }

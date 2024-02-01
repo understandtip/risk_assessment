@@ -1,4 +1,4 @@
-package com.yushang.risk.admin.domain.entity;
+package com.yushang.risk.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 
@@ -8,8 +8,6 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * 账户
@@ -26,7 +24,7 @@ import javax.validation.constraints.NotNull;
 public class Account implements Serializable, Cloneable {
   /** 主键id */
   @ApiModelProperty(notes = "主键id")
-  @TableId
+  @TableId(type = IdType.AUTO)
   private Integer id;
   /** 用户名 */
   @ApiModelProperty(notes = "用户名")
@@ -46,6 +44,9 @@ public class Account implements Serializable, Cloneable {
   /** 状态;1:正常 0:封禁 */
   @ApiModelProperty(notes = "状态 1:正常   0:封禁")
   private String state;
+  /** 邀请码 */
+  @ApiModelProperty(notes = "邀请码")
+  private String invitationCode;
   /** 登录时间 */
   @ApiModelProperty(notes = "登录时间")
   private LocalDateTime loginTime;

@@ -3,7 +3,8 @@ package com.yushang.risk.admin.dao;
 import cn.hutool.core.date.LocalDateTimeUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.yushang.risk.admin.domain.entity.Account;
+import com.yushang.risk.admin.domain.enums.AccountStateEnum;
+import com.yushang.risk.domain.entity.Account;
 import com.yushang.risk.admin.domain.vo.request.AccountPageReq;
 import com.yushang.risk.admin.mapper.AccountMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -27,7 +28,10 @@ public class AccountDao extends ServiceImpl<AccountMapper, Account> {
    * @return
    */
   public Account getNormalByUsername(String userName) {
-    return this.lambdaQuery().eq(Account::getUsername, userName).one();
+    return this.lambdaQuery()
+        .eq(Account::getUsername, userName)
+        .eq(Account::getState, AccountStateEnum.NORMAL.getState())
+        .one();
   }
 
   /**
@@ -36,7 +40,10 @@ public class AccountDao extends ServiceImpl<AccountMapper, Account> {
    * @param id
    */
   public void updateLoginTime(Integer id) {
-    this.lambdaUpdate().eq(Account::getId, id).set(Account::getLoginTime, LocalDateTimeUtil.now());
+    this.lambdaUpdate()
+        .eq(Account::getId, id)
+        .set(Account::getLoginTime, LocalDateTimeUtil.now())
+        .update();
   }
 
   /**

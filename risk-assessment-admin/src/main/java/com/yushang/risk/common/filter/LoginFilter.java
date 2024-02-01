@@ -3,10 +3,9 @@ package com.yushang.risk.common.filter;
 import com.yushang.risk.admin.dao.AccountDao;
 import com.yushang.risk.admin.dao.RolePermissionDao;
 import com.yushang.risk.admin.dao.UserRoleDao;
-import com.yushang.risk.admin.dao.UsersDao;
 import com.yushang.risk.admin.domain.dto.RequestDataInfo;
 import com.yushang.risk.admin.domain.dto.SecurityUser;
-import com.yushang.risk.admin.domain.entity.Account;
+import com.yushang.risk.domain.entity.Account;
 import com.yushang.risk.domain.entity.Role;
 import com.yushang.risk.admin.domain.enums.HttpErrorEnum;
 import com.yushang.risk.admin.domain.enums.UserRoleEnum;
@@ -84,7 +83,7 @@ public class LoginFilter extends OncePerRequestFilter {
     RequestHolder.set(info);
     // 往SecurityContextHolder放用户认证数据
     SecurityUser securityUser = new SecurityUser();
-    securityUser.setUser(User.builder().username(user.getUsername()).build());
+    securityUser.setUser(Account.builder().username(user.getUsername()).build());
     securityUser.setPermissions(permissions);
     UsernamePasswordAuthenticationToken authenticationToken =
         new UsernamePasswordAuthenticationToken(securityUser, null, securityUser.getAuthorities());

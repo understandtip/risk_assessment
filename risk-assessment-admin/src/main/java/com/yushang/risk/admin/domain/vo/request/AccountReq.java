@@ -18,6 +18,8 @@ public class AccountReq {
   /** 主键id */
   @ApiModelProperty(notes = "主键id")
   private Integer id;
+
+  private Integer roleId;
   /** 用户名 */
   @ApiModelProperty(notes = "用户名")
   @NotNull

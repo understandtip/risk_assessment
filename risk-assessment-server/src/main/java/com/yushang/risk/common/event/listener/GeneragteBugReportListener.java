@@ -3,13 +3,17 @@ package com.yushang.risk.common.event.listener;
 import com.yushang.risk.assessment.dao.SUserDao;
 import com.yushang.risk.assessment.service.MinioService;
 import com.yushang.risk.assessment.service.SSecurityServiceService;
+import com.yushang.risk.common.config.ThreadPoolConfig;
 import com.yushang.risk.common.constant.RiskConstant;
 import com.yushang.risk.common.event.GenerateBugReportEvent;
 import com.yushang.risk.common.event.domaih.dto.SUserDto;
 import com.yushang.risk.domain.entity.SUser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -36,6 +40,7 @@ public class GeneragteBugReportListener {
   @TransactionalEventListener(
       value = GenerateBugReportEvent.class,
       phase = TransactionPhase.AFTER_COMMIT)
+  @Async(ThreadPoolConfig.SECURITY_SERVICE_EXECUTOR)
   public void generateBugReport(GenerateBugReportEvent event) {
     log.info("开始生成pdf");
     SUserDto dto = event.getSUserDto();

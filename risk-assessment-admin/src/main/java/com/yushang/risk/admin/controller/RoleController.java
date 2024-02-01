@@ -12,6 +12,7 @@ import com.yushang.risk.common.exception.BusinessException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +33,7 @@ public class RoleController {
 
   @GetMapping("/getPermissionList")
   @ApiOperation("获取权限列表")
+  @PreAuthorize("@ss.hasPermi('sys:role:getPer')")
   public ApiResult<List<PermissionResp>> getPermissionList() {
     List<PermissionResp> list = permissionService.getPermissionList();
     return ApiResult.success(list);
@@ -39,6 +41,7 @@ public class RoleController {
 
   @GetMapping("/getRoleList")
   @ApiOperation("查询角色信息")
+  @PreAuthorize("@ss.hasPermi('sys:role:get')")
   public ApiResult<List<RoleResp>> getRoleList() {
     List<RoleResp> list = roleService.getRoleList();
     return ApiResult.success(list);
@@ -46,6 +49,7 @@ public class RoleController {
 
   @PutMapping("/upRoleState")
   @ApiOperation("修改角色状态")
+  @PreAuthorize("@ss.hasPermi('sys:role:sta')")
   public ApiResult<Void> upRoleState(Integer roleId, boolean state) {
     if (roleId == null || roleId == 0) throw new BusinessException("请先选择角色.");
     roleService.upRoleState(roleId, state);
@@ -54,6 +58,7 @@ public class RoleController {
 
   @PutMapping("/upRoleInfo")
   @ApiOperation("修改角色信息")
+  @PreAuthorize("@ss.hasPermi('sys:role:upd')")
   public ApiResult<Void> upRoleInfo(@RequestBody @Validated RoleReq roleReq) {
     roleService.upRoleInfo(roleReq);
     return ApiResult.success();
@@ -61,6 +66,7 @@ public class RoleController {
 
   @PutMapping("/addRoleInfo")
   @ApiOperation("添加角色信息")
+  @PreAuthorize("@ss.hasPermi('sys:role:add')")
   public ApiResult<Void> addRoleInfo(@RequestBody @Validated RoleReq roleReq) {
     roleService.addRoleInfo(roleReq);
     return ApiResult.success();
@@ -68,6 +74,7 @@ public class RoleController {
 
   @PostMapping("/allotPermissionByRole")
   @ApiOperation("角色分配权限")
+  @PreAuthorize("@ss.hasPermi('sys:role:grantP')")
   public ApiResult<Void> allotPermissionByRole(@RequestBody @Validated RoleAllotReq roleAllotReq) {
     roleService.allotPermissionByRole(roleAllotReq);
     return ApiResult.success();
@@ -75,6 +82,7 @@ public class RoleController {
 
   @GetMapping("/getPerByRole")
   @ApiOperation("查询角色权限")
+  @PreAuthorize("@ss.hasPermi('sys:role:getRP')")
   public ApiResult<RolePerResp> getPerByRole(Integer roleId) {
     RolePerResp resp = roleService.getPerByRole(roleId);
     return ApiResult.success(resp);

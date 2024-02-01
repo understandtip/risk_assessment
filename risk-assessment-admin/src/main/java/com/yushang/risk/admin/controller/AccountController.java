@@ -1,12 +1,11 @@
 package com.yushang.risk.admin.controller;
 
+import com.yushang.risk.admin.domain.enums.AccountStateEnum;
 import com.yushang.risk.admin.domain.vo.request.*;
-import com.yushang.risk.admin.domain.vo.response.AccountPageResp;
-import com.yushang.risk.admin.domain.vo.response.LoginUserResp;
-import com.yushang.risk.admin.domain.vo.response.PageBaseResp;
-import com.yushang.risk.admin.domain.vo.response.UserResp;
+import com.yushang.risk.admin.domain.vo.response.*;
 import com.yushang.risk.admin.service.AccountService;
 import com.yushang.risk.common.domain.vo.ApiResult;
+import com.yushang.risk.common.exception.BusinessException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.poi.util.Removal;
@@ -44,6 +43,7 @@ public class AccountController {
 
   @PostMapping("/getAccounts")
   @ApiOperation("查询所有账户")
+  @PreAuthorize("@ss.hasPermi('sys:acc:get')")
   public ApiResult<PageBaseResp<AccountPageResp>> getAccounts(
       @RequestBody PageBaseReq<AccountPageReq> reqPageBaseReq) {
     PageBaseResp<AccountPageResp> resp = accountService.getUserList(reqPageBaseReq);
@@ -52,6 +52,7 @@ public class AccountController {
 
   @GetMapping("/getAccInfo")
   @ApiOperation("查询账户信息")
+  @PreAuthorize("@ss.hasPermi('sys:acc:get')")
   public ApiResult<AccountPageResp> getAccInfo(Integer accId) {
     AccountPageResp resp = accountService.getAccInfo(accId);
     return ApiResult.success(resp);
@@ -59,20 +60,35 @@ public class AccountController {
 
   @PostMapping("/addAccount")
   @ApiOperation("添加账户信息")
-  public ApiResult<String> addAccount(@RequestBody @Validated AccountReq accountReq) {
-    String pass = accountService.addAccount(accountReq);
-    return ApiResult.success(pass);
+  @PreAuthorize("@ss.hasPermi('sys:acc:add')")
+  public ApiResult<AccountAddResp> addAccount(@RequestBody @Validated AccountReq accountReq) {
+    AccountAddResp account = accountService.addAccount(accountReq);
+    return ApiResult.success(account);
   }
 
   @PutMapping("/upAccount")
   @ApiOperation("修改账户信息")
+  @PreAuthorize("@ss.hasPermi('sys:acc:upd')")
   public ApiResult<Void> upAccount(@RequestBody @Validated AccountReq accountReq) {
     accountService.upAccount(accountReq);
     return ApiResult.success();
   }
 
+  @PutMapping("/upAccountState")
+  @ApiOperation("修改账户状态")
+  @PreAuthorize("@ss.hasPermi('sys:acc:del')")
+  public ApiResult<Void> upAccountState(@RequestParam Integer accId, @RequestParam Integer state) {
+    if (accId == 0
+        || state == null
+        || (!state.equals(AccountStateEnum.NORMAL.getState())
+            && !state.equals(AccountStateEnum.BAN.getState()))) throw new BusinessException("参数异常");
+    accountService.upAccountState(accId, state);
+    return ApiResult.success();
+  }
+
   @PostMapping("/grantAuthorityToAcc")
   @ApiOperation("给账户赋予角色")
+  @PreAuthorize("@ss.hasPermi('sys:acc:grant')")
   public ApiResult<Void> grantRoleToAcc(@RequestBody @Validated AccountRoleReq accountRoleReq) {
     accountService.grantRoleToAcc(accountRoleReq);
     return ApiResult.success();

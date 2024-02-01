@@ -19,24 +19,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UsersDao extends ServiceImpl<UserMapper, User> {
-  /**
-   * 根据用户名查询用户
-   *
-   * @param userName
-   * @return
-   */
-  public User getNormalByUsername(String userName) {
-    return this.lambdaQuery().eq(User::getUsername, userName).one();
-  }
-
-  /**
-   * 修改登录时间
-   *
-   * @param id
-   */
-  public void updateLoginTime(Integer id) {
-    this.lambdaUpdate().eq(User::getId, id).set(User::getLoginTime, LocalDateTimeUtil.now());
-  }
 
   /**
    * 获取月增用户数

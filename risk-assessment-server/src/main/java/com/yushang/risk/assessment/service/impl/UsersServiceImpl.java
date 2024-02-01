@@ -1,9 +1,11 @@
 package com.yushang.risk.assessment.service.impl;
 
+import com.yushang.risk.assessment.dao.AccountDao;
 import com.yushang.risk.assessment.dao.RoleDao;
 import com.yushang.risk.assessment.dao.UserRoleDao;
 import com.yushang.risk.assessment.dao.UsersDao;
 import com.yushang.risk.assessment.domain.dto.RequestDataInfo;
+import com.yushang.risk.domain.entity.Account;
 import com.yushang.risk.domain.entity.User;
 import com.yushang.risk.assessment.domain.vo.request.LoginReq;
 import com.yushang.risk.assessment.domain.vo.request.RegisterReq;
@@ -41,9 +43,7 @@ import java.util.concurrent.TimeUnit;
 public class UsersServiceImpl implements UsersService {
 
   @Resource private UsersDao usersDao;
-  @Resource private UserRoleDao userRoleDao;
-  @Resource private RoleDao roleDao;
-  @Resource private JwtUtils jwtUtils;
+  @Resource private AccountDao accountDao;
   @Resource private LoginService loginService;
   /** 用户随机码放入Redis的过期时间 */
   public static final int USER_CODE_EXPIRE_TIME = 2;
@@ -245,7 +245,8 @@ public class UsersServiceImpl implements UsersService {
    */
   private void verifyInvitationCode(String invitationCode) {
     User user = usersDao.getByField(User::getInvitationCode, invitationCode);
-    AssertUtils.isNotEmpty(user, "无效的邀请码");
+    Account account = accountDao.getByField(Account::getInvitationCode, invitationCode);
+    AssertUtils.isTrue(user != null || account != null, "无效的邀请码");
 
     /*  List<UserRole> userRoleList = userRoleDao.getByUserId(user.getId());
     Role admin = roleDao.getByField(Role::getName, UserRoleEnum.ADMIN.getDesc());

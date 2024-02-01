@@ -11,6 +11,8 @@ import com.yushang.risk.common.exception.CommonErrorEnum;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import javax.annotation.Resource;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +35,7 @@ public class SecurityServiceController {
    */
   @PostMapping("/getUserBugRecordList")
   @ApiOperation("查询用户申请漏洞列表")
+  @PreAuthorize("@ss.hasPermi('sys:ss:get')")
   public ApiResult<PageBaseResp<SecurityServiceRecordPageResp>> getUserBugRecordList(
       @RequestBody @Validated PageBaseReq<SecurityServiceRecordPageReq> recordPageReq) {
     PageBaseResp<SecurityServiceRecordPageResp> resp =
@@ -48,6 +51,7 @@ public class SecurityServiceController {
    */
   @DeleteMapping("/deleteBugRecord")
   @ApiOperation("删除漏洞记录")
+  @PreAuthorize("@ss.hasPermi('sys:ss:del')")
   public ApiResult<Void> deleteBugRecord(Integer userId) {
     boolean b = sUserService.deleteBugRecord(userId);
     return b

@@ -19,6 +19,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 public class ThreadPoolConfig implements AsyncConfigurer {
   /** 项目共用线程池 */
   public static final String COMMON_EXECUTOR = "commonExecutor";
+  /** 安全服务线程池 */
+  public static final String SECURITY_SERVICE_EXECUTOR = "securityServiceExecutor";
 
   @Override
   public Executor getAsyncExecutor() {
@@ -35,6 +37,23 @@ public class ThreadPoolConfig implements AsyncConfigurer {
     executor.setQueueCapacity(200);
     // 设置创建线程的名称前缀,方便排查问题
     executor.setThreadNamePrefix("risk-executor-");
+    // 满了调用线程执行，认为重要任务
+    executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+    executor.setThreadFactory(new MyThreadFactory(executor));
+    executor.initialize();
+    return executor;
+  }
+
+  @Bean(SECURITY_SERVICE_EXECUTOR)
+  @Primary
+  public ThreadPoolTaskExecutor securityServiceExecutor() {
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    executor.setWaitForTasksToCompleteOnShutdown(true);
+    executor.setCorePoolSize(1);
+    executor.setMaxPoolSize(1);
+    executor.setQueueCapacity(50);
+    // 设置创建线程的名称前缀,方便排查问题
+    executor.setThreadNamePrefix("security-service-executor-");
     // 满了调用线程执行，认为重要任务
     executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
     executor.setThreadFactory(new MyThreadFactory(executor));

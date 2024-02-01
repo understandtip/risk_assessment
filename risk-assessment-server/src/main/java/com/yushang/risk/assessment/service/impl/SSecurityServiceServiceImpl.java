@@ -17,6 +17,7 @@ import com.yushang.risk.assessment.service.SSecurityServiceService;
 import com.yushang.risk.assessment.service.adapter.SecurityServiceAdapter;
 import fr.opensagres.poi.xwpf.converter.pdf.PdfConverter;
 import fr.opensagres.poi.xwpf.converter.pdf.PdfOptions;
+import io.swagger.models.auth.In;
 import javafx.scene.paint.Stop;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -56,7 +57,7 @@ public class SSecurityServiceServiceImpl implements SSecurityServiceService {
   @Resource private SUserRecordDao sUserRecordDao;
   @Resource private ApplicationEventPublisher applicationEventPublisher;
   @Resource private SServiceBugOptDao sServiceBugOptDao;
-  @Resource private MinioService minioService;
+  @Resource private SBugOptRelDao sBugOptRelDao;
 
   /**
    * 获取安全服务模块列表
@@ -113,6 +114,7 @@ public class SSecurityServiceServiceImpl implements SSecurityServiceService {
                 .userId(sUser.getId())
                 .serviceId(bugReq.getId())
                 .bugIds(bugReq.getBugIds())
+                .addBugs(bugReq.getAddBugs())
                 .build()));
   }
 
@@ -126,8 +128,20 @@ public class SSecurityServiceServiceImpl implements SSecurityServiceService {
   public String generateBugReport(SUserDto dto) {
     SUser user = sUserDao.getById(dto.getUserId());
     List<SBug> bugs = sBugDao.listByIds(dto.getBugIds());
+    // 新增的漏洞
+    if (dto.getAddBugs() != null) {
+      dto.getAddBugs()
+          .forEach(
+              addBug -> {
+                SBug sBug = new SBug();
+                BeanUtils.copyProperties(addBug, sBug);
+                bugs.add(sBug);
+              });
+    }
     Integer serviceId = dto.getServiceId();
-    List<SBugOpt> optList = sServiceBugOptDao.getByServiceId(serviceId);
+    List<Integer> ids = getBugsId(bugs);
+    List<SBugOpt> optList = sBugOptRelDao.getOptListByBugIds(ids);
+    // List<SBugOpt> optList = sServiceBugOptDao.getByServiceId(serviceId);
     Map<String, Object> map = new HashMap<>();
     map.put("portName", "羽觞安全报告");
     map.put("name", user.getName());
@@ -208,5 +222,18 @@ public class SSecurityServiceServiceImpl implements SSecurityServiceService {
         e.printStackTrace();
       }
     }
+  }
+
+  /**
+   * 获取漏洞id集合
+   *
+   * @param bugs
+   * @return
+   */
+  private List<Integer> getBugsId(List<SBug> bugs) {
+    return bugs.stream()
+        .filter(b -> b.getId() != null)
+        .map(SBug::getId)
+        .collect(Collectors.toList());
   }
 }

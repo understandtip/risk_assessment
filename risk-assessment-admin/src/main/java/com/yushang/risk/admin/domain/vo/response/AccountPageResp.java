@@ -1,7 +1,5 @@
 package com.yushang.risk.admin.domain.vo.response;
 
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -44,4 +42,6 @@ public class AccountPageResp {
   /** 更新时间 */
   @ApiModelProperty(notes = "更新时间")
   private LocalDateTime updatedTime;
+
+  private RoleResp roleResp;
 }

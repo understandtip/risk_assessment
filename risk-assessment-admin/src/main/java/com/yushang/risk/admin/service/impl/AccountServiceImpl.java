@@ -4,13 +4,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yushang.risk.admin.dao.AccountDao;
 import com.yushang.risk.admin.dao.UserRoleDao;
 import com.yushang.risk.admin.domain.dto.RequestDataInfo;
-import com.yushang.risk.admin.domain.entity.Account;
+import com.yushang.risk.admin.domain.vo.response.*;
+import com.yushang.risk.admin.service.adapter.UserAdapter;
+import com.yushang.risk.domain.entity.Account;
 import com.yushang.risk.admin.domain.entity.UserRole;
 import com.yushang.risk.admin.domain.enums.UserRoleEnum;
 import com.yushang.risk.admin.domain.vo.request.*;
-import com.yushang.risk.admin.domain.vo.response.AccountPageResp;
-import com.yushang.risk.admin.domain.vo.response.LoginUserResp;
-import com.yushang.risk.admin.domain.vo.response.PageBaseResp;
 import com.yushang.risk.admin.service.AccountService;
 import com.yushang.risk.admin.service.LoginService;
 import com.yushang.risk.admin.service.adapter.AccountAdapter;
@@ -19,12 +18,14 @@ import com.yushang.risk.common.exception.BusinessException;
 import com.yushang.risk.common.exception.CommonErrorEnum;
 import com.yushang.risk.common.exception.SystemException;
 import com.yushang.risk.common.util.*;
+import com.yushang.risk.domain.entity.Role;
 import lombok.SneakyThrows;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -118,6 +119,10 @@ public class AccountServiceImpl implements AccountService {
 
     AccountPageResp resp = new AccountPageResp();
     BeanUtils.copyProperties(accountDao.getById(accId), resp);
+    Role role = userRoleDao.getRoleByUserId(accId);
+    RoleResp roleResp = new RoleResp();
+    BeanUtils.copyProperties(role, roleResp);
+    resp.setRoleResp(roleResp);
     return resp;
   }
 
@@ -129,11 +134,17 @@ public class AccountServiceImpl implements AccountService {
    */
   @SneakyThrows
   @Override
-  public String addAccount(AccountReq accountReq) {
+  public AccountAddResp addAccount(AccountReq accountReq) {
+    if (accountReq.getRoleId() == null || accountReq.getRoleId() == 0)
+      throw new BusinessException("请选择角色");
     Account account = AccountAdapter.buildAddAccount(accountReq);
     String password = UserServiceImpl.generateRandomString();
     account.setPassword(PasswordUtils.encryptPassword(password));
-    return password;
+    account.setInvitationCode(generateRandomString());
+    accountDao.save(account);
+    UserRole userRole = UserAdapter.buildUserRole(account.getId(), accountReq.getRoleId());
+    userRoleDao.save(userRole);
+    return AccountAddResp.builder().username(account.getUsername()).password(password).build();
   }
 
   /**
@@ -161,6 +172,35 @@ public class AccountServiceImpl implements AccountService {
     userRole.setRoleId(accountRoleReq.getRoleId());
     userRoleDao.save(userRole);
   }
+
+  /**
+   * 修改账户状态
+   *
+   * @param accId
+   * @param state
+   */
+  @Override
+  public void upAccountState(Integer accId, Integer state) {
+    Account account = new Account();
+    account.setId(accId);
+    account.setState(String.valueOf(state));
+    accountDao.updateById(account);
+  }
+
+  /**
+   * 查询账户角色
+   *
+   * @param accId
+   * @return
+   */
+  @Override
+  public RoleResp getAccRole(Integer accId) {
+    Role role = userRoleDao.getRoleByUserId(accId);
+    RoleResp resp = new RoleResp();
+    BeanUtils.copyProperties(role, resp);
+    return resp;
+  }
+
   /**
    * 校验验证码
    *
@@ -172,5 +212,25 @@ public class AccountServiceImpl implements AccountService {
     String s = RedisUtils.getStr(RedisKey.getKey(RedisKey.USER_REDIS_CODE_PREFIX, ip));
     AssertUtils.isNotEmpty(s, "验证码已过期，请重新输入。");
     AssertUtils.equal(code.toLowerCase(Locale.ROOT), s.toLowerCase(Locale.ROOT), "验证码错误，请重新输入。");
+  }
+  /**
+   * 随机生成邀请码
+   *
+   * @return
+   */
+  private String generateRandomString() {
+    final String CHAR_LOWER = "abcdefghijklmnopqrstuvwxyz";
+    final String CHAR_UPPER = CHAR_LOWER.toUpperCase();
+    final String DIGITS = "0123456789";
+
+    final String ALPHA_NUMERIC = CHAR_LOWER + CHAR_UPPER + DIGITS;
+    SecureRandom random = new SecureRandom();
+    StringBuilder sb = new StringBuilder(6);
+
+    for (int i = 0; i < 6; i++) {
+      int randomIndex = random.nextInt(ALPHA_NUMERIC.length());
+      sb.append(ALPHA_NUMERIC.charAt(randomIndex));
+    }
+    return sb.toString();
   }
 }

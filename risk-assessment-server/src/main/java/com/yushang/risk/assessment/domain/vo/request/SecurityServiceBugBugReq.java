@@ -29,4 +29,19 @@ public class SecurityServiceBugBugReq {
   @NotNull
   @ApiModelProperty("提交的漏洞id集合")
   private List<Integer> bugIds;
+
+  private List<AddBug> addBugs;
+
+  @Data
+  public static class AddBug {
+    /** 漏洞名称 */
+    @ApiModelProperty(notes = "漏洞名称")
+    private String name;
+    /** 漏洞原理 */
+    @ApiModelProperty(notes = "漏洞原理")
+    private String theory;
+    /** 危害 */
+    @ApiModelProperty(notes = "危害")
+    private String harm;
+  }
 }
