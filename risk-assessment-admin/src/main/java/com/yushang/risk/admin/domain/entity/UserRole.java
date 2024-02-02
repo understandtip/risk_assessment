@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.apache.xmlbeans.impl.xb.xmlschema.IdAttribute;
 
 /**
  * 用户角色
@@ -22,7 +23,7 @@ import lombok.EqualsAndHashCode;
 public class UserRole implements Serializable, Cloneable {
   /** 主键id */
   @ApiModelProperty(notes = "主键id")
-  @TableId
+  @TableId(type = IdType.AUTO)
   private Integer id;
   /** 用户id */
   @ApiModelProperty(notes = "用户id")

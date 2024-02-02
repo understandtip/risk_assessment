@@ -61,13 +61,13 @@ public class UserController {
   }
 
   /**
-   * 用户注册
+   * 用户入驻
    *
    * @param registerReq
    * @return
    */
   @PostMapping("/register")
-  @ApiOperation("注册")
+  @ApiOperation("入驻")
   public ApiResult<Void> register(
       @RequestBody @Validated RegisterReq registerReq, HttpServletRequest request) {
     usersService.register(registerReq, request);

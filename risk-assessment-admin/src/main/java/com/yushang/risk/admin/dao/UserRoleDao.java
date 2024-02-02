@@ -27,7 +27,7 @@ public class UserRoleDao extends ServiceImpl<UserRoleMapper, UserRole> {
    * @return
    */
   public UserRole getByUserIdAndRole(Integer uid, Integer code) {
-    return this.lambdaQuery().eq(UserRole::getUserId, uid).eq(UserRole::getRoleId, code).one();
+    return this.lambdaQuery().eq(UserRole::getUserId, uid).ne(UserRole::getRoleId, code).one();
   }
 
   /**
@@ -51,5 +51,14 @@ public class UserRoleDao extends ServiceImpl<UserRoleMapper, UserRole> {
     return this.lambdaQuery().eq(UserRole::getRoleId, roleId).list().stream()
         .map(UserRole::getUserId)
         .collect(Collectors.toList());
+  }
+
+  /**
+   * 根据账户id删除授权信息
+   *
+   * @param accId
+   */
+  public void removeByUserId(Integer accId) {
+    this.lambdaUpdate().eq(UserRole::getUserId, accId).remove();
   }
 }

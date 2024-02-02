@@ -5,6 +5,7 @@ import com.yushang.risk.admin.domain.vo.request.AccountReq;
 import com.yushang.risk.admin.domain.vo.response.LoginUserResp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @Author：zlp @Package：com.yushang.risk.admin.service.adapter @Project：risk_assessment
@@ -17,9 +18,11 @@ public class AccountAdapter {
    * 构建登录成功后返回对象
    *
    * @param user
+   * @param permissions
    * @return
    */
-  public static LoginUserResp buildLoginUserResp(Account user, String token) {
+  public static LoginUserResp buildLoginUserResp(
+      Account user, String token, List<String> permissions) {
     return LoginUserResp.builder()
         .id(user.getId())
         .username(user.getUsername())
@@ -27,6 +30,7 @@ public class AccountAdapter {
         .phone(user.getPhone())
         .email(user.getEmail())
         .loginTime(LocalDateTime.now())
+        .permissionList(permissions)
         .token(token)
         .build();
   }

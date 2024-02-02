@@ -25,7 +25,20 @@ public class RegisterReq {
 
   @ApiModelProperty(notes = "邀请码")
   @NotNull
-  private String invitationCode;
+  private String useCode;
+
+  /** 手机号 */
+  @ApiModelProperty(notes = "手机号")
+  @Pattern(regexp = "^1[3-9]\\d{9}$", message = "手机号格式错误")
+  private String phone;
+  /** 邮箱 */
+  @ApiModelProperty(notes = "邮箱")
+  @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "邮箱格式错误")
+  private String email;
+  /** 真实姓名 */
+  @NotNull
+  @ApiModelProperty(notes = "真实姓名")
+  private String realName;
 
   @ApiModelProperty(notes = "验证码")
   @NotNull

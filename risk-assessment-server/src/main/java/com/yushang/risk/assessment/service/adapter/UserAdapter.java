@@ -26,7 +26,7 @@ public class UserAdapter {
     return User.builder()
         .username(registerReq.getUserName())
         .password(newPassword)
-        .useCode(registerReq.getInvitationCode())
+        .useCode(registerReq.getUseCode())
         .invitationCode(myInvitationCode)
         .build();
   }

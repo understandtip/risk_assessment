@@ -2,6 +2,8 @@ package com.yushang.risk.admin.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yushang.risk.admin.dao.AccountDao;
+import com.yushang.risk.admin.dao.RoleDao;
+import com.yushang.risk.admin.dao.RolePermissionDao;
 import com.yushang.risk.admin.dao.UserRoleDao;
 import com.yushang.risk.admin.domain.dto.RequestDataInfo;
 import com.yushang.risk.admin.domain.vo.response.*;
@@ -19,15 +21,19 @@ import com.yushang.risk.common.exception.CommonErrorEnum;
 import com.yushang.risk.common.exception.SystemException;
 import com.yushang.risk.common.util.*;
 import com.yushang.risk.domain.entity.Role;
+import com.yushang.risk.domain.enums.UserStatusEnum;
 import lombok.SneakyThrows;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -41,6 +47,8 @@ public class AccountServiceImpl implements AccountService {
   @Resource private AccountDao accountDao;
   @Resource private UserRoleDao userRoleDao;
   @Resource private LoginService loginService;
+  @Resource private RoleDao roleDao;
+  @Resource private RolePermissionDao rolePermissionDao;
 
   /**
    * 登录
@@ -55,11 +63,12 @@ public class AccountServiceImpl implements AccountService {
     // 校验验证码
     this.verifyCode(loginReq.getCode(), IpUtils.getClientIpAddress(request));
     // 校验账户基本信息
-    Account account = accountDao.getNormalByUsername(loginReq.getUserName());
-    AssertUtils.assertNotNull(account, "用户已被封禁，请联系管理员");
+    Account account = accountDao.getAccountByUsername(loginReq.getUserName());
+    AssertUtils.assertNotNull(account, "用户名或密码错误");
+    AssertUtils.notEqual(account.getState(), UserStatusEnum.BAN.getCode(), "用户已被封禁，请联系管理员");
     // 查询是否具有管理员权限
     UserRole userRole =
-        userRoleDao.getByUserIdAndRole(account.getId(), UserRoleEnum.ADMIN.getCode());
+        userRoleDao.getByUserIdAndRole(account.getId(), UserRoleEnum.USER.getCode());
     AssertUtils.assertNotNull(userRole, "用户无管理员权限");
     String password;
     try {
@@ -75,7 +84,10 @@ public class AccountServiceImpl implements AccountService {
     RequestDataInfo dataInfo = new RequestDataInfo();
     dataInfo.setUid(account.getId());
     RequestHolder.set(dataInfo);
-    return AccountAdapter.buildLoginUserResp(account, token);
+    // 设置角色信息
+    Role role = userRoleDao.getRoleByUserId(account.getId());
+    List<String> permissions = rolePermissionDao.getByRoleId(role.getId());
+    return AccountAdapter.buildLoginUserResp(account, token, permissions);
   }
 
   /**
@@ -94,6 +106,11 @@ public class AccountServiceImpl implements AccountService {
         && accountPageReq.getRoleId() != 0) {
       accIds = userRoleDao.getAccIdsByRoleId(accountPageReq.getRoleId());
     }
+    Map<Integer, Integer> userIdAndRoleIdMap =
+        userRoleDao.list().stream()
+            .collect(Collectors.toMap(UserRole::getUserId, UserRole::getRoleId));
+    Map<Integer, Role> roleMap =
+        roleDao.list().stream().collect(Collectors.toMap(Role::getId, Function.identity()));
 
     Page<Account> accountPage = accountDao.getAccListByPage(page, accountPageReq, accIds);
     List<AccountPageResp> collect =
@@ -102,6 +119,12 @@ public class AccountServiceImpl implements AccountService {
                 ap -> {
                   AccountPageResp resp = new AccountPageResp();
                   BeanUtils.copyProperties(ap, resp);
+                  Role role = roleMap.get(userIdAndRoleIdMap.get(ap.getId()));
+                  if (role != null) {
+                    RoleResp roleResp = new RoleResp();
+                    BeanUtils.copyProperties(role, roleResp);
+                    resp.setRoleResp(roleResp);
+                  }
                   return resp;
                 })
             .collect(Collectors.toList());
@@ -137,6 +160,9 @@ public class AccountServiceImpl implements AccountService {
   public AccountAddResp addAccount(AccountReq accountReq) {
     if (accountReq.getRoleId() == null || accountReq.getRoleId() == 0)
       throw new BusinessException("请选择角色");
+    if (accountDao.getAccountByUsername(accountReq.getUsername()) != null) {
+      throw new BusinessException("用户名已存在");
+    }
     Account account = AccountAdapter.buildAddAccount(accountReq);
     String password = UserServiceImpl.generateRandomString();
     account.setPassword(PasswordUtils.encryptPassword(password));
@@ -166,7 +192,9 @@ public class AccountServiceImpl implements AccountService {
    * @param accountRoleReq
    */
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public void grantRoleToAcc(AccountRoleReq accountRoleReq) {
+    userRoleDao.removeByUserId(accountRoleReq.getAccId());
     UserRole userRole = new UserRole();
     userRole.setUserId(accountRoleReq.getAccId());
     userRole.setRoleId(accountRoleReq.getRoleId());

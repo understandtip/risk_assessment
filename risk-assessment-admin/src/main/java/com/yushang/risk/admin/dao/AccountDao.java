@@ -3,7 +3,6 @@ package com.yushang.risk.admin.dao;
 import cn.hutool.core.date.LocalDateTimeUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.yushang.risk.admin.domain.enums.AccountStateEnum;
 import com.yushang.risk.domain.entity.Account;
 import com.yushang.risk.admin.domain.vo.request.AccountPageReq;
 import com.yushang.risk.admin.mapper.AccountMapper;
@@ -27,11 +26,8 @@ public class AccountDao extends ServiceImpl<AccountMapper, Account> {
    * @param userName
    * @return
    */
-  public Account getNormalByUsername(String userName) {
-    return this.lambdaQuery()
-        .eq(Account::getUsername, userName)
-        .eq(Account::getState, AccountStateEnum.NORMAL.getState())
-        .one();
+  public Account getAccountByUsername(String userName) {
+    return this.lambdaQuery().eq(Account::getUsername, userName).one();
   }
 
   /**
@@ -74,5 +70,15 @@ public class AccountDao extends ServiceImpl<AccountMapper, Account> {
           userPageReq.getEndTime() != null, Account::getCreatedTime, userPageReq.getEndTime());
     }
     return this.page(page, wrapper);
+  }
+
+  /**
+   * 根据真实姓名查询账户
+   *
+   * @param applyName
+   * @return
+   */
+  public List<Account> getAccListByName(String applyName) {
+    return this.lambdaQuery().like(Account::getRealName, applyName).list();
   }
 }

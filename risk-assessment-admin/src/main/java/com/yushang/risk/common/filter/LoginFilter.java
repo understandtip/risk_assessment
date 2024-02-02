@@ -71,6 +71,7 @@ public class LoginFilter extends OncePerRequestFilter {
     Account user = accountDao.getById(uid);
     AssertUtils.isNotEmpty(user, "用户不存在");
     Role role = userRoleDao.getRoleByUserId(uid);
+    AssertUtils.assertNotNull(role, "该账户无权限");
     if (role.getId().equals(UserRoleEnum.USER.getCode())) return;
     // TODO 权限做缓存
     // 拿权限

@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @Author：zlp @Package：com.yushang.risk.assessment.domain.vo.response @Project：risk_assessment
@@ -45,4 +46,6 @@ public class LoginUserResp {
   /** 登录成功返回token */
   @ApiModelProperty(notes = "token")
   private String token;
+
+  private List<String> permissionList;
 }

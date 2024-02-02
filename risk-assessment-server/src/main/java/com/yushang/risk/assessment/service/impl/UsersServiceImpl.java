@@ -1,11 +1,10 @@
 package com.yushang.risk.assessment.service.impl;
 
-import com.yushang.risk.assessment.dao.AccountDao;
-import com.yushang.risk.assessment.dao.RoleDao;
-import com.yushang.risk.assessment.dao.UserRoleDao;
-import com.yushang.risk.assessment.dao.UsersDao;
+import com.yushang.risk.assessment.dao.*;
 import com.yushang.risk.assessment.domain.dto.RequestDataInfo;
+import com.yushang.risk.assessment.service.adapter.RegisterApplyAdapter;
 import com.yushang.risk.domain.entity.Account;
+import com.yushang.risk.domain.entity.RegisterApply;
 import com.yushang.risk.domain.entity.User;
 import com.yushang.risk.assessment.domain.vo.request.LoginReq;
 import com.yushang.risk.assessment.domain.vo.request.RegisterReq;
@@ -45,6 +44,7 @@ public class UsersServiceImpl implements UsersService {
   @Resource private UsersDao usersDao;
   @Resource private AccountDao accountDao;
   @Resource private LoginService loginService;
+  @Resource private RegisterApplyDao registerApplyDao;
   /** 用户随机码放入Redis的过期时间 */
   public static final int USER_CODE_EXPIRE_TIME = 2;
 
@@ -95,10 +95,9 @@ public class UsersServiceImpl implements UsersService {
     User user = usersDao.getByField(User::getUsername, registerReq.getUserName());
     AssertUtils.isEmpty(user, "用户名已经存在了");
     // 邀请码
-    this.verifyInvitationCode(registerReq.getInvitationCode());
-    // TODO 保存到申请表中,由后台管理员处理申请
+    this.verifyInvitationCode(registerReq.getUseCode());
+    //  保存到申请表中,由后台管理员处理申请
     // 存储数据库
-    // TODO 只有后台管理员批准之后,才能添加到数据库,下面要注释
     // 第一阶段解密
     String password = AesUtil.decryptPassword(registerReq.getPassword());
     try {
@@ -107,10 +106,11 @@ public class UsersServiceImpl implements UsersService {
     } catch (Exception e) {
       throw new SystemException(CommonErrorEnum.SYSTEM_ERROR.getErrorCode(), "密码加密失败,抛出异常");
     }
+    RegisterApply apply = RegisterApplyAdapter.buildApply(registerReq, password);
     // 生成邀请码
     String myInvitationCode = generateRandomString();
-    User saveUser = UserAdapter.buildSaveUser(registerReq, password, myInvitationCode);
-    usersDao.save(saveUser);
+    apply.setInvitationCode(myInvitationCode);
+    registerApplyDao.save(apply);
   }
 
   /**
