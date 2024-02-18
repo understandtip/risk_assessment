@@ -20,6 +20,7 @@ public class RegisterApplyAdapter {
   public static RegisterApply buildApply(RegisterReq registerReq, String password) {
     RegisterApply apply = new RegisterApply();
     BeanUtils.copyProperties(registerReq, apply);
+    apply.setUsername(registerReq.getUserName());
     apply.setPassword(password);
     return apply;
   }

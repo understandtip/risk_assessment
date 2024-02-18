@@ -3,7 +3,7 @@ package com.yushang.risk.assessment.dao;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.yushang.risk.assessment.domain.entity.Project;
+import com.yushang.risk.domain.entity.Project;
 import com.yushang.risk.assessment.domain.vo.request.ProjectPageReq;
 import com.yushang.risk.assessment.mapper.ProjectMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;

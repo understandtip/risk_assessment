@@ -53,6 +53,7 @@ public class RegisterApplyDao extends ServiceImpl<RegisterApplyMapper, RegisterA
           RegisterApply::getState,
           applyReq.getState());
     }
+    wrapper.orderByDesc(RegisterApply::getCreatedTime);
     wrapper.in(ids != null && !ids.isEmpty(), RegisterApply::getApplyId, ids);
 
     return this.page(page, wrapper);

@@ -25,8 +25,12 @@ public abstract class AbstractOptLogHandler {
     OptLogHandlerFactory.of(this.getCode(), this);
   }
 
-  /** 记录日志 */
-  public abstract void log();
+  /**
+   * 记录日志
+   *
+   * @param flag true:操作成功 false:操作失败
+   */
+  public abstract void log(boolean flag);
 
   /**
    * 获取code

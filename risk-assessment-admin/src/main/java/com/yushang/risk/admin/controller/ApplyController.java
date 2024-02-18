@@ -11,6 +11,7 @@ import com.yushang.risk.common.domain.vo.ApiResult;
 import com.yushang.risk.common.exception.BusinessException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.xhtmlrenderer.css.parser.property.PrimitivePropertyBuilders;
@@ -31,6 +32,7 @@ public class ApplyController {
 
   @PostMapping("/getAllApply")
   @ApiOperation("查询申请")
+  @PreAuthorize("@ss.hasPermi('sys:reg:get')")
   public ApiResult<PageBaseResp<ApplyPageResp>> getAllApply(
       @RequestBody @Validated PageBaseReq<ApplyPageReq> applyReq) {
     PageBaseResp<ApplyPageResp> resp = registerApplyService.getAllApplyByPage(applyReq);
@@ -39,6 +41,7 @@ public class ApplyController {
 
   @PutMapping("/upApplyState")
   @ApiOperation("修改状态")
+  @PreAuthorize("@ss.hasPermi('sys:reg:upd')")
   public ApiResult<Void> upApplyState(@RequestParam Integer applyId, @RequestParam Integer state) {
     if (!ApplyStateEnum.isInside(state)) throw new BusinessException("状态错误");
     registerApplyService.upApplyState(applyId, state);
@@ -47,6 +50,7 @@ public class ApplyController {
 
   @DeleteMapping("/removeApply")
   @ApiOperation("删除记录")
+  @PreAuthorize("@ss.hasPermi('sys:reg:del')")
   public ApiResult<Void> removeApply(@RequestBody List<Integer> appIds) {
     registerApplyService.removeApply(appIds);
     return ApiResult.success();

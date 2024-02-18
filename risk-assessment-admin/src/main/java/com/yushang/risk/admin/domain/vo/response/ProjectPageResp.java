@@ -1,30 +1,23 @@
-package com.yushang.risk.assessment.domain.entity;
+package com.yushang.risk.admin.domain.vo.response;
 
-import java.math.BigDecimal;
-
-import com.baomidou.mybatisplus.annotation.*;
-
-import java.time.LocalDateTime;
-import java.io.Serializable;
-
-import io.swagger.annotations.ApiModel;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import org.checkerframework.checker.tainting.qual.MethodTaintingParam;
+
+import java.time.LocalDateTime;
 
 /**
- * 项目表
+ * @Author：zlp @Package：com.yushang.risk.admin.domain.vo.response @Project：risk_assessment
  *
- * @author zlp
- * @since 2023-12-29
+ * @name：ProjectPageResp @Date：2024/2/2 10:02 @Filename：ProjectPageResp
  */
 @Data
-@ApiModel(value = "项目表", description = "")
-@TableName("project")
-public class Project implements Serializable, Cloneable {
+public class ProjectPageResp {
   /** 主键id */
   @ApiModelProperty(notes = "主键id")
-  @TableId(type = IdType.AUTO)
   private Integer id;
   /** 项目名称 */
   @ApiModelProperty(notes = "项目名称")
@@ -48,9 +41,7 @@ public class Project implements Serializable, Cloneable {
   /** 制作人姓名 */
   @ApiModelProperty(notes = "制作人姓名")
   private String authorName;
-  /** 制作人id */
-  @ApiModelProperty(notes = "制作人id")
-  private Integer authorId;
+
   /** 涉及系统 */
   @ApiModelProperty(notes = "涉及系统")
   private String referenceSystem;
@@ -63,8 +54,4 @@ public class Project implements Serializable, Cloneable {
   /** 更新时间 */
   @ApiModelProperty(notes = "更新时间")
   private LocalDateTime updatedTime;
-  /** 逻辑删除 */
-  @ApiModelProperty(notes = "逻辑删除")
-  @TableLogic
-  private String isDeleted;
 }

@@ -2,7 +2,7 @@ package com.yushang.risk.assessment.service.adapter;
 
 import cn.hutool.core.date.LocalDateTimeUtil;
 import com.yushang.risk.assessment.domain.entity.GenerateRecord;
-import com.yushang.risk.assessment.domain.entity.Project;
+import com.yushang.risk.domain.entity.Project;
 
 /**
  * @Author：zlp @Package：com.yushang.risk.assessment.service.adapter @Project：risk_assessment

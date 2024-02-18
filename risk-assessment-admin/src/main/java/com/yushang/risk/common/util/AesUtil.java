@@ -130,4 +130,9 @@ public class AesUtil {
   private static String removeQuotes(String input) {
     return input.replace("\"", "");
   }
+
+  public static void main(String[] args) throws Exception {
+    System.out.println(encrypt("ydhcnbmfio0283Z", ENCRYPTION_KEY_FRONT));
+    System.out.println(decrypt("0d9ca0a9e614412dc11f2a90e7690624", ENCRYPTION_KEY_FRONT));
+  }
 }

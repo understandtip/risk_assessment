@@ -6,6 +6,7 @@ import com.yushang.risk.assessment.service.handler.OptLogHandlerFactory;
 import com.yushang.risk.common.annotation.OptLog;
 import com.yushang.risk.common.config.ThreadPoolConfig;
 import com.yushang.risk.common.util.RequestHolder;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -22,6 +23,7 @@ import javax.annotation.Resource;
  */
 @Aspect
 @Component
+@Slf4j
 public class LogAspect {
   @Qualifier(ThreadPoolConfig.COMMON_EXECUTOR)
   @Resource
@@ -29,16 +31,25 @@ public class LogAspect {
 
   @Around("@annotation(optLog)")
   public Object logAspect(ProceedingJoinPoint joinPoint, OptLog optLog) throws Throwable {
-    Object proceed = joinPoint.proceed();
-    RequestDataInfo dataInfo = RequestHolder.get();
-    threadPoolTaskExecutor.execute(
-        () -> {
-          RequestHolder.set(dataInfo);
-          // 异步记录日志
-          OptLog.Target target = optLog.target();
-          AbstractOptLogHandler handler = OptLogHandlerFactory.get(target.getCode());
-          handler.log();
-        });
+    Object proceed = null;
+    boolean flag = false;
+    try {
+      proceed = joinPoint.proceed();
+      flag = true;
+    } catch (Throwable e) {
+      log.error("OptLog日志切面异常", e);
+    } finally {
+      RequestDataInfo dataInfo = RequestHolder.get();
+      boolean finalFlag = flag;
+      threadPoolTaskExecutor.execute(
+          () -> {
+            RequestHolder.set(dataInfo);
+            // 异步记录日志
+            OptLog.Target target = optLog.target();
+            AbstractOptLogHandler handler = OptLogHandlerFactory.get(target.getCode());
+            handler.log(finalFlag);
+          });
+    }
     return proceed;
   }
 }

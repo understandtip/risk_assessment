@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 
 /**
@@ -22,7 +23,7 @@ public class AccountReq {
   private Integer roleId;
   /** 用户名 */
   @ApiModelProperty(notes = "用户名")
-  @NotNull
+  @Pattern(regexp = "^[a-zA-Z0-9_]{5,15}$", message = "用户名必须是数字/字母/下划线,长度5-15")
   private String username;
   /** 真实姓名 */
   @ApiModelProperty(notes = "真实姓名")

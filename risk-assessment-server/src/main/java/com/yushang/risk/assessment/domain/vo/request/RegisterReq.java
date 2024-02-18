@@ -13,10 +13,10 @@ import javax.validation.constraints.Pattern;
  * @name：LoginVo @Date：2023/12/21 14:10 @Filename：LoginVo
  */
 @Data
-@ApiModel("注册前端传递对象")
+@ApiModel("入驻前端传递对象")
 public class RegisterReq {
   @ApiModelProperty(notes = "用户名")
-  @NotNull
+  @Pattern(regexp = "^[a-zA-Z0-9_]{5,15}$", message = "用户名必须是数字/字母/下划线,长度5-15")
   private String userName;
 
   @ApiModelProperty(notes = "密码")

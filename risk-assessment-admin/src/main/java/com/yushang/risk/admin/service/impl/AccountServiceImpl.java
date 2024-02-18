@@ -1,6 +1,7 @@
 package com.yushang.risk.admin.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.sun.xml.internal.bind.v2.TODO;
 import com.yushang.risk.admin.dao.AccountDao;
 import com.yushang.risk.admin.dao.RoleDao;
 import com.yushang.risk.admin.dao.RolePermissionDao;
@@ -8,6 +9,7 @@ import com.yushang.risk.admin.dao.UserRoleDao;
 import com.yushang.risk.admin.domain.dto.RequestDataInfo;
 import com.yushang.risk.admin.domain.vo.response.*;
 import com.yushang.risk.admin.service.adapter.UserAdapter;
+import com.yushang.risk.common.annotation.OptLog;
 import com.yushang.risk.domain.entity.Account;
 import com.yushang.risk.admin.domain.entity.UserRole;
 import com.yushang.risk.admin.domain.enums.UserRoleEnum;
@@ -58,7 +60,7 @@ public class AccountServiceImpl implements AccountService {
    * @return
    */
   @Override
-  // TODO  @OptLog(target = OptLog.Target.LOGIN)
+  @OptLog(target = OptLog.Target.LOGIN)
   public LoginUserResp login(LoginReq loginReq, HttpServletRequest request) {
     // 校验验证码
     this.verifyCode(loginReq.getCode(), IpUtils.getClientIpAddress(request));

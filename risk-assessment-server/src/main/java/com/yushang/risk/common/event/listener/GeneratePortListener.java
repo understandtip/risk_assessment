@@ -4,7 +4,7 @@ import com.yushang.risk.assessment.dao.GenerateRecordDao;
 import com.yushang.risk.assessment.dao.ProjectDao;
 import com.yushang.risk.assessment.domain.dto.RequestDataInfo;
 import com.yushang.risk.assessment.domain.entity.GenerateRecord;
-import com.yushang.risk.assessment.domain.entity.Project;
+import com.yushang.risk.domain.entity.Project;
 import com.yushang.risk.assessment.service.MinioService;
 import com.yushang.risk.assessment.service.adapter.RecordAdapter;
 import com.yushang.risk.common.event.GeneratePortEvent;

@@ -30,10 +30,7 @@ public class RolePermission implements Serializable, Cloneable {
   /** 权限id */
   @ApiModelProperty(notes = "权限id")
   private Integer perId;
-  /** 逻辑删除;1:删除 0:未删除 */
-  @ApiModelProperty(notes = "逻辑删除 1:删除   0:未删除")
-  @TableLogic
-  private String isDeleted;
+
   /** 创建时间 */
   @ApiModelProperty(notes = "创建时间")
   private LocalDateTime createdTime;

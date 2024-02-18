@@ -94,6 +94,10 @@ public class UsersServiceImpl implements UsersService {
     // 用户名不能重复
     User user = usersDao.getByField(User::getUsername, registerReq.getUserName());
     AssertUtils.isEmpty(user, "用户名已经存在了");
+    // 用户名不能重复
+    RegisterApply registerApply =
+        registerApplyDao.getByField(RegisterApply::getUsername, registerReq.getUserName());
+    AssertUtils.isEmpty(registerApply, "用户名已经存在了");
     // 邀请码
     this.verifyInvitationCode(registerReq.getUseCode());
     //  保存到申请表中,由后台管理员处理申请

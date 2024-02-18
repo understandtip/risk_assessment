@@ -56,7 +56,7 @@ public class UserController {
 
   @PostMapping("/getUserList")
   @ApiOperation("获取用户列表")
-  @PreAuthorize("@ss.hasPermi('sys:pro:get')")
+  @PreAuthorize("@ss.hasPermi('sys:user:get')")
   public ApiResult<PageBaseResp<UserResp>> getUserList(
       @RequestBody PageBaseReq<UserPageReq> userPageReq) {
     PageBaseResp<UserResp> resp = userService.getUserList(userPageReq);

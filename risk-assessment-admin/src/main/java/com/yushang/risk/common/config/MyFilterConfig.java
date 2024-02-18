@@ -21,6 +21,7 @@ public class MyFilterConfig {
     registrationBean.setFilter(new LoginFilter());
     // 指定URL模式
     registrationBean.addUrlPatterns("/*");
+
     return registrationBean;
   }
 }

@@ -27,7 +27,7 @@ public class HomePageController {
 
   @GetMapping("/getVisitNum")
   @ApiOperation("获取月访问量")
-  @PreAuthorize("@ss.hasPermi('sys:home:home')")
+  @PreAuthorize("@ss.hasPermi('sys:home')")
   public ApiResult<Long> getVisitNum() {
     Long count = homePageService.getVisitNum();
     return ApiResult.success(count);
@@ -35,7 +35,7 @@ public class HomePageController {
 
   @GetMapping("/getVisitNumAll")
   @ApiOperation("获取总访问量")
-  @PreAuthorize("@ss.hasPermi('sys:home:home')")
+  @PreAuthorize("@ss.hasPermi('sys:home')")
   public ApiResult<Long> getVisitNumAll() {
     Long count = homePageService.getVisitNumAll();
     return ApiResult.success(count);

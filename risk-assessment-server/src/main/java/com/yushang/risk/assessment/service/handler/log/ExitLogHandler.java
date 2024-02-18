@@ -20,17 +20,19 @@ public class ExitLogHandler extends AbstractOptLogHandler {
   @Resource private UserLogDao userLogDao;
 
   @Override
-  public void log() {
-    Integer uid = RequestHolder.get().getUid();
-    // 记录到文件
-    StringBuilder str = new StringBuilder();
-    str.append(LocalDateTimeUtil.now()).append("----------用户ID：").append(uid).append("退出系统");
-    writeToFile(AbstractOptLogHandler.EXIT_FILE_PATH, str.toString());
-    // 记录到数据库
-    UserLog userLog = new UserLog();
-    userLog.setUserId(uid);
-    userLog.setLogType(this.getCode());
-    userLogDao.save(userLog);
+  public void log(boolean flag) {
+    if (flag) {
+      Integer uid = RequestHolder.get().getUid();
+      // 记录到文件
+      StringBuilder str = new StringBuilder();
+      str.append(LocalDateTimeUtil.now()).append("----------用户ID：").append(uid).append("退出系统");
+      writeToFile(AbstractOptLogHandler.EXIT_FILE_PATH, str.toString());
+      // 记录到数据库
+      UserLog userLog = new UserLog();
+      userLog.setUserId(uid);
+      userLog.setLogType(this.getCode());
+      userLogDao.save(userLog);
+    }
   }
 
   @Override

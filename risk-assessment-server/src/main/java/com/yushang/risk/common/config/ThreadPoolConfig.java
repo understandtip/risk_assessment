@@ -21,6 +21,8 @@ public class ThreadPoolConfig implements AsyncConfigurer {
   public static final String COMMON_EXECUTOR = "commonExecutor";
   /** 安全服务线程池 */
   public static final String SECURITY_SERVICE_EXECUTOR = "securityServiceExecutor";
+  /** ip解析线程池 */
+  public static final String IP_DETAIL_EXECUTOR = "ipDetailExecutor";
 
   @Override
   public Executor getAsyncExecutor() {
@@ -56,6 +58,23 @@ public class ThreadPoolConfig implements AsyncConfigurer {
     executor.setThreadNamePrefix("security-service-executor-");
     // 满了调用线程执行，认为重要任务
     executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+    executor.setThreadFactory(new MyThreadFactory(executor));
+    executor.initialize();
+    return executor;
+  }
+
+  @Bean(IP_DETAIL_EXECUTOR)
+  @Primary
+  public ThreadPoolTaskExecutor ipDetailExecutor() {
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    executor.setWaitForTasksToCompleteOnShutdown(true);
+    executor.setCorePoolSize(1);
+    executor.setMaxPoolSize(1);
+    executor.setQueueCapacity(50);
+    // 设置创建线程的名称前缀,方便排查问题
+    executor.setThreadNamePrefix("ip-detail-executor-");
+    // 满了丢弃
+    executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());
     executor.setThreadFactory(new MyThreadFactory(executor));
     executor.initialize();
     return executor;

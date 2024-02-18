@@ -1,10 +1,20 @@
 package com.yushang.risk.admin.service.adapter;
 
+import cn.hutool.core.lang.TypeReference;
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONUtil;
+import com.yushang.risk.admin.domain.entity.IpDetail;
+import com.yushang.risk.admin.domain.entity.IpResult;
 import com.yushang.risk.admin.domain.entity.UserRole;
 import com.yushang.risk.admin.domain.vo.request.UserReq;
 import com.yushang.risk.admin.domain.vo.response.LoginUserResp;
+import com.yushang.risk.common.util.IpUtils;
+import com.yushang.risk.domain.entity.SysLoginLog;
 import com.yushang.risk.domain.entity.User;
+import com.yushang.risk.domain.enums.LoginLogTypeEnum;
+import com.yushang.risk.utils.RequestUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 
 /**
@@ -60,4 +70,5 @@ public class UserAdapter {
     userRole.setUserId(uid);
     return userRole;
   }
+  
 }
