@@ -1,14 +1,18 @@
 package com.yushang.risk.assessment.service.handler.log;
 
 import cn.hutool.core.date.LocalDateTimeUtil;
+import com.yushang.risk.assessment.dao.OnlineUserDao;
 import com.yushang.risk.assessment.dao.UserLogDao;
 import com.yushang.risk.assessment.domain.entity.UserLog;
 import com.yushang.risk.assessment.service.handler.AbstractOptLogHandler;
 import com.yushang.risk.common.annotation.OptLog;
+import com.yushang.risk.common.util.RedisUtils;
 import com.yushang.risk.common.util.RequestHolder;
+import com.yushang.risk.constant.RedisCommonKey;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @Author：zlp @Package：com.yushang.risk.assessment.service.handler.log @Project：risk_assessment
@@ -18,10 +22,12 @@ import javax.annotation.Resource;
 @Component
 public class ExitLogHandler extends AbstractOptLogHandler {
   @Resource private UserLogDao userLogDao;
+  @Resource private OnlineUserDao onlineUserDao;
 
   @Override
-  public void log(boolean flag) {
+  public void log(HttpServletRequest request, boolean flag) {
     if (flag) {
+      // 退出成功
       Integer uid = RequestHolder.get().getUid();
       // 记录到文件
       StringBuilder str = new StringBuilder();
@@ -32,6 +38,8 @@ public class ExitLogHandler extends AbstractOptLogHandler {
       userLog.setUserId(uid);
       userLog.setLogType(this.getCode());
       userLogDao.save(userLog);
+      // 清除在线用户信息
+      onlineUserDao.removeByUserName(uid);
     }
   }
 

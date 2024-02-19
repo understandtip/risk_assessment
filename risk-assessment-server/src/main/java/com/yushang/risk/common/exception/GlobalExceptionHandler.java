@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(SystemException.class)
   public ApiResult<?> businessException(SystemException e) {
-    log.error("自定义系统异常--->", e);
+    log.error("系统异常--->", e);
     return ApiResult.fail(CommonErrorEnum.SYSTEM_ERROR);
   }
 

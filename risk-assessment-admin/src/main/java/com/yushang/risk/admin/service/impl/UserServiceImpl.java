@@ -1,6 +1,8 @@
 package com.yushang.risk.admin.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yushang.risk.admin.dao.AccountDao;
+import com.yushang.risk.admin.dao.RegisterApplyDao;
 import com.yushang.risk.admin.dao.UserRoleDao;
 import com.yushang.risk.admin.dao.UsersDao;
 import com.yushang.risk.admin.domain.dto.RequestDataInfo;
@@ -19,6 +21,8 @@ import com.yushang.risk.common.exception.BusinessException;
 import com.yushang.risk.common.exception.CommonErrorEnum;
 import com.yushang.risk.common.exception.SystemException;
 import com.yushang.risk.common.util.*;
+import com.yushang.risk.domain.entity.Account;
+import com.yushang.risk.domain.entity.RegisterApply;
 import com.yushang.risk.domain.entity.User;
 import com.yushang.risk.domain.enums.UserStatusEnum;
 import lombok.SneakyThrows;
@@ -44,6 +48,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserServiceImpl implements UserService {
   @Resource private UsersDao usersDao;
+  @Resource private RegisterApplyDao registerApplyDao;
+  @Resource private AccountDao accountDao;
 
   /** 用户随机码放入Redis的过期时间 */
   public static final int USER_CODE_EXPIRE_TIME = 2;
@@ -112,6 +118,16 @@ public class UserServiceImpl implements UserService {
   @SneakyThrows
   @Override
   public UserAddResp addUser(UserReq userReq) {
+    // 用户名不能重复
+    User userName = usersDao.getByField(User::getUsername, userReq.getUsername());
+    AssertUtils.isEmpty(userName, "用户名已经存在了");
+    // 用户名不能重复
+    RegisterApply registerApply =
+        registerApplyDao.getByField(RegisterApply::getUsername, userReq.getUsername());
+    AssertUtils.isEmpty(registerApply, "用户名已经存在了");
+    // 用户名不能重复
+    Account account = accountDao.getByField(Account::getUsername, userReq.getUsername());
+    AssertUtils.isEmpty(account, "用户名已经存在了");
     User user = UserAdapter.buildAddUser(userReq);
     // 初始化密码
     String pass = generateRandomString();

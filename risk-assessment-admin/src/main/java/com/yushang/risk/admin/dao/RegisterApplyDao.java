@@ -1,6 +1,7 @@
 package com.yushang.risk.admin.dao;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yushang.risk.admin.domain.enums.ApplyStateEnum;
 import com.yushang.risk.admin.domain.vo.request.ApplyPageReq;
@@ -20,6 +21,15 @@ import java.util.Set;
  */
 @Service
 public class RegisterApplyDao extends ServiceImpl<RegisterApplyMapper, RegisterApply> {
+  /**
+   * 根据指定字段查询用户
+   *
+   * @param value
+   * @return
+   */
+  public RegisterApply getByField(SFunction<RegisterApply, ?> function, String value) {
+    return this.lambdaQuery().eq(function, value).one();
+  }
   /**
    * 分页获取申请记录
    *

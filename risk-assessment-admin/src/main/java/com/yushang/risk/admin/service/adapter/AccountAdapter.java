@@ -9,7 +9,9 @@ import com.yushang.risk.common.util.IpUtils;
 import com.yushang.risk.domain.entity.Account;
 import com.yushang.risk.admin.domain.vo.request.AccountReq;
 import com.yushang.risk.admin.domain.vo.response.LoginUserResp;
+import com.yushang.risk.domain.entity.OnlineUser;
 import com.yushang.risk.domain.entity.SysLoginLog;
+import com.yushang.risk.domain.entity.User;
 import com.yushang.risk.domain.enums.LoginLogTypeEnum;
 import com.yushang.risk.utils.RequestUtils;
 
@@ -99,6 +101,46 @@ public class AccountAdapter {
         .state(String.valueOf(flag ? 1 : 0))
         .build();
   }
+  /**
+   * 构建登录成功后的在线用户对象
+   *
+   * @param request
+   * @param user
+   * @return
+   */
+  public static OnlineUser buildOnlineUser(HttpServletRequest request, Account user) {
+    // 浏览器
+    String browserName = getBrowserName(request);
+    // 操作系统
+    String operatingSystem = getOperatingSystem(request);
+    String sessionId = request.getSession().getId();
+    // 处理ip
+    String ip = IpUtils.getClientIpAddress(request);
+    String add = null;
+    for (int i = 0; i < 3; i++) {
+      IpDetail ipDetail = getIpDetailOrNull(ip);
+      if (ipDetail != null) {
+        add =
+            ipDetail.getCountry()
+                + " "
+                + ipDetail.getRegion()
+                + " "
+                + ipDetail.getCity()
+                + " "
+                + ipDetail.getIsp();
+        break;
+      }
+    }
+    return OnlineUser.builder()
+        .sessionId(sessionId)
+        .userName(user.getUsername())
+        .ip(ip)
+        .address(add)
+        .browser(browserName)
+        .os(operatingSystem)
+        .platformType(String.valueOf(LoginLogTypeEnum.ADMIN.getType()))
+        .build();
+  }
 
   /**
    * 获取ip归属地
@@ -142,6 +184,8 @@ public class AccountAdapter {
         return "Opera";
       } else if (userAgent.contains("MSIE") || userAgent.contains("Trident/")) {
         return "Internet Explorer";
+      } else if (userAgent.contains("Postman")) {
+        return "Postman";
       } else {
         return "未知浏览器";
       }
@@ -169,6 +213,8 @@ public class AccountAdapter {
         return "Android";
       } else if (userAgent.contains("iOS")) {
         return "iOS";
+      } else if (userAgent.contains("Postman")) {
+        return "Postman";
       } else {
         return "未知操作系统";
       }

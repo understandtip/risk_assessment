@@ -46,6 +46,7 @@ public class SysLoginLogDao extends ServiceImpl<SysLoginLogMapper, SysLoginLog> 
       wrapper.le(
           logPageReq.getEndTime() != null, SysLoginLog::getCreatedTime, logPageReq.getEndTime());
     }
+    wrapper.orderByDesc(SysLoginLog::getCreatedTime);
     return this.page(page, wrapper);
   }
 }

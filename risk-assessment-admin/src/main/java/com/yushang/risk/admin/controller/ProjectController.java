@@ -6,6 +6,7 @@ import com.yushang.risk.admin.domain.vo.response.PageBaseResp;
 import com.yushang.risk.admin.domain.vo.response.ProjectPageResp;
 import com.yushang.risk.admin.service.ProjectService;
 import com.yushang.risk.common.domain.vo.ApiResult;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("/capi/pro")
+@Api(tags = "项目接口")
 public class ProjectController {
 
   @Resource private ProjectService projectService;

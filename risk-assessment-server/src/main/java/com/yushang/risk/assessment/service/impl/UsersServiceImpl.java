@@ -20,6 +20,7 @@ import com.yushang.risk.common.constant.RedisKey;
 import com.yushang.risk.common.exception.CommonErrorEnum;
 import com.yushang.risk.common.exception.SystemException;
 import com.yushang.risk.common.util.*;
+import com.yushang.risk.domain.enums.UserStatusEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -98,6 +99,9 @@ public class UsersServiceImpl implements UsersService {
     RegisterApply registerApply =
         registerApplyDao.getByField(RegisterApply::getUsername, registerReq.getUserName());
     AssertUtils.isEmpty(registerApply, "用户名已经存在了");
+    // 用户名不能重复
+    Account account = accountDao.getByField(Account::getUsername, registerReq.getUserName());
+    AssertUtils.isEmpty(account, "用户名已经存在了");
     // 邀请码
     this.verifyInvitationCode(registerReq.getUseCode());
     //  保存到申请表中,由后台管理员处理申请
@@ -127,11 +131,15 @@ public class UsersServiceImpl implements UsersService {
   @Override
   @OptLog(target = OptLog.Target.LOGIN)
   public LoginUserResp login(LoginReq loginReq, HttpServletRequest request) {
+    RequestDataInfo dataInfo = new RequestDataInfo();
+    dataInfo.setUserName(loginReq.getUserName());
+    RequestHolder.set(dataInfo);
     // 校验验证码
     this.verifyCode(loginReq.getCode(), IpUtils.getClientIpAddress(request));
     // 校验账户基本信息
-    User user = usersDao.getNormalByUsername(loginReq.getUserName());
-    AssertUtils.assertNotNull(user, "用户已被封禁，请联系管理员");
+    User user = usersDao.getByField(User::getUsername, loginReq.getUserName());
+    AssertUtils.assertNotNull(user, "用户不存在");
+    AssertUtils.notEqual(UserStatusEnum.BAN.getCode(), user.getStatus(), "用户已被封禁，请联系管理员");
     String password;
     try {
       password = PasswordUtils.decryptPassword(user.getPassword());
@@ -143,8 +151,10 @@ public class UsersServiceImpl implements UsersService {
     usersDao.updateLoginTime(user.getId());
     // 获取token
     String token = loginService.login(user.getId());
-    RequestDataInfo dataInfo = new RequestDataInfo();
+
     dataInfo.setUid(user.getId());
+    dataInfo.setIp(IpUtils.getClientIpAddress(request));
+    dataInfo.setUserName(user.getUsername());
     RequestHolder.set(dataInfo);
     return UserAdapter.buildLoginUserResp(user, token);
   }

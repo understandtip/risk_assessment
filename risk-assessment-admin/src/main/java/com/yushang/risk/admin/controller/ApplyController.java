@@ -26,7 +26,7 @@ import java.util.List;
  */
 @RequestMapping("/capi/apply")
 @RestController
-@Api(tags = "入驻管理")
+@Api(tags = "入驻接口")
 public class ApplyController {
   @Resource private RegisterApplyService registerApplyService;
 

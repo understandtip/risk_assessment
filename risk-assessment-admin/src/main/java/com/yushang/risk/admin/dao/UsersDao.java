@@ -2,11 +2,13 @@ package com.yushang.risk.admin.dao;
 
 import cn.hutool.core.date.LocalDateTimeUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yushang.risk.admin.domain.vo.request.UserPageReq;
 import com.yushang.risk.admin.mapper.UserMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yushang.risk.common.constant.NormalConstant;
+import com.yushang.risk.domain.entity.RegisterApply;
 import com.yushang.risk.domain.entity.User;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,15 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UsersDao extends ServiceImpl<UserMapper, User> {
+  /**
+   * 根据指定字段查询用户
+   *
+   * @param value
+   * @return
+   */
+  public User getByField(SFunction<User, ?> function, String value) {
+    return this.lambdaQuery().eq(function, value).one();
+  }
 
   /**
    * 获取月增用户数

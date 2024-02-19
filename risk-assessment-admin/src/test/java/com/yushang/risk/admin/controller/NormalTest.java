@@ -301,8 +301,8 @@ public class NormalTest {
 
   @Test
   void test01() {
-    String s = "fasdfasfljas/yushang/9797";
     System.out.println(
-        "s.substring(s.lastIndexOf()) = " + s.substring(s.lastIndexOf("yushang/") + 8));
+        "\"PostmanRuntime/7.29.0\".contains(\"postman\") = "
+            + "PostmanRuntime/7.29.0".contains("Postman"));
   }
 }

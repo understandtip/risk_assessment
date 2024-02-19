@@ -41,6 +41,7 @@ public class UserAdapter {
         .build();
   }
 
+
   /**
    * 构建添加用户对象
    *

@@ -2,6 +2,8 @@ package com.yushang.risk.assessment.domain.dto;
 
 import lombok.Data;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @Author：zlp @Package：com.yushang.risk.assessment.domain.dto @Project：risk_assessment
  *
@@ -11,4 +13,5 @@ import lombok.Data;
 public class RequestDataInfo {
   private Integer uid;
   private String ip;
+  private String userName;
 }

@@ -21,7 +21,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/capi/home")
-@Api(tags = "后台首页接口")
+@Api(tags = "首页接口")
 public class HomePageController {
   @Resource private HomePageService homePageService;
 

@@ -10,6 +10,14 @@ import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
 public class RedisCommonKey {
 
   private static final String PREFIX = "common:";
+  /** 后台redis前缀 */
+  public static final String ADMIN_PREFIX = "admin:";
+  /** 前台redis前缀 */
+  public static final String FRONT_PREFIX = "risk:";
+  /** 用户token */
+  public static final String USER_REDIS_TOKEN_PREFIX = "user:token:uid_%d";
+  /** 在线用户key */
+  public static final String USER_REDIS_ONLINE = "user:online:uid_%d";
 
   /** 用户访问key */
   public static final String USER_VISIT_PROJECT_KEY = PREFIX + "user:visit";

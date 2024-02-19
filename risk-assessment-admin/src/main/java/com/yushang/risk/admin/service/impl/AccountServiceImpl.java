@@ -2,10 +2,7 @@ package com.yushang.risk.admin.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sun.xml.internal.bind.v2.TODO;
-import com.yushang.risk.admin.dao.AccountDao;
-import com.yushang.risk.admin.dao.RoleDao;
-import com.yushang.risk.admin.dao.RolePermissionDao;
-import com.yushang.risk.admin.dao.UserRoleDao;
+import com.yushang.risk.admin.dao.*;
 import com.yushang.risk.admin.domain.dto.RequestDataInfo;
 import com.yushang.risk.admin.domain.vo.response.*;
 import com.yushang.risk.admin.service.adapter.UserAdapter;
@@ -22,7 +19,9 @@ import com.yushang.risk.common.exception.BusinessException;
 import com.yushang.risk.common.exception.CommonErrorEnum;
 import com.yushang.risk.common.exception.SystemException;
 import com.yushang.risk.common.util.*;
+import com.yushang.risk.domain.entity.RegisterApply;
 import com.yushang.risk.domain.entity.Role;
+import com.yushang.risk.domain.entity.User;
 import com.yushang.risk.domain.enums.UserStatusEnum;
 import lombok.SneakyThrows;
 import org.springframework.beans.BeanUtils;
@@ -46,6 +45,8 @@ import java.util.stream.Collectors;
 @Service
 public class AccountServiceImpl implements AccountService {
 
+  @Resource private UsersDao usersDao;
+  @Resource private RegisterApplyDao registerApplyDao;
   @Resource private AccountDao accountDao;
   @Resource private UserRoleDao userRoleDao;
   @Resource private LoginService loginService;
@@ -162,9 +163,17 @@ public class AccountServiceImpl implements AccountService {
   public AccountAddResp addAccount(AccountReq accountReq) {
     if (accountReq.getRoleId() == null || accountReq.getRoleId() == 0)
       throw new BusinessException("请选择角色");
-    if (accountDao.getAccountByUsername(accountReq.getUsername()) != null) {
-      throw new BusinessException("用户名已存在");
-    }
+    // 用户名不能重复
+    User userName = usersDao.getByField(User::getUsername, accountReq.getUsername());
+    AssertUtils.isEmpty(userName, "用户名已经存在了");
+    // 用户名不能重复
+    RegisterApply registerApply =
+        registerApplyDao.getByField(RegisterApply::getUsername, accountReq.getUsername());
+    AssertUtils.isEmpty(registerApply, "用户名已经存在了");
+    // 用户名不能重复
+    Account accountName = accountDao.getByField(Account::getUsername, accountReq.getUsername());
+    AssertUtils.isEmpty(accountName, "用户名已经存在了");
+
     Account account = AccountAdapter.buildAddAccount(accountReq);
     String password = UserServiceImpl.generateRandomString();
     account.setPassword(PasswordUtils.encryptPassword(password));

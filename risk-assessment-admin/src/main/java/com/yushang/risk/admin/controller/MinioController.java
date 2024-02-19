@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 @RestController
 @RequestMapping("/capi/minio")
-@Api(tags = "minio文件上传相关接口")
+@Api(tags = "文件接口")
 public class MinioController {
   @Resource private MinioService minioService;
 

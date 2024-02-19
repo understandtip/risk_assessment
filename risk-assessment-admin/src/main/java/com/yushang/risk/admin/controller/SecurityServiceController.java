@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/capi/security")
-@Api(tags = "安全服务相关接口")
+@Api(tags = "安全服务接口")
 public class SecurityServiceController {
   @Resource private SUserRecordService sUserRecordService;
   @Resource private SUserService sUserService;

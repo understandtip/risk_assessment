@@ -1,14 +1,13 @@
 package com.yushang.risk.assessment.service.handler;
 
-import com.yushang.risk.assessment.service.handler.OptLogHandlerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 /**
  * @Author：zlp @Package：com.yushang.risk.assessment.service @Project：risk_assessment
@@ -28,9 +27,10 @@ public abstract class AbstractOptLogHandler {
   /**
    * 记录日志
    *
+   * @param request
    * @param flag true:操作成功 false:操作失败
    */
-  public abstract void log(boolean flag);
+  public abstract void log(HttpServletRequest request, boolean flag);
 
   /**
    * 获取code

@@ -2,11 +2,13 @@ package com.yushang.risk.admin.dao;
 
 import cn.hutool.core.date.LocalDateTimeUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yushang.risk.domain.entity.Account;
 import com.yushang.risk.admin.domain.vo.request.AccountPageReq;
 import com.yushang.risk.admin.mapper.AccountMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yushang.risk.domain.entity.RegisterApply;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,15 @@ import java.util.List;
  */
 @Service
 public class AccountDao extends ServiceImpl<AccountMapper, Account> {
+  /**
+   * 根据指定字段查询用户
+   *
+   * @param value
+   * @return
+   */
+  public Account getByField(SFunction<Account, ?> function, String value) {
+    return this.lambdaQuery().eq(function, value).one();
+  }
   /**
    * 根据用户名查询用户
    *

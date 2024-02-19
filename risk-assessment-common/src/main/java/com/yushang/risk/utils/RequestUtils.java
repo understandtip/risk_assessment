@@ -20,12 +20,9 @@ public class RequestUtils {
   public static HttpServletRequest getRequest() {
     ServletRequestAttributes attributes =
         (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-    HttpServletRequest request = null;
-    if (attributes != null) {
-      // 获取 HttpServletRequest 对象
-      request = attributes.getRequest();
-      return request;
-    }
+    HttpServletRequest request;
+    // 获取 HttpServletRequest 对象
+    request = attributes.getRequest();
     return request;
   }
 }

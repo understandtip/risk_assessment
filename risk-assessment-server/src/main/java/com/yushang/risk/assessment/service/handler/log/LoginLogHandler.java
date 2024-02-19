@@ -1,26 +1,32 @@
 package com.yushang.risk.assessment.service.handler.log;
 
 import cn.hutool.core.date.LocalDateTimeUtil;
+import com.yushang.risk.assessment.dao.OnlineUserDao;
 import com.yushang.risk.assessment.dao.SysLoginLogDao;
 import com.yushang.risk.assessment.dao.UserLogDao;
 import com.yushang.risk.assessment.dao.UsersDao;
+import com.yushang.risk.assessment.domain.dto.RequestDataInfo;
 import com.yushang.risk.assessment.domain.entity.UserLog;
 import com.yushang.risk.assessment.service.adapter.UserAdapter;
 import com.yushang.risk.assessment.service.handler.AbstractOptLogHandler;
 import com.yushang.risk.common.annotation.OptLog;
 import com.yushang.risk.common.config.ThreadPoolConfig;
+import com.yushang.risk.common.util.RedisUtils;
 import com.yushang.risk.common.util.RequestHolder;
+import com.yushang.risk.constant.RedisCommonKey;
+import com.yushang.risk.domain.entity.OnlineUser;
 import com.yushang.risk.domain.entity.SysLoginLog;
 import com.yushang.risk.domain.entity.User;
-import org.apache.commons.lang3.function.FailableIntBinaryOperator;
-import org.checkerframework.checker.guieffect.qual.UI;
+import com.yushang.risk.utils.RequestUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.rmi.server.UID;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author：zlp @Package：com.yushang.risk.assessment.service.handler.log @Project：risk_assessment
@@ -32,14 +38,26 @@ public class LoginLogHandler extends AbstractOptLogHandler {
   @Resource private UserLogDao userLogDao;
   @Resource private UsersDao usersDao;
   @Resource private SysLoginLogDao sysLoginLogDao;
+  @Resource private OnlineUserDao onlineUserDao;
 
   @Qualifier(ThreadPoolConfig.IP_DETAIL_EXECUTOR)
   @Resource
   private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
   @Override
-  public void log(boolean flag) {
-    Integer uid = RequestHolder.get().getUid();
+  public void log(HttpServletRequest request, boolean flag) {
+    RequestDataInfo dataInfo = RequestHolder.get();
+    Integer uid = dataInfo.getUid();
+    // 不管成功还是失败,都记录
+    // 记录到数据库sys_login_log
+    threadPoolTaskExecutor.execute(
+        () -> {
+          RequestHolder.set(dataInfo);
+          User user = new User();
+          user.setUsername(RequestHolder.get().getUserName());
+          SysLoginLog loginLog = UserAdapter.buildLoginLog(request, user, flag);
+          sysLoginLogDao.save(loginLog);
+        });
     // 登录成功才记录
     if (flag) {
       // 记录到文件
@@ -50,16 +68,13 @@ public class LoginLogHandler extends AbstractOptLogHandler {
       UserLog userLog = new UserLog();
       userLog.setUserId(uid);
       userLog.setLogType(this.getCode());
+      // 处理登录信息存到redis--在线用户
+      User user = new User();
+      user.setUsername(RequestHolder.get().getUserName());
+      OnlineUser onlineUser = UserAdapter.buildOnlineUser(request, user);
       userLogDao.save(userLog);
+      onlineUserDao.save(onlineUser);
     }
-    // 不管成功还是失败,都记录
-    // 记录到数据库sys_login_log
-    threadPoolTaskExecutor.execute(
-        () -> {
-          User user = usersDao.getById(uid);
-          SysLoginLog loginLog = UserAdapter.buildLoginLog(user, flag);
-          sysLoginLogDao.save(loginLog);
-        });
   }
 
   @Override
