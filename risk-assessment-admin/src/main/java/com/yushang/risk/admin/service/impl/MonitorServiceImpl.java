@@ -78,6 +78,7 @@ public class MonitorServiceImpl implements MonitorService {
         RedisCommonKey.getKey(
             RedisCommonKey.FRONT_PREFIX + RedisCommonKey.USER_REDIS_TOKEN_PREFIX, user.getId());
     RedisUtils.del(key);
+    onlineUserDao.removeByUserName(userName);
   }
 
   /**
@@ -92,5 +93,6 @@ public class MonitorServiceImpl implements MonitorService {
         RedisCommonKey.getKey(
             RedisCommonKey.ADMIN_PREFIX + RedisCommonKey.USER_REDIS_TOKEN_PREFIX, account.getId());
     RedisUtils.del(key);
+    onlineUserDao.removeByUserName(userName);
   }
 }

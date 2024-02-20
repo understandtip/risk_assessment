@@ -8,6 +8,7 @@ import com.yushang.risk.common.domain.vo.ApiResult;
 import com.yushang.risk.domain.entity.OnlineUser;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +25,7 @@ import javax.annotation.Resource;
 public class MonitorController {
   @Resource private MonitorService monitorService;
 
+  @PreAuthorize("@ss.hasPermi('sys:mon:getOnlineUser')")
   @PostMapping("/getOnlineList")
   @ApiOperation("查询在线用户")
   public ApiResult<PageBaseResp<OnlineUser>> getOnlineList(
@@ -32,6 +34,7 @@ public class MonitorController {
     return ApiResult.success(resp);
   }
 
+  @PreAuthorize("@ss.hasPermi('sys:mon:forceExit')")
   @DeleteMapping("/forceExit")
   @ApiOperation("强退")
   public ApiResult<Void> forceExit(

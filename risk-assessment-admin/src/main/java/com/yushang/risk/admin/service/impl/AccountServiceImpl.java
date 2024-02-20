@@ -63,6 +63,9 @@ public class AccountServiceImpl implements AccountService {
   @Override
   @OptLog(target = OptLog.Target.LOGIN)
   public LoginUserResp login(LoginReq loginReq, HttpServletRequest request) {
+    RequestDataInfo info = new RequestDataInfo();
+    info.setUserName(loginReq.getUserName());
+    RequestHolder.set(info);
     // 校验验证码
     this.verifyCode(loginReq.getCode(), IpUtils.getClientIpAddress(request));
     // 校验账户基本信息
@@ -86,6 +89,8 @@ public class AccountServiceImpl implements AccountService {
     String token = loginService.login(account.getId());
     RequestDataInfo dataInfo = new RequestDataInfo();
     dataInfo.setUid(account.getId());
+    dataInfo.setUserName(loginReq.getUserName());
+    dataInfo.setIp(IpUtils.getClientIpAddress(request));
     RequestHolder.set(dataInfo);
     // 设置角色信息
     Role role = userRoleDao.getRoleByUserId(account.getId());

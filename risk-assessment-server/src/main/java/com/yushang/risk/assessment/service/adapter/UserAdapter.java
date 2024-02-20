@@ -3,6 +3,7 @@ package com.yushang.risk.assessment.service.adapter;
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
+import com.yushang.risk.assessment.domain.dto.RequestDataDto;
 import com.yushang.risk.assessment.domain.entity.IpDetail;
 import com.yushang.risk.assessment.domain.entity.IpResult;
 import com.yushang.risk.common.util.IpUtils;
@@ -13,12 +14,8 @@ import com.yushang.risk.domain.entity.User;
 import com.yushang.risk.assessment.domain.vo.request.RegisterReq;
 import com.yushang.risk.assessment.domain.vo.response.LoginUserResp;
 import com.yushang.risk.domain.enums.LoginLogTypeEnum;
-import com.yushang.risk.utils.RequestUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.velocity.runtime.parser.node.ASTElseIfStatement;
 
-import javax.servlet.http.HttpServletRequest;
-import java.awt.*;
 import java.time.LocalDateTime;
 
 /**
@@ -69,22 +66,22 @@ public class UserAdapter {
   /**
    * 构建前台系统登录时日志对象
    *
-   * @param request
+   * @param requestDataDto
    * @param user
    * @param flag
    * @return
    */
-  public static SysLoginLog buildLoginLog(HttpServletRequest request, User user, boolean flag) {
+  public static SysLoginLog buildLoginLog(RequestDataDto requestDataDto, User user, boolean flag) {
     // 操作系统
-    String operatingSystem = getOperatingSystem(request);
+    String operatingSystem = getOperatingSystem(requestDataDto);
     // 浏览器
-    String browserName = getBrowserName(request);
+    String browserName = getBrowserName(requestDataDto);
     // 处理ip
     String ip;
     if (StringUtils.isNotBlank(RequestHolder.get().getIp())) {
       ip = RequestHolder.get().getIp();
     } else {
-      ip = IpUtils.getClientIpAddress(request);
+      ip = requestDataDto.getIp();
     }
     String add = null;
     for (int i = 0; i < 3; i++) {
@@ -137,11 +134,11 @@ public class UserAdapter {
   /**
    * 获取浏览器名称
    *
-   * @param request
+   * @param requestDataDto
    * @return
    */
-  public static String getBrowserName(HttpServletRequest request) {
-    String userAgent = request.getHeader("User-Agent");
+  public static String getBrowserName(RequestDataDto requestDataDto) {
+    String userAgent = requestDataDto.getHeader("User-Agent");
 
     if (userAgent != null) {
       if (userAgent.contains("Chrome")) {
@@ -168,11 +165,11 @@ public class UserAdapter {
   /**
    * 获取操作系统名称
    *
-   * @param request
+   * @param requestDataDto
    * @return
    */
-  public static String getOperatingSystem(HttpServletRequest request) {
-    String userAgent = request.getHeader("User-Agent");
+  public static String getOperatingSystem(RequestDataDto requestDataDto) {
+    String userAgent = requestDataDto.getHeader("User-Agent");
 
     if (userAgent != null) {
       if (userAgent.contains("Windows")) {
@@ -198,18 +195,18 @@ public class UserAdapter {
   /**
    * 构建登录成功后的在线用户对象
    *
-   * @param request
+   * @param requestDataDto
    * @param user
    * @return
    */
-  public static OnlineUser buildOnlineUser(HttpServletRequest request, User user) {
+  public static OnlineUser buildOnlineUser(RequestDataDto requestDataDto, User user) {
     // 浏览器
-    String browserName = getBrowserName(request);
+    String browserName = getBrowserName(requestDataDto);
     // 操作系统
-    String operatingSystem = getOperatingSystem(request);
-    String sessionId = request.getSession().getId();
+    String operatingSystem = getOperatingSystem(requestDataDto);
+    String sessionId = requestDataDto.getSession().getId();
     // 处理ip
-    String ip = IpUtils.getClientIpAddress(request);
+    String ip = requestDataDto.getIp();
     String add = null;
     for (int i = 0; i < 3; i++) {
       IpDetail ipDetail = getIpDetailOrNull(ip);
@@ -225,6 +222,7 @@ public class UserAdapter {
         break;
       }
     }
+    if (StringUtils.isEmpty(add)) add = "未知";
     return OnlineUser.builder()
         .sessionId(sessionId)
         .userName(user.getUsername())

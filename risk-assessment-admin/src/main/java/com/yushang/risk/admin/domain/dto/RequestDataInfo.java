@@ -11,4 +11,5 @@ import lombok.Data;
 public class RequestDataInfo {
   private Integer uid;
   private String ip;
+  private String userName;
 }

@@ -4,11 +4,13 @@ import com.yushang.risk.admin.dao.AccountDao;
 import com.yushang.risk.admin.dao.OnlineUserDao;
 import com.yushang.risk.admin.dao.SysLoginLogDao;
 import com.yushang.risk.admin.dao.UsersDao;
+import com.yushang.risk.admin.domain.dto.RequestDataDto;
 import com.yushang.risk.admin.domain.dto.RequestDataInfo;
 import com.yushang.risk.admin.service.adapter.AccountAdapter;
 import com.yushang.risk.admin.service.adapter.UserAdapter;
 import com.yushang.risk.common.annotation.OptLog;
 import com.yushang.risk.common.config.ThreadPoolConfig;
+import com.yushang.risk.common.util.IpUtils;
 import com.yushang.risk.common.util.RedisUtils;
 import com.yushang.risk.common.util.RequestHolder;
 import com.yushang.risk.constant.RedisCommonKey;
@@ -27,6 +29,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextListener;
 
 import javax.annotation.Resource;
+import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import java.util.concurrent.TimeUnit;
@@ -52,11 +55,19 @@ public class LogAspect {
       flag = true;
     } finally {
       RequestDataInfo dataInfo = RequestHolder.get();
-      Account user = accountDao.getById(dataInfo.getUid());
-      boolean finalFlag = flag;
       HttpServletRequest request = RequestUtils.getRequest();
-      // 将在线用户信息存
-      OnlineUser onlineUser = AccountAdapter.buildOnlineUser(request, user);
+      RequestDataDto requestDataDto = new RequestDataDto();
+      requestDataDto.setHeaders(request);
+      requestDataDto.setSession(request.getSession());
+      requestDataDto.setIp(IpUtils.getClientIpAddress(request));
+      Account user = new Account();
+      if (flag) {
+        user = accountDao.getById(dataInfo.getUid());
+      } else {
+        user.setUsername(RequestHolder.get().getUserName());
+      }
+      boolean finalFlag = flag;
+      Account finalUser = user;
       threadPoolTaskExecutor.execute(
           () -> {
             RequestHolder.set(dataInfo);
@@ -64,14 +75,18 @@ public class LogAspect {
             OptLog.Target target = optLog.target();
             switch (target) {
               case LOGIN:
+                // 将在线用户信息存
+                OnlineUser onlineUser = AccountAdapter.buildOnlineUser(requestDataDto, finalUser);
                 // 记录登录日志
-                SysLoginLog loginLog = AccountAdapter.buildLoginLog(request, user, finalFlag);
+                SysLoginLog loginLog =
+                    AccountAdapter.buildLoginLog(requestDataDto, finalUser, finalFlag);
+                onlineUserDao.removeByUserName(finalUser.getUsername());
                 sysLoginLogDao.save(loginLog);
                 onlineUserDao.save(onlineUser);
                 break;
               case EXIT:
                 // 清除在线用户信息
-                onlineUserDao.removeByUserName(user.getId());
+                onlineUserDao.removeByUserName(finalUser.getId());
                 break;
               default:
                 log.error("日志参数异常");

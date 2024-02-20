@@ -5,12 +5,14 @@ import com.yushang.risk.assessment.dao.OnlineUserDao;
 import com.yushang.risk.assessment.dao.SysLoginLogDao;
 import com.yushang.risk.assessment.dao.UserLogDao;
 import com.yushang.risk.assessment.dao.UsersDao;
+import com.yushang.risk.assessment.domain.dto.RequestDataDto;
 import com.yushang.risk.assessment.domain.dto.RequestDataInfo;
 import com.yushang.risk.assessment.domain.entity.UserLog;
 import com.yushang.risk.assessment.service.adapter.UserAdapter;
 import com.yushang.risk.assessment.service.handler.AbstractOptLogHandler;
 import com.yushang.risk.common.annotation.OptLog;
 import com.yushang.risk.common.config.ThreadPoolConfig;
+import com.yushang.risk.common.util.IpUtils;
 import com.yushang.risk.common.util.RedisUtils;
 import com.yushang.risk.common.util.RequestHolder;
 import com.yushang.risk.constant.RedisCommonKey;
@@ -48,6 +50,10 @@ public class LoginLogHandler extends AbstractOptLogHandler {
   public void log(HttpServletRequest request, boolean flag) {
     RequestDataInfo dataInfo = RequestHolder.get();
     Integer uid = dataInfo.getUid();
+    RequestDataDto requestDataDto = new RequestDataDto();
+    requestDataDto.setHeaders(request);
+    requestDataDto.setSession(request.getSession());
+    requestDataDto.setIp(IpUtils.getClientIpAddress(request));
     // 不管成功还是失败,都记录
     // 记录到数据库sys_login_log
     threadPoolTaskExecutor.execute(
@@ -55,11 +61,12 @@ public class LoginLogHandler extends AbstractOptLogHandler {
           RequestHolder.set(dataInfo);
           User user = new User();
           user.setUsername(RequestHolder.get().getUserName());
-          SysLoginLog loginLog = UserAdapter.buildLoginLog(request, user, flag);
+          SysLoginLog loginLog = UserAdapter.buildLoginLog(requestDataDto, user, flag);
           sysLoginLogDao.save(loginLog);
         });
     // 登录成功才记录
     if (flag) {
+      onlineUserDao.removeByUserName(uid);
       // 记录到文件
       StringBuilder str = new StringBuilder();
       str.append(LocalDateTimeUtil.now()).append("----------用户ID：").append(uid).append("登录成功");
@@ -71,7 +78,7 @@ public class LoginLogHandler extends AbstractOptLogHandler {
       // 处理登录信息存到redis--在线用户
       User user = new User();
       user.setUsername(RequestHolder.get().getUserName());
-      OnlineUser onlineUser = UserAdapter.buildOnlineUser(request, user);
+      OnlineUser onlineUser = UserAdapter.buildOnlineUser(requestDataDto, user);
       userLogDao.save(userLog);
       onlineUserDao.save(onlineUser);
     }

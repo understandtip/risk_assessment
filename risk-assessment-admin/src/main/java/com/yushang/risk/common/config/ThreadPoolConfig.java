@@ -70,11 +70,11 @@ public class ThreadPoolConfig implements AsyncConfigurer {
     executor.setWaitForTasksToCompleteOnShutdown(true);
     executor.setCorePoolSize(1);
     executor.setMaxPoolSize(1);
-    executor.setQueueCapacity(50);
+    executor.setQueueCapacity(100);
     // 设置创建线程的名称前缀,方便排查问题
     executor.setThreadNamePrefix("ip-detail-executor-");
     // 满了丢弃
-    executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());
+    executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardOldestPolicy());
     executor.setThreadFactory(new MyThreadFactory(executor));
     executor.initialize();
     return executor;

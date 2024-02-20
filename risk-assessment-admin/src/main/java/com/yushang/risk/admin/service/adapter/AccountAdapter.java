@@ -3,6 +3,7 @@ package com.yushang.risk.admin.service.adapter;
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
+import com.yushang.risk.admin.domain.dto.RequestDataDto;
 import com.yushang.risk.admin.domain.entity.IpDetail;
 import com.yushang.risk.admin.domain.entity.IpResult;
 import com.yushang.risk.common.util.IpUtils;
@@ -11,11 +12,9 @@ import com.yushang.risk.admin.domain.vo.request.AccountReq;
 import com.yushang.risk.admin.domain.vo.response.LoginUserResp;
 import com.yushang.risk.domain.entity.OnlineUser;
 import com.yushang.risk.domain.entity.SysLoginLog;
-import com.yushang.risk.domain.entity.User;
 import com.yushang.risk.domain.enums.LoginLogTypeEnum;
-import com.yushang.risk.utils.RequestUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -64,33 +63,39 @@ public class AccountAdapter {
   /**
    * 构建前台系统登录时日志对象
    *
-   * @param request
+   * @param requestDataDto
    * @param user
    * @param flag
    * @return
    */
-  public static SysLoginLog buildLoginLog(HttpServletRequest request, Account user, boolean flag) {
+  public static SysLoginLog buildLoginLog(
+      RequestDataDto requestDataDto, Account user, boolean flag) {
     // 处理ip
-    String ip = IpUtils.getClientIpAddress(request);
+    String ip = requestDataDto.getIp();
     String add = null;
-    for (int i = 0; i < 3; i++) {
-      IpDetail ipDetail = getIpDetailOrNull(ip);
-      if (ipDetail != null) {
-        add =
-            ipDetail.getCountry()
-                + " "
-                + ipDetail.getRegion()
-                + " "
-                + ipDetail.getCity()
-                + " "
-                + ipDetail.getIsp();
-        break;
+    if (StringUtils.isNotBlank(ip)) {
+      for (int i = 0; i < 3; i++) {
+        IpDetail ipDetail = getIpDetailOrNull(ip);
+        if (ipDetail != null) {
+          add =
+              ipDetail.getCountry()
+                  + " "
+                  + ipDetail.getRegion()
+                  + " "
+                  + ipDetail.getCity()
+                  + " "
+                  + ipDetail.getIsp();
+          break;
+        }
       }
+    } else {
+      ip = "未知";
+      add = "未知";
     }
     // 浏览器
-    String browserName = getBrowserName(request);
+    String browserName = getBrowserName(requestDataDto);
     // 操作系统
-    String operatingSystem = getOperatingSystem(request);
+    String operatingSystem = getOperatingSystem(requestDataDto);
     return SysLoginLog.builder()
         .username(user.getUsername())
         .ip(ip)
@@ -104,18 +109,18 @@ public class AccountAdapter {
   /**
    * 构建登录成功后的在线用户对象
    *
-   * @param request
+   * @param requestDataDto
    * @param user
    * @return
    */
-  public static OnlineUser buildOnlineUser(HttpServletRequest request, Account user) {
+  public static OnlineUser buildOnlineUser(RequestDataDto requestDataDto, Account user) {
     // 浏览器
-    String browserName = getBrowserName(request);
+    String browserName = getBrowserName(requestDataDto);
     // 操作系统
-    String operatingSystem = getOperatingSystem(request);
-    String sessionId = request.getSession().getId();
+    String operatingSystem = getOperatingSystem(requestDataDto);
+    String sessionId = requestDataDto.getSession().getId();
     // 处理ip
-    String ip = IpUtils.getClientIpAddress(request);
+    String ip = requestDataDto.getIp();
     String add = null;
     for (int i = 0; i < 3; i++) {
       IpDetail ipDetail = getIpDetailOrNull(ip);
@@ -168,8 +173,8 @@ public class AccountAdapter {
    * @param request
    * @return
    */
-  public static String getBrowserName(HttpServletRequest request) {
-    String userAgent = request.getHeader("User-Agent");
+  public static String getBrowserName(RequestDataDto request) {
+    String userAgent = request.getHeader("user-agent");
 
     if (userAgent != null) {
       if (userAgent.contains("Chrome")) {
@@ -196,11 +201,11 @@ public class AccountAdapter {
   /**
    * 获取操作系统名称
    *
-   * @param request
+   * @param requestDataDto
    * @return
    */
-  public static String getOperatingSystem(HttpServletRequest request) {
-    String userAgent = request.getHeader("User-Agent");
+  public static String getOperatingSystem(RequestDataDto requestDataDto) {
+    String userAgent = requestDataDto.getHeader("user-agent");
 
     if (userAgent != null) {
       if (userAgent.contains("Windows")) {

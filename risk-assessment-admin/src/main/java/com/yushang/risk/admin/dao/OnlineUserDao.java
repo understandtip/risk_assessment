@@ -52,4 +52,13 @@ public class OnlineUserDao extends ServiceImpl<OnlineUserMapper, OnlineUser> {
     wrapper.orderByDesc(OnlineUser::getCreatedTime);
     return this.page(page, wrapper);
   }
+
+  /**
+   * 根据用户名删除记录
+   *
+   * @param userName
+   */
+  public void removeByUserName(String userName) {
+    this.lambdaUpdate().eq(OnlineUser::getUserName, userName).remove();
+  }
 }
