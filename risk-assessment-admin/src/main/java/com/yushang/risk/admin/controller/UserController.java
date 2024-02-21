@@ -86,4 +86,13 @@ public class UserController {
     userService.updateUserStatus(userStaReq);
     return ApiResult.success();
   }
+
+  @PutMapping("/chPass")
+  @ApiOperation("修改密码")
+  @PreAuthorize("@ss.hasPermi('sys:user:chPass')")
+  public ApiResult<Void> chPass(
+      @RequestBody @Validated UpdatePassReq passReq, HttpServletRequest request) {
+    userService.chPass(passReq, request);
+    return ApiResult.success();
+  }
 }

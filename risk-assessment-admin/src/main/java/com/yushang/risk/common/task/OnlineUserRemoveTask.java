@@ -17,7 +17,8 @@ import javax.annotation.Resource;
 public class OnlineUserRemoveTask {
   @Resource private OnlineUserDao onlineUserDao;
 
-  @Scheduled(cron = "0 */3 * * *")
+  // @Scheduled(cron = "0 0 0/3 * * ?")
+  @Scheduled(cron = "0 0 * * * ?")
   public void removeOnlineUser() {
     log.info("清除在线用户记录定时任务执行");
     onlineUserDao.removeOnlineUser();

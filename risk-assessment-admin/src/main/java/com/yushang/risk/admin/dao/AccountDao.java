@@ -9,6 +9,7 @@ import com.yushang.risk.admin.domain.vo.request.AccountPageReq;
 import com.yushang.risk.admin.mapper.AccountMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yushang.risk.domain.entity.RegisterApply;
+import com.yushang.risk.domain.entity.User;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -91,5 +92,14 @@ public class AccountDao extends ServiceImpl<AccountMapper, Account> {
    */
   public List<Account> getAccListByName(String applyName) {
     return this.lambdaQuery().like(Account::getRealName, applyName).list();
+  }
+  /**
+   * 修改用户密码
+   *
+   * @param id
+   * @param newPass
+   */
+  public boolean updatePass(Integer id, String newPass) {
+    return this.lambdaUpdate().eq(Account::getId, id).set(Account::getPassword, newPass).update();
   }
 }

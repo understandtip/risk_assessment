@@ -52,4 +52,11 @@ public interface UserService {
    * @param userStaReq
    */
   void updateUserStatus(UserStaReq userStaReq);
+
+  /**
+   * 修改密码
+   * @param passReq
+   * @param request
+   */
+    void chPass(UpdatePassReq passReq, HttpServletRequest request);
 }

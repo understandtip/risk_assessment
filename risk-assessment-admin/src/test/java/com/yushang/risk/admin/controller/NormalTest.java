@@ -3,6 +3,7 @@ package com.yushang.risk.admin.controller;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.yushang.risk.admin.domain.dto.Server;
 import org.junit.jupiter.api.Test;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
@@ -300,9 +301,9 @@ public class NormalTest {
   }
 
   @Test
-  void test01() {
-    System.out.println(
-        "\"PostmanRuntime/7.29.0\".contains(\"postman\") = "
-            + "PostmanRuntime/7.29.0".contains("Postman"));
+  void test01() throws Exception {
+    Server server = new Server();
+    server.copyTo();
+    System.out.println("server = " + server);
   }
 }

@@ -1,5 +1,6 @@
 package com.yushang.risk.admin.controller;
 
+import com.yushang.risk.admin.domain.dto.Server;
 import com.yushang.risk.admin.domain.vo.request.OnlineUserPageReq;
 import com.yushang.risk.admin.domain.vo.request.PageBaseReq;
 import com.yushang.risk.admin.domain.vo.response.PageBaseResp;
@@ -41,5 +42,14 @@ public class MonitorController {
       @RequestParam String userName, @RequestParam String platformType) {
     monitorService.forceExit(userName, platformType);
     return ApiResult.success();
+  }
+
+  @PreAuthorize("@ss.hasPermi('sys:mon:info')")
+  @GetMapping("/getSysInfo")
+  @ApiOperation("系统信息")
+  public ApiResult<Server> getSysInfo() throws Exception {
+    Server server = new Server();
+    server.copyTo();
+    return ApiResult.success(server);
   }
 }

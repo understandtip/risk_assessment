@@ -168,6 +168,37 @@ public class UserServiceImpl implements UserService {
             .build());
   }
 
+  /**
+   * 修改密码
+   *
+   * @param passReq
+   * @param request
+   */
+  @Override
+  public void chPass(UpdatePassReq passReq, HttpServletRequest request) {
+    // 与前端协调密码的加密处理
+    // 校验验证码
+    this.verifyCode(passReq.getCode(), IpUtils.getClientIpAddress(request));
+    // 修改密码
+    Account user = accountDao.getById(RequestHolder.get().getUid());
+    String password;
+    try {
+      password = PasswordUtils.decryptPassword(user.getPassword());
+    } catch (Exception e) {
+      throw new SystemException(CommonErrorEnum.SYSTEM_ERROR.getErrorCode(), "密码解密异常");
+    }
+    AssertUtils.equal(AesUtil.decryptPassword(passReq.getPassword()), password, "密码错误");
+    String newPass;
+    try {
+      newPass = PasswordUtils.encryptPassword(AesUtil.decryptPassword(passReq.getNewPassword()));
+    } catch (Exception e) {
+      throw new SystemException(CommonErrorEnum.SYSTEM_ERROR.getErrorCode(), "新密码加密异常");
+    }
+    AssertUtils.isTrue(accountDao.updatePass(user.getId(), newPass), "修改密码失败");
+    // 清除token
+    RedisUtils.del(RedisKey.getKey(RedisKey.USER_REDIS_TOKEN_PREFIX, user.getId()));
+  }
+
   private static final String CHARACTERS =
       "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   /**
@@ -186,5 +217,17 @@ public class UserServiceImpl implements UserService {
     }
 
     return randomString.toString();
+  }
+  /**
+   * 校验验证码
+   *
+   * @param code
+   * @param ip
+   * @return
+   */
+  private void verifyCode(String code, String ip) {
+    String s = RedisUtils.getStr(RedisKey.getKey(RedisKey.USER_REDIS_CODE_PREFIX, ip));
+    AssertUtils.isNotEmpty(s, "验证码已过期，请重新输入。");
+    AssertUtils.equal(code.toLowerCase(Locale.ROOT), s.toLowerCase(Locale.ROOT), "验证码错误，请重新输入。");
   }
 }
