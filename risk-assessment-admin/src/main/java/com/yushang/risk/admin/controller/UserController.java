@@ -1,10 +1,10 @@
 package com.yushang.risk.admin.controller;
 
 import com.yushang.risk.admin.domain.vo.request.*;
-import com.yushang.risk.admin.domain.vo.response.LoginUserResp;
+import com.yushang.risk.admin.domain.vo.response.AccountInfoResp;
 import com.yushang.risk.admin.domain.vo.response.PageBaseResp;
 import com.yushang.risk.admin.domain.vo.response.UserAddResp;
-import com.yushang.risk.admin.domain.vo.response.UserResp;
+import com.yushang.risk.admin.domain.vo.response.UserPageResp;
 import com.yushang.risk.admin.service.UserService;
 import com.yushang.risk.common.domain.vo.ApiResult;
 import com.yushang.risk.common.util.IpUtils;
@@ -57,9 +57,9 @@ public class UserController {
   @PostMapping("/getUserList")
   @ApiOperation("获取用户列表")
   @PreAuthorize("@ss.hasPermi('sys:user:get')")
-  public ApiResult<PageBaseResp<UserResp>> getUserList(
+  public ApiResult<PageBaseResp<UserPageResp>> getUserList(
       @RequestBody PageBaseReq<UserPageReq> userPageReq) {
-    PageBaseResp<UserResp> resp = userService.getUserList(userPageReq);
+    PageBaseResp<UserPageResp> resp = userService.getUserList(userPageReq);
     return ApiResult.success(resp);
   }
 

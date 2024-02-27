@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * @Author：zlp @Package：com.yushang.risk @Project：risk_assessment
@@ -11,6 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @name：RiskAssessmentApplication @Date：2023/12/18 14:18 @Filename：RiskAssessmentApplication
  */
 @SpringBootApplication
+@EnableScheduling
 @MapperScan("com.yushang.risk.admin.**.mapper")
 @Slf4j
 public class RiskAdminApplication {

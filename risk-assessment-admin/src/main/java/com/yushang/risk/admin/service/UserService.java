@@ -1,10 +1,9 @@
 package com.yushang.risk.admin.service;
 
 import com.yushang.risk.admin.domain.vo.request.*;
-import com.yushang.risk.admin.domain.vo.response.LoginUserResp;
 import com.yushang.risk.admin.domain.vo.response.PageBaseResp;
 import com.yushang.risk.admin.domain.vo.response.UserAddResp;
-import com.yushang.risk.admin.domain.vo.response.UserResp;
+import com.yushang.risk.admin.domain.vo.response.UserPageResp;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,7 +28,7 @@ public interface UserService {
    * @param userPageReq
    * @return
    */
-  PageBaseResp<UserResp> getUserList(PageBaseReq<UserPageReq> userPageReq);
+  PageBaseResp<UserPageResp> getUserList(PageBaseReq<UserPageReq> userPageReq);
 
   /**
    * 新增用户
@@ -55,8 +54,9 @@ public interface UserService {
 
   /**
    * 修改密码
+   *
    * @param passReq
    * @param request
    */
-    void chPass(UpdatePassReq passReq, HttpServletRequest request);
+  void chPass(UpdatePassReq passReq, HttpServletRequest request);
 }

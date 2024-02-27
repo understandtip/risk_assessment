@@ -93,4 +93,18 @@ public class AccountController {
     accountService.grantRoleToAcc(accountRoleReq);
     return ApiResult.success();
   }
+
+  @GetMapping("/accInfo")
+  @ApiOperation("个人中心")
+  public ApiResult<AccountInfoResp> accInfo() {
+    AccountInfoResp resp = accountService.accInfo();
+    return ApiResult.success(resp);
+  }
+
+  @PutMapping("/chInfo")
+  @ApiOperation("修改信息")
+  public ApiResult<Void> chInfo(@RequestBody @Validated AccountInfoReq accountInfoReq) {
+    accountService.chInfo(accountInfoReq);
+    return ApiResult.success();
+  }
 }

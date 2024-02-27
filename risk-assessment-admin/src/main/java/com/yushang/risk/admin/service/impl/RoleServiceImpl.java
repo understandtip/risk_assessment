@@ -9,6 +9,7 @@ import com.yushang.risk.admin.domain.vo.response.RolePerResp;
 import com.yushang.risk.admin.domain.vo.response.RoleResp;
 import com.yushang.risk.admin.service.RoleService;
 import com.yushang.risk.common.exception.BusinessException;
+import com.yushang.risk.common.util.AssertUtils;
 import com.yushang.risk.domain.entity.Role;
 import com.yushang.risk.domain.entity.RolePermission;
 import org.springframework.beans.BeanUtils;
@@ -65,6 +66,8 @@ public class RoleServiceImpl implements RoleService {
    */
   @Override
   public void upRoleInfo(RoleReq roleReq) {
+    Role byField = roleDao.getByField(Role::getName, roleReq.getName());
+    AssertUtils.isEmpty(byField, "角色名已存在");
     Role role = new Role();
     BeanUtils.copyProperties(roleReq, role);
     roleDao.updateById(role);

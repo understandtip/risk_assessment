@@ -245,6 +245,33 @@ public class AccountServiceImpl implements AccountService {
   }
 
   /**
+   * 个人中心
+   *
+   * @return
+   */
+  @Override
+  public AccountInfoResp accInfo() {
+    Integer accId = RequestHolder.get().getUid();
+    AccountInfoResp resp = new AccountInfoResp();
+    BeanUtils.copyProperties(accountDao.getById(accId), resp);
+    return resp;
+  }
+
+  /**
+   * 修改个人信息
+   *
+   * @param accountInfoReq
+   */
+  @Override
+  public void chInfo(AccountInfoReq accountInfoReq) {
+    Integer accId = RequestHolder.get().getUid();
+    Account account = new Account();
+    BeanUtils.copyProperties(accountInfoReq, account);
+    account.setId(accId);
+    accountDao.updateById(account);
+  }
+
+  /**
    * 校验验证码
    *
    * @param code

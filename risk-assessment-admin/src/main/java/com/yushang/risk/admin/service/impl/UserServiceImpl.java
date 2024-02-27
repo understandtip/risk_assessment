@@ -3,17 +3,11 @@ package com.yushang.risk.admin.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yushang.risk.admin.dao.AccountDao;
 import com.yushang.risk.admin.dao.RegisterApplyDao;
-import com.yushang.risk.admin.dao.UserRoleDao;
 import com.yushang.risk.admin.dao.UsersDao;
-import com.yushang.risk.admin.domain.dto.RequestDataInfo;
-import com.yushang.risk.admin.domain.entity.UserRole;
-import com.yushang.risk.admin.domain.enums.UserRoleEnum;
 import com.yushang.risk.admin.domain.vo.request.*;
-import com.yushang.risk.admin.domain.vo.response.LoginUserResp;
 import com.yushang.risk.admin.domain.vo.response.PageBaseResp;
 import com.yushang.risk.admin.domain.vo.response.UserAddResp;
-import com.yushang.risk.admin.domain.vo.response.UserResp;
-import com.yushang.risk.admin.service.LoginService;
+import com.yushang.risk.admin.domain.vo.response.UserPageResp;
 import com.yushang.risk.admin.service.UserService;
 import com.yushang.risk.admin.service.adapter.UserAdapter;
 import com.yushang.risk.common.constant.RedisKey;
@@ -93,14 +87,14 @@ public class UserServiceImpl implements UserService {
    * @return
    */
   @Override
-  public PageBaseResp<UserResp> getUserList(PageBaseReq<UserPageReq> userPageReq) {
+  public PageBaseResp<UserPageResp> getUserList(PageBaseReq<UserPageReq> userPageReq) {
     Page<User> page = userPageReq.plusPage();
     Page<User> userPage = usersDao.getUserListByPage(page, userPageReq.getData());
-    List<UserResp> userResps =
+    List<UserPageResp> userResps =
         userPage.getRecords().stream()
             .map(
                 user -> {
-                  UserResp resp = new UserResp();
+                  UserPageResp resp = new UserPageResp();
                   BeanUtils.copyProperties(user, resp);
                   return resp;
                 })

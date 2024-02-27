@@ -1,9 +1,5 @@
 package com.yushang.risk.admin.domain.vo.response;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -15,7 +11,7 @@ import java.time.LocalDateTime;
  * @name：UserResp @Date：2024/1/23 14:15 @Filename：UserResp
  */
 @Data
-public class UserResp {
+public class UserPageResp {
   /** 主键id */
   @ApiModelProperty(notes = "主键id")
   private Integer id;

@@ -74,4 +74,18 @@ public interface AccountService {
    * @return
    */
   RoleResp getAccRole(Integer accId);
+
+  /**
+   * 个人中心
+   *
+   * @return
+   */
+  AccountInfoResp accInfo();
+
+  /**
+   * 修改个人信息
+   *
+   * @param accountInfoReq
+   */
+  void chInfo(AccountInfoReq accountInfoReq);
 }
