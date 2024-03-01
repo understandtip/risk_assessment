@@ -6,6 +6,8 @@ import com.yushang.risk.assessment.service.ICConfrontWayService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * 对抗方式 服务实现类
  *
@@ -13,4 +15,8 @@ import org.springframework.stereotype.Service;
  * @since 2024-02-23
  */
 @Service
-public class CConfrontWayDao extends ServiceImpl<CConfrontWayMapper, CConfrontWay> {}
+public class CConfrontWayDao extends ServiceImpl<CConfrontWayMapper, CConfrontWay> {
+  public List<CConfrontWay> listBySort() {
+    return this.lambdaQuery().orderByAsc(CConfrontWay::getSort).list();
+  }
+}

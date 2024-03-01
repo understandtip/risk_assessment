@@ -1,5 +1,6 @@
 package com.yushang.risk.assessment.domain.vo.response;
 
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.yushang.risk.assessment.domain.entity.CConfrontWay;
 import com.yushang.risk.assessment.domain.entity.CElement;
 import com.yushang.risk.assessment.domain.entity.CElementType;
@@ -19,14 +20,15 @@ public class ConfrontInfoResp {
   private List<ElementTypeResp> elementTypeRespList;
 
   @Data
-  static class ElementTypeResp {
+  public static class ElementTypeResp {
     private CElementType cElementType;
     private List<ElementTypeMethodResp> elementTypeMethodResp;
   }
 
   @Data
-  static class ElementTypeMethodResp {
+  public static class ElementTypeMethodResp {
     private CElementTypeMethod cElementTypeMethod;
     private List<CConfrontWay> cConfrontWayList;
+    private List<ElementTypeMethodResp> enHanceTypeMethodList;
   }
 }

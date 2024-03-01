@@ -39,6 +39,8 @@ public class CElementTypeMethod implements Serializable, Cloneable {
   @ApiModelProperty(notes = "逻辑删除 1:删除   0:未删除")
   private String isDeleted;
 
+  private String isEnhance;
+  private Integer pid;
   /** 创建时间 */
   @TableField("created_time")
   private LocalDateTime createdTime;

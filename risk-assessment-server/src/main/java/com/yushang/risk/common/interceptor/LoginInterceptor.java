@@ -34,7 +34,7 @@ public class LoginInterceptor implements HandlerInterceptor {
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
       throws IOException {
-    if (isPublicUri(request.getServletPath())) {
+    if (isPublicUri(request)) {
       return true;
     }
     Integer uid = this.parseToken(request);
@@ -71,13 +71,16 @@ public class LoginInterceptor implements HandlerInterceptor {
   /**
    * 是否是公开资源
    *
-   * @param pathInfo
+   * @param request
    * @return
    */
-  private boolean isPublicUri(String pathInfo) {
+  private boolean isPublicUri(HttpServletRequest request) {
+    String pathInfo = request.getServletPath();
     return pathInfo.contains("getSecurityModel")
         || pathInfo.contains("getModelDetail")
-        || pathInfo.contains("submitBugReport");
+        || pathInfo.contains("submitBugReport")
+        || (pathInfo.contains("getConfrontInfo")
+            && "false".equals(request.getParameter("isEnhance")));
   }
 
   /**

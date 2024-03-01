@@ -6,6 +6,8 @@ import com.yushang.risk.assessment.service.ICElementService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * 因素 服务实现类
  *
@@ -13,4 +15,9 @@ import org.springframework.stereotype.Service;
  * @since 2024-02-23
  */
 @Service
-public class CElementDao extends ServiceImpl<CElementMapper, CElement> {}
+public class CElementDao extends ServiceImpl<CElementMapper, CElement> {
+    public List<CElement> listBySort() {
+        return this.lambdaQuery().orderByAsc(CElement::getSort).list();
+    }
+
+}
