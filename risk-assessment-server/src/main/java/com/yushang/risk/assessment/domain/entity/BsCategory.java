@@ -13,26 +13,25 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * 工具规避关系
+ * 种类
  *
  * @author zlp
- * @since 2024-03-01
+ * @since 2024-03-05
  */
 @Data
-@ApiModel(value = "工具规避关系", description = "")
-@TableName("bs_attack_avoid")
-public class BsAttackAvoid implements Serializable, Cloneable {
+@ApiModel(value = "种类", description = "")
+@TableName("bs_category")
+public class BsCategory implements Serializable, Cloneable {
   /** 主键id */
-  @ApiModelProperty(value = "主键id")
+  @ApiModelProperty(value = "主键id", notes = "")
   @TableId
   private Integer id;
-  /** 攻击工具id */
-  @ApiModelProperty(value = "攻击工具id")
-  private Integer attackId;
-  /** 规避id */
-  @ApiModelProperty(value = "规避id")
-  private Integer avoidId;
-
+  /** 分类名称 */
+  @ApiModelProperty(value = "分类名称", notes = "")
+  private String name;
+  /** 排序 */
+  @ApiModelProperty(value = "排序", notes = "")
+  private Integer sort;
   /** 逻辑删除;1:删除 0:未删除 */
   @ApiModelProperty(value = "逻辑删除", notes = "1:删除   0:未删除")
   private String isDeleted;

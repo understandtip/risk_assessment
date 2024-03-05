@@ -2,9 +2,7 @@ package com.yushang.risk.common.config;
 
 import com.yushang.risk.common.interceptor.LoginInterceptor;
 import com.yushang.risk.common.interceptor.VisitInterceptor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 

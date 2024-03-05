@@ -6,31 +6,28 @@ import com.yushang.risk.common.exception.SystemException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import org.openxmlformats.schemas.drawingml.x2006.chart.STGapAmount;
-import org.springframework.stereotype.Service;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * AES对称加密工具类
  *
- * @author 星空流年
+ * @author zlp
  */
 @Slf4j
 public class AesUtil {
   /** 加密算法 */
-  private static String Algorithm = "AES";
+  private static final String ALGORITHM = "AES";
 
   /** 算法/模式/补码方式 */
-  private static String AlgorithmProvider = "AES/ECB/PKCS5Padding";
+  private static final String ALGORITHM_PROVIDER = "AES/ECB/PKCS5Padding";
 
+  /** 密码解密秘钥 */
   private static final String ENCRYPTION_KEY_FRONT = "uiw89xhdbnlpq98126yhj902bnmxygvv";
+  /** 系统接口返回数据加密秘钥 */
+  private static final String ENCRYPTION_KEY_ALL = "rB5ZlKzMgfhjWn6XuDQ9eHjN2c4Rp7aY";
 
   /**
    * 加密
@@ -38,23 +35,11 @@ public class AesUtil {
    * @param src 原内容
    * @param uniqueKey 唯一key
    * @return
-   * @throws NoSuchPaddingException
-   * @throws NoSuchAlgorithmException
-   * @throws InvalidKeyException
-   * @throws BadPaddingException
-   * @throws IllegalBlockSizeException
-   * @throws DecoderException
    */
-  private static String encrypt(String src, String uniqueKey)
-      throws NoSuchPaddingException,
-          NoSuchAlgorithmException,
-          InvalidKeyException,
-          BadPaddingException,
-          IllegalBlockSizeException,
-          DecoderException {
+  private static String encrypt(String src, String uniqueKey) throws Exception {
     byte[] key = uniqueKey.getBytes();
-    SecretKey secretKey = new SecretKeySpec(key, Algorithm);
-    Cipher cipher = Cipher.getInstance(AlgorithmProvider);
+    SecretKey secretKey = new SecretKeySpec(key, ALGORITHM);
+    Cipher cipher = Cipher.getInstance(ALGORITHM_PROVIDER);
     cipher.init(Cipher.ENCRYPT_MODE, secretKey);
     byte[] cipherBytes = cipher.doFinal(src.getBytes(StandardCharsets.UTF_8));
     return byteToHexString(cipherBytes);
@@ -66,27 +51,11 @@ public class AesUtil {
    * @param enc 加密内容
    * @param uniqueKey 唯一key
    * @return
-   * @throws NoSuchPaddingException
-   * @throws NoSuchAlgorithmException
-   * @throws UnsupportedEncodingException
-   * @throws InvalidAlgorithmParameterException
-   * @throws InvalidKeyException
-   * @throws DecoderException
-   * @throws BadPaddingException
-   * @throws IllegalBlockSizeException
    */
-  private static String decrypt(String enc, String uniqueKey)
-      throws NoSuchPaddingException,
-          NoSuchAlgorithmException,
-          UnsupportedEncodingException,
-          InvalidAlgorithmParameterException,
-          InvalidKeyException,
-          DecoderException,
-          BadPaddingException,
-          IllegalBlockSizeException {
+  private static String decrypt(String enc, String uniqueKey) throws Exception {
     byte[] key = uniqueKey.getBytes();
-    SecretKey secretKey = new SecretKeySpec(key, Algorithm);
-    Cipher cipher = Cipher.getInstance(AlgorithmProvider);
+    SecretKey secretKey = new SecretKeySpec(key, ALGORITHM);
+    Cipher cipher = Cipher.getInstance(ALGORITHM_PROVIDER);
     cipher.init(Cipher.DECRYPT_MODE, secretKey);
     byte[] hexBytes = hexStringToBytes(enc);
     byte[] plainBytes = cipher.doFinal(hexBytes);
@@ -128,7 +97,23 @@ public class AesUtil {
     }
   }
 
+  /**
+   * 加密数据
+   *
+   * @param data
+   * @return
+   */
+  public static String encryptData(String data) {
+    try {
+      return encrypt(data, ENCRYPTION_KEY_ALL);
+    } catch (Exception e) {
+      log.error("加密出错", e);
+      throw new BusinessException("加密出错");
+    }
+  }
+
   private static String removeQuotes(String input) {
     return input.replace("\"", "");
   }
+
 }

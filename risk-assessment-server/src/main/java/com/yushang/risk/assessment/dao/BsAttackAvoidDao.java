@@ -2,7 +2,6 @@ package com.yushang.risk.assessment.dao;
 
 import com.yushang.risk.assessment.domain.entity.BsAttackAvoid;
 import com.yushang.risk.assessment.mapper.BsAttackAvoidMapper;
-import com.yushang.risk.assessment.service.IBsAttackAvoidService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 

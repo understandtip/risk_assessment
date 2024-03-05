@@ -13,26 +13,25 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * 工具规避关系
+ * 风险复杂度关系
  *
  * @author zlp
- * @since 2024-03-01
+ * @since 2024-03-05
  */
 @Data
-@ApiModel(value = "工具规避关系", description = "")
-@TableName("bs_attack_avoid")
-public class BsAttackAvoid implements Serializable, Cloneable {
+@ApiModel(value = "风险复杂度关系", description = "")
+@TableName("bs_risk_complexity_rel")
+public class BsRiskComplexityRel implements Serializable, Cloneable {
   /** 主键id */
-  @ApiModelProperty(value = "主键id")
+  @ApiModelProperty(value = "主键id", notes = "")
   @TableId
   private Integer id;
-  /** 攻击工具id */
-  @ApiModelProperty(value = "攻击工具id")
-  private Integer attackId;
-  /** 规避id */
-  @ApiModelProperty(value = "规避id")
-  private Integer avoidId;
-
+  /** 风险id */
+  @ApiModelProperty(value = "风险id", notes = "")
+  private Integer riskId;
+  /** 复杂度id */
+  @ApiModelProperty(value = "复杂度id", notes = "")
+  private Integer complexityId;
   /** 逻辑删除;1:删除 0:未删除 */
   @ApiModelProperty(value = "逻辑删除", notes = "1:删除   0:未删除")
   private String isDeleted;

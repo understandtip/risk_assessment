@@ -13,26 +13,40 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * 工具规避关系
+ * 业务风险
  *
  * @author zlp
- * @since 2024-03-01
+ * @since 2024-03-05
  */
 @Data
-@ApiModel(value = "工具规避关系", description = "")
-@TableName("bs_attack_avoid")
-public class BsAttackAvoid implements Serializable, Cloneable {
+@ApiModel(value = "业务风险", description = "")
+@TableName("bs_risk")
+public class BsRisk implements Serializable, Cloneable {
   /** 主键id */
-  @ApiModelProperty(value = "主键id")
+  @ApiModelProperty(value = "主键id", notes = "")
   @TableId
   private Integer id;
-  /** 攻击工具id */
-  @ApiModelProperty(value = "攻击工具id")
-  private Integer attackId;
-  /** 规避id */
-  @ApiModelProperty(value = "规避id")
-  private Integer avoidId;
-
+  /** 标题 */
+  @ApiModelProperty(value = "标题", notes = "")
+  private String title;
+  /** 定义 */
+  @ApiModelProperty(value = "定义", notes = "")
+  private String definition;
+  /** 描述 */
+  @ApiModelProperty(value = "描述", notes = "")
+  private String description;
+  /** 影响 */
+  @ApiModelProperty(value = "影响", notes = "")
+  private String affect;
+  /** 参考 */
+  @ApiModelProperty(value = "参考", notes = "")
+  private String reference;
+  /** 关系图 */
+  @ApiModelProperty(value = "关系图", notes = "")
+  private String relationSchema;
+  /** 父id */
+  @ApiModelProperty(value = "父id", notes = "")
+  private Integer pid;
   /** 逻辑删除;1:删除 0:未删除 */
   @ApiModelProperty(value = "逻辑删除", notes = "1:删除   0:未删除")
   private String isDeleted;
