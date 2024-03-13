@@ -47,6 +47,8 @@ public class BsRisk implements Serializable, Cloneable {
   /** 父id */
   @ApiModelProperty(value = "父id", notes = "")
   private Integer pid;
+
+  private Integer complexityId;
   /** 逻辑删除;1:删除 0:未删除 */
   @ApiModelProperty(value = "逻辑删除", notes = "1:删除   0:未删除")
   private String isDeleted;

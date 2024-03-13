@@ -6,34 +6,36 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
-
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * 风险复杂度关系
+ * 风险工具关系
  *
  * @author zlp
- * @since 2024-03-05
+ * @since 2024-03-11
  */
 @Data
-@ApiModel(value = "风险复杂度关系", description = "")
-@TableName("bs_risk_complexity_rel")
-public class BsRiskComplexityRel implements Serializable, Cloneable {
+@EqualsAndHashCode(callSuper = false)
+@TableName("bs_risk_tool")
+public class BsRiskTool implements Serializable {
+
+  private static final long serialVersionUID = 1L;
+
   /** 主键id */
-  @ApiModelProperty(value = "主键id", notes = "")
-  @TableId
+  @TableId(value = "id", type = IdType.AUTO)
   private Integer id;
+
   /** 风险id */
-  @ApiModelProperty(value = "风险id", notes = "")
+  @TableField("risk_id")
   private Integer riskId;
-  /** 复杂度id */
-  @ApiModelProperty(value = "复杂度id", notes = "")
-  private Integer complexityId;
+
+  /** 工具id */
+  @TableField("tool_id")
+  private Integer toolId;
+
   /** 逻辑删除;1:删除 0:未删除 */
-  @ApiModelProperty(value = "逻辑删除", notes = "1:删除   0:未删除")
+  @TableField("is_deleted")
   private String isDeleted;
 
   /** 创建时间 */

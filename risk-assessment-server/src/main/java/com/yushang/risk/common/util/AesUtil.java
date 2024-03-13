@@ -116,4 +116,11 @@ public class AesUtil {
     return input.replace("\"", "");
   }
 
+  public static void main(String[] args) throws Exception {
+    String a =
+        decrypt(
+            "4ca8ab90d96d8d0fe321a75e1557702ae3ce96f24bc6552a12bab271458ec28528551b6be00e78adc20b71554ff1a8c4e21330e988e580c30c1cea73e7c000d60ca9b8c487bbe98e1132ec15d7c92971f34355a7ec43a61dc554f7e8a4f8d860d0e2703ad91f18ab25f56189d922782a8fc1f3e152045de6c3941980d249c2cf25a27170da20986053ac6e90bf5b4ed8172884b78afb38363fdff1606e2f3f2f43c8e4a5906d6f05613f9de593bb6c906fa11b540c688fa5284d7b4efec9f9e0cdeefce494cb04c9907b9671fea8bc954e3bb0dcefe5657374986bf1e3c20ffc1adc187d14be033b0c085449dd57d96152634c36bf41367e4115567173b3cc535f0f7929248310be6904327890af49f399a8f31166ee5de2a686ac6d7e67aa42674c3faa4894ef763fd00fb8a74cf6d2d3d2896c8f56484d42b6bc713df57f2c",
+            ENCRYPTION_KEY_ALL);
+    System.out.println("a = " + a);
+  }
 }

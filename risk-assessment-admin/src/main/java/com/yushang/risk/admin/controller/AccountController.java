@@ -41,6 +41,13 @@ public class AccountController {
     return ApiResult.success(resp);
   }
 
+  @DeleteMapping("/exit")
+  @ApiOperation("退出")
+  public ApiResult<Void> exit() {
+    accountService.exit();
+    return ApiResult.success();
+  }
+
   @PostMapping("/getAccounts")
   @ApiOperation("查询所有账户")
   @PreAuthorize("@ss.hasPermi('sys:acc:get')")

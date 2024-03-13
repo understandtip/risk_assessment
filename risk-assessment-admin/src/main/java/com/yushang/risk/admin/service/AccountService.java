@@ -88,4 +88,7 @@ public interface AccountService {
    * @param accountInfoReq
    */
   void chInfo(AccountInfoReq accountInfoReq);
+
+  /** 退出 */
+  void exit();
 }

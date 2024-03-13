@@ -80,7 +80,8 @@ public class LoginInterceptor implements HandlerInterceptor {
         || pathInfo.contains("getModelDetail")
         || pathInfo.contains("submitBugReport")
         || (pathInfo.contains("getConfrontInfo")
-            && "false".equals(request.getParameter("isEnhance")));
+                && "false".equals(request.getParameter("isEnhance"))
+            || pathInfo.contains("/api/bsr"));
   }
 
   /**

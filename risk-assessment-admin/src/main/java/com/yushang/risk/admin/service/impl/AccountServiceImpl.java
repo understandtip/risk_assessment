@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -51,6 +52,7 @@ public class AccountServiceImpl implements AccountService {
   @Resource private LoginService loginService;
   @Resource private RoleDao roleDao;
   @Resource private RolePermissionDao rolePermissionDao;
+  @Resource private OnlineUserDao onlineUserDao;
 
   /**
    * 登录
@@ -268,6 +270,23 @@ public class AccountServiceImpl implements AccountService {
     Account account = new Account();
     BeanUtils.copyProperties(accountInfoReq, account);
     account.setId(accId);
+    accountDao.updateById(account);
+  }
+
+  /**
+   * 退出
+   *
+   * @return
+   */
+  @OptLog(target = OptLog.Target.EXIT)
+  @Override
+  public void exit() {
+    // 清除token
+    RedisUtils.del(RedisKey.getKey(RedisKey.USER_REDIS_TOKEN_PREFIX, RequestHolder.get().getUid()));
+    // 设置退出时间
+    Account account = new Account();
+    account.setId(RequestHolder.get().getUid());
+    account.setExitTime(LocalDateTime.now());
     accountDao.updateById(account);
   }
 

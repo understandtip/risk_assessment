@@ -86,6 +86,7 @@ public class LogAspect {
                 break;
               case EXIT:
                 // 清除在线用户信息
+                RequestHolder.remove();
                 onlineUserDao.removeByUserName(finalUser.getId());
                 break;
               default:

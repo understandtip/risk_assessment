@@ -16,6 +16,13 @@
     </properties>
     <dependencies>
         <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+            <!-- 根据最新的版本号替换此处 -->
+            <version>3.1.0</version> <!-- 请检查最新稳定版 -->
+        </dependency>
+
+        <dependency>
             <groupId>com.yushang</groupId>
             <artifactId>risk-assessment-common</artifactId>
             <version>1.0-SNAPSHOT</version>
