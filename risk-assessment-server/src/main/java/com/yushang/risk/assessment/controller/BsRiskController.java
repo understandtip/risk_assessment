@@ -1,5 +1,6 @@
 package com.yushang.risk.assessment.controller;
 
+import com.mysql.cj.x.protobuf.MysqlxCrud;
 import com.yushang.risk.assessment.domain.entity.BsAttackAvoid;
 import com.yushang.risk.assessment.domain.entity.BsCategory;
 import com.yushang.risk.assessment.domain.vo.response.*;
@@ -71,15 +72,17 @@ public class BsRiskController {
     return ApiResult.success(resp);
   }
 
-  /**
-   * 所有风险id和name集合
-   *
-   * @return
-   */
-  @GetMapping("/getAllRiskSmall")
-  @ApiOperation("所有风险(小)")
-  public ApiResult<Map<Integer, String>> getAllRiskSmall() {
-    Map<Integer, String> resp = bsRiskService.getAllRiskSmall();
+  @GetMapping("/getAllAvoid")
+  @ApiOperation("所有规避手段")
+  public ApiResult<List<BsAllAvoidInfoResp>> getAllAvoid() {
+    List<BsAllAvoidInfoResp> resp = bsRiskService.getAllAvoid();
+    return ApiResult.success(resp);
+  }
+
+  @GetMapping("/getAllAttackTool")
+  @ApiOperation("所有攻击工具")
+  public ApiResult<List<BsAllAttackToolInfoResp>> getAllAttackTool() {
+    List<BsAllAttackToolInfoResp> resp = bsRiskService.getAllAttackTool();
     return ApiResult.success(resp);
   }
 }

@@ -11,6 +11,7 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
+import springfox.documentation.spring.web.json.Json;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -48,9 +49,5 @@ public class DataEncryptionAdvice implements ResponseBodyAdvice<ApiResult> {
    */
   private String encrypt(String data) {
     return AesUtil.encryptData(data);
-  }
-
-  public static void main(String[] args) {
-
   }
 }

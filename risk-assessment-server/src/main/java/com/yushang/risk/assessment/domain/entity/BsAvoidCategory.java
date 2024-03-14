@@ -34,6 +34,10 @@ public class BsAvoidCategory implements Serializable {
   @TableField("is_deleted")
   private String isDeleted;
 
+  private String eng;
+
+  private String description;
+
   /** 创建时间 */
   @TableField("created_time")
   private LocalDateTime createdTime;

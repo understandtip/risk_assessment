@@ -45,6 +45,10 @@ public class BsAvoidMeans implements Serializable, Cloneable {
   @ApiModelProperty(value = "逻辑删除", notes = "1:删除   0:未删除")
   private String isDeleted;
 
+  private Integer typeId;
+  
+  private Integer pid;
+
   /** 创建时间 */
   @TableField("created_time")
   private LocalDateTime createdTime;

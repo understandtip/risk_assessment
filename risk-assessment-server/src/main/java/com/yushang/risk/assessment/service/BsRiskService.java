@@ -1,9 +1,6 @@
 package com.yushang.risk.assessment.service;
 
-import com.yushang.risk.assessment.domain.vo.response.BsAllRiskInfoResp;
-import com.yushang.risk.assessment.domain.vo.response.BsAttackToolInfoResp;
-import com.yushang.risk.assessment.domain.vo.response.BsAvoidInfoResp;
-import com.yushang.risk.assessment.domain.vo.response.BsRiskInfoResp;
+import com.yushang.risk.assessment.domain.vo.response.*;
 
 import java.util.List;
 import java.util.Map;
@@ -46,9 +43,16 @@ public interface BsRiskService {
   List<BsAllRiskInfoResp> getAllRisk();
 
   /**
-   * 所有风险(小)
+   * 所有规避手段
    *
    * @return
    */
-  Map<Integer, String> getAllRiskSmall();
+  List<BsAllAvoidInfoResp> getAllAvoid();
+
+  /**
+   * 所有攻击工具
+   *
+   * @return
+   */
+  List<BsAllAttackToolInfoResp> getAllAttackTool();
 }

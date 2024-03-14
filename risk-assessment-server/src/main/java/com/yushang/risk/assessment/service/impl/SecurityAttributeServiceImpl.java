@@ -28,18 +28,26 @@ public class SecurityAttributeServiceImpl implements SecurityAttributeService {
   @Resource private AttrMeansDao attrMeansDao;
   @Resource private AttrMenaceDao attrMenaceDao;
   /**
-   * 获取所有安全属性集合
+   * 获取所有安全属性集合。
+   * 此方法通过查询数据库获取所有安全属性，并将它们转换为更适用于前端展示的格式。
    *
-   * @return
+   * @return 返回一个包含所有安全属性信息的列表，每个属性包括其ID、名称、含义等信息。
    */
   @Override
   @Cacheable(cacheNames = "attrList")
   public List<AttrResp> getAttrList() {
-    List<SecurityAttribute> attrList = securityAttributeDao.list();
-    List<Integer> attrIds =
-        attrList.stream().map(SecurityAttribute::getId).collect(Collectors.toList());
-    List<AttrMeans> attrMeans = attrMeansDao.getByAttrId(attrIds);
-    List<AttrMenace> attrMenaces = attrMenaceDao.getByAttrId(attrIds);
-    return AttrAdapter.buildAttrResp(attrList, attrMeans, attrMenaces);
+      // 从数据库中列出所有安全属性
+      List<SecurityAttribute> attrList = securityAttributeDao.list();
+
+      // 提取所有属性的ID，供后续查询关联信息使用 
+      List<Integer> attrIds =
+          attrList.stream().map(SecurityAttribute::getId).collect(Collectors.toList());
+
+      // 根据属性ID查询其关联的属性手段和属性威胁信息
+      List<AttrMeans> attrMeans = attrMeansDao.getByAttrId(attrIds);
+      List<AttrMenace> attrMenaces = attrMenaceDao.getByAttrId(attrIds);
+
+      // 将获取到的安全属性及其关联信息转换为前端所需的格式
+      return AttrAdapter.buildAttrResp(attrList, attrMeans, attrMenaces);
   }
 }
