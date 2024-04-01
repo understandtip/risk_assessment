@@ -45,7 +45,7 @@ public class RegisterApplyDao extends ServiceImpl<RegisterApplyMapper, RegisterA
       wrapper.like(
           StringUtils.isNotBlank(applyReq.getUsername()),
           RegisterApply::getUsername,
-          applyReq.getApplyName());
+          applyReq.getUsername());
       wrapper.like(
           StringUtils.isNotBlank(applyReq.getPhone()),
           RegisterApply::getPhone,

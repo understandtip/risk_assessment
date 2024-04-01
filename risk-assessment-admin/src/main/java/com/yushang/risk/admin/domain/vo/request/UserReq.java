@@ -24,7 +24,7 @@ public class UserReq {
   private Integer id;
   /** 用户名 */
   @ApiModelProperty(notes = "用户名")
-  @NotNull
+  @Pattern(regexp = "^[a-zA-Z0-9_]{5,15}$", message = "用户名必须是数字/字母/下划线,长度5-15")
   private String username;
   /** 用户真实姓名 */
   @ApiModelProperty(notes = "用户真实姓名")

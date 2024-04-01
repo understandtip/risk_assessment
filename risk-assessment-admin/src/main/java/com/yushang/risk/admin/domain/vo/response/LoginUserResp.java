@@ -48,4 +48,6 @@ public class LoginUserResp {
   private String token;
 
   private List<String> permissionList;
+
+  private Integer roleId;
 }

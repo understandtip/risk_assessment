@@ -43,7 +43,7 @@ public interface AccountService {
    * @param accountReq
    * @return
    */
-  AccountAddResp addAccount(AccountReq accountReq);
+  AccountAddResp addAccount(AccountReq accountReq) throws Exception;
 
   /**
    * 给账户赋予角色

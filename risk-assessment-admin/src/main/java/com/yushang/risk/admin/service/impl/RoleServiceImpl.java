@@ -82,6 +82,8 @@ public class RoleServiceImpl implements RoleService {
   public void addRoleInfo(RoleReq roleReq) {
     Role role = new Role();
     role.setName(roleReq.getName());
+    Role roleDaoByField = roleDao.getByField(Role::getName, roleReq.getName());
+    AssertUtils.isEmpty(roleDaoByField, "角色名已存在");
     roleDao.save(role);
   }
 

@@ -33,6 +33,7 @@ public class SUserDao extends ServiceImpl<SUserMapper, SUser> {
       wrapper.like(StrUtil.isNotEmpty(data.getEmail()), SUser::getEmail, data.getEmail());
       wrapper.eq(StrUtil.isNotEmpty(data.getServiceId()), SUser::getServiceId, data.getServiceId());
     }
+    wrapper.orderByDesc(SUser::getCreatedTime);
     return this.page(page, wrapper);
   }
 }

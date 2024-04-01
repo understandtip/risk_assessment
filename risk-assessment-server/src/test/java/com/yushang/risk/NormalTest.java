@@ -1,5 +1,6 @@
 package com.yushang.risk;
 
+import com.yushang.risk.assessment.service.impl.UsersServiceImpl;
 import com.yushang.risk.common.util.PasswordUtils;
 import com.yushang.risk.common.util.RedisUtils;
 import com.yushang.risk.constant.RedisCommonKey;
@@ -14,6 +15,8 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @Author：zlp @Package：com.yushang.risk @Project：risk_assessment
@@ -128,4 +131,7 @@ public class NormalTest {
     String decipherText = new String(decipherByte);
     System.out.println("解密：" + decipherText);
   }
+
+  @Test
+  void test02() {}
 }

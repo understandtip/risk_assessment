@@ -22,6 +22,8 @@ import java.util.stream.Stream;
 /**
  * @Author：zlp @Package：com.yushang.risk.assessment.service.impl @Project：risk_assessment
  *
+ * 
+ *
  * @name：BsRiskServiceImpl @Date：2024/3/11 10:58 @Filename：BsRiskServiceImpl
  */
 @Service
@@ -35,6 +37,7 @@ public class BsRiskServiceImpl implements BsRiskService {
   @Resource private BsRiskComplexityDao bsRiskComplexityDao;
   @Resource private BsAttackAvoidDao bsAttackAvoidDao;
   @Resource private BsAvoidCategoryDao bsAvoidCategoryDao;
+
   /**
    * 获取风险信息
    *

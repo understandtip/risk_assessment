@@ -1,5 +1,6 @@
 package com.yushang.risk.admin.service.impl;
 
+import cn.hutool.core.collection.ListUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yushang.risk.admin.dao.AccountDao;
 import com.yushang.risk.admin.dao.RegisterApplyDao;
@@ -31,6 +32,7 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -89,7 +91,14 @@ public class UserServiceImpl implements UserService {
   @Override
   public PageBaseResp<UserPageResp> getUserList(PageBaseReq<UserPageReq> userPageReq) {
     Page<User> page = userPageReq.plusPage();
-    Page<User> userPage = usersDao.getUserListByPage(page, userPageReq.getData());
+    Page<User> userPage;
+    try {
+      userPage = usersDao.getUserListByPage(page, userPageReq.getData());
+    } catch (Exception e) {
+      log.error("获取用户列表失败", e);
+      // 异常处理逻辑，具体实现根据实际情况调整
+      return PageBaseResp.init(new Page<>(), ListUtil.empty());
+    }
     List<UserPageResp> userResps =
         userPage.getRecords().stream()
             .map(
@@ -106,28 +115,31 @@ public class UserServiceImpl implements UserService {
   /**
    * 新增用户
    *
-   * @param userReq
-   * @return
+   * @param userReq 用户请求对象，包含新建用户的信息
+   * @return UserAddResp 用户添加响应对象，包含用户名和设置的密码
    */
   @SneakyThrows
   @Override
   public UserAddResp addUser(UserReq userReq) {
-    // 用户名不能重复
+    // 检查用户名在用户、注册申请、账号中是否已存在
     User userName = usersDao.getByField(User::getUsername, userReq.getUsername());
     AssertUtils.isEmpty(userName, "用户名已经存在了");
-    // 用户名不能重复
+
     RegisterApply registerApply =
         registerApplyDao.getByField(RegisterApply::getUsername, userReq.getUsername());
     AssertUtils.isEmpty(registerApply, "用户名已经存在了");
-    // 用户名不能重复
+
     Account account = accountDao.getByField(Account::getUsername, userReq.getUsername());
     AssertUtils.isEmpty(account, "用户名已经存在了");
+
     User user = UserAdapter.buildAddUser(userReq);
-    // 初始化密码
+    // 为用户生成并设置随机密码
     String pass = generateRandomString();
     String newPass = PasswordUtils.encryptPassword(pass);
     user.setPassword(newPass);
     usersDao.save(user);
+
+    // 返回包含用户名和设置的密码的响应对象
     return UserAddResp.builder().userName(userReq.getUsername()).password(pass).build();
   }
 
@@ -146,18 +158,24 @@ public class UserServiceImpl implements UserService {
   /**
    * 修改用户状态
    *
-   * @param userStaReq
+   * @param userStaReq 用户状态请求对象，包含用户ID和待更新的状态
    */
   @Override
   public void updateUserStatus(UserStaReq userStaReq) {
+    // 获取传入的状态值
     Integer status = userStaReq.getStatus();
+    // 检查状态是否为正常和禁用状态的非法组合
     if (status.equals(UserStatusEnum.NORMAL.getCode())
         && status.equals(UserStatusEnum.BAN.getCode())) {
+      // 如果是非法组合，抛出业务异常
       throw new BusinessException("修改状态异常");
     }
+    // 更新用户状态
     usersDao.updateById(
         User.builder()
+            // 用户ID
             .id(userStaReq.getId())
+            // 更新后的状态
             .status(String.valueOf(userStaReq.getStatus()))
             .build());
   }
@@ -165,31 +183,41 @@ public class UserServiceImpl implements UserService {
   /**
    * 修改密码
    *
-   * @param passReq
-   * @param request
+   * @param passReq 包含密码修改请求信息的对象，包括旧密码的验证码、旧密码、新密码。
+   * @param request HttpServletRequest对象，用于获取客户端IP地址进行验证码校验。
    */
   @Override
   public void chPass(UpdatePassReq passReq, HttpServletRequest request) {
-    // 与前端协调密码的加密处理
-    // 校验验证码
+    // 校验用户输入的验证码是否正确
     this.verifyCode(passReq.getCode(), IpUtils.getClientIpAddress(request));
-    // 修改密码
+
+    // 获取当前登录用户信息
     Account user = accountDao.getById(RequestHolder.get().getUid());
     String password;
     try {
+      // 解密用户当前密码进行验证
       password = PasswordUtils.decryptPassword(user.getPassword());
     } catch (Exception e) {
+      // 密码解密异常处理
       throw new SystemException(CommonErrorEnum.SYSTEM_ERROR.getErrorCode(), "密码解密异常");
     }
+
+    // 验证旧密码是否正确
     AssertUtils.equal(AesUtil.decryptPassword(passReq.getPassword()), password, "密码错误");
+
     String newPass;
     try {
+      // 对新密码进行加密处理
       newPass = PasswordUtils.encryptPassword(AesUtil.decryptPassword(passReq.getNewPassword()));
     } catch (Exception e) {
+      // 新密码加密异常处理
       throw new SystemException(CommonErrorEnum.SYSTEM_ERROR.getErrorCode(), "新密码加密异常");
     }
+
+    // 更新数据库中的用户密码
     AssertUtils.isTrue(accountDao.updatePass(user.getId(), newPass), "修改密码失败");
-    // 清除token
+
+    // 修改密码成功后，清除用户token，强制用户重新登录
     RedisUtils.del(RedisKey.getKey(RedisKey.USER_REDIS_TOKEN_PREFIX, user.getId()));
   }
 
@@ -201,15 +229,19 @@ public class UserServiceImpl implements UserService {
    * @return
    */
   public static String generateRandomString() {
-    int length = 8 + new SecureRandom().nextInt(8);
-    StringBuilder randomString = new StringBuilder(length);
-    SecureRandom random = new SecureRandom();
-    for (int i = 0; i < length; i++) {
-      int randomIndex = random.nextInt(CHARACTERS.length());
-      char randomChar = CHARACTERS.charAt(randomIndex);
-      randomString.append(randomChar);
-    }
-
+    // 使用正则验证randomString
+    Pattern pattern = Pattern.compile("^[A-Z][a-zA-Z0-9]{7,15}$");
+    StringBuilder randomString;
+    do {
+      int length = 8 + new SecureRandom().nextInt(8);
+      randomString = new StringBuilder(length);
+      SecureRandom random = new SecureRandom();
+      for (int i = 0; i < length; i++) {
+        int randomIndex = random.nextInt(CHARACTERS.length());
+        char randomChar = CHARACTERS.charAt(randomIndex);
+        randomString.append(randomChar);
+      }
+    } while (!pattern.matcher(randomString).matches());
     return randomString.toString();
   }
   /**

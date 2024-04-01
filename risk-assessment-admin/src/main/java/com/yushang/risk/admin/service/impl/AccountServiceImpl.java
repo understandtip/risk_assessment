@@ -29,11 +29,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ValidationException;
+import java.net.InetAddress;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -96,64 +96,108 @@ public class AccountServiceImpl implements AccountService {
     // 设置角色信息
     Role role = userRoleDao.getRoleByUserId(account.getId());
     List<String> permissions = rolePermissionDao.getByRoleId(role.getId());
-    return AccountAdapter.buildLoginUserResp(account, token, permissions);
+    return AccountAdapter.buildLoginUserResp(account, token, permissions, role.getId());
   }
 
   /**
-   * 查询所有账户
+   * 查询所有账户信息
    *
-   * @param reqPageBaseReq
-   * @return
+   * @param reqPageBaseReq 包含分页和查询条件的请求对象
+   * @return 返回账户信息的分页响应对象，其中包含账户列表及其角色信息
    */
   @Override
   public PageBaseResp<AccountPageResp> getUserList(PageBaseReq<AccountPageReq> reqPageBaseReq) {
+    // 校验请求参数是否为空
+    if (reqPageBaseReq == null) {
+      throw new IllegalArgumentException("请求参数不能为空");
+    }
+
+    // 初始化分页信息
     Page<Account> page = reqPageBaseReq.plusPage();
     AccountPageReq accountPageReq = reqPageBaseReq.getData();
+
+    // 根据角色ID查询相关的账户ID列表
     List<Integer> accIds = null;
     if (accountPageReq != null
         && accountPageReq.getRoleId() != null
         && accountPageReq.getRoleId() != 0) {
       accIds = userRoleDao.getAccIdsByRoleId(accountPageReq.getRoleId());
     }
-    Map<Integer, Integer> userIdAndRoleIdMap =
-        userRoleDao.list().stream()
-            .collect(Collectors.toMap(UserRole::getUserId, UserRole::getRoleId));
-    Map<Integer, Role> roleMap =
-        roleDao.list().stream().collect(Collectors.toMap(Role::getId, Function.identity()));
 
+    // 组合用户ID和角色ID的映射关系
+    Map<Integer, Integer> userIdAndRoleIdMap =
+        Optional.ofNullable(userRoleDao.list())
+            .map(
+                list ->
+                    list.stream()
+                        .collect(Collectors.toMap(UserRole::getUserId, UserRole::getRoleId)))
+            .orElse(Collections.emptyMap());
+
+    // 组合角色ID和角色对象的映射关系
+    Map<Integer, Role> roleMap =
+        Optional.ofNullable(roleDao.list())
+            .map(list -> list.stream().collect(Collectors.toMap(Role::getId, Function.identity())))
+            .orElse(Collections.emptyMap());
+
+    // 根据条件查询账户列表并分页
     Page<Account> accountPage = accountDao.getAccListByPage(page, accountPageReq, accIds);
+
+    // 将账户信息转换为响应对象列表
     List<AccountPageResp> collect =
         accountPage.getRecords().stream()
-            .map(
-                ap -> {
-                  AccountPageResp resp = new AccountPageResp();
-                  BeanUtils.copyProperties(ap, resp);
-                  Role role = roleMap.get(userIdAndRoleIdMap.get(ap.getId()));
-                  if (role != null) {
-                    RoleResp roleResp = new RoleResp();
-                    BeanUtils.copyProperties(role, roleResp);
-                    resp.setRoleResp(roleResp);
-                  }
-                  return resp;
-                })
+            .map(ap -> convertAccountToAccountPageResp(ap, userIdAndRoleIdMap, roleMap))
             .collect(Collectors.toList());
+
+    // 构建并返回分页响应对象
     return PageBaseResp.init(accountPage, collect);
   }
 
   /**
-   * 查询账户信息
+   * 将账户对象转换为账户页面响应对象
    *
-   * @param accId
-   * @return
+   * @param ap 账户对象
+   * @param userIdAndRoleIdMap 用户ID和角色ID的映射
+   * @param roleMap 角色ID和角色对象的映射
+   * @return 返回转换后的账户页面响应对象
+   */
+  private AccountPageResp convertAccountToAccountPageResp(
+      Account ap, Map<Integer, Integer> userIdAndRoleIdMap, Map<Integer, Role> roleMap) {
+    AccountPageResp resp = new AccountPageResp();
+    BeanUtils.copyProperties(ap, resp);
+
+    // 根据账户ID查询角色ID
+    Integer roleId = userIdAndRoleIdMap != null ? userIdAndRoleIdMap.get(ap.getId()) : null;
+    if (roleId != null) {
+      // 根据角色ID查询角色对象
+      Role role = roleMap.get(roleId);
+      if (role != null) {
+        // 将角色对象转换为角色响应对象
+        RoleResp roleResp = new RoleResp();
+        BeanUtils.copyProperties(role, roleResp);
+        resp.setRoleResp(roleResp);
+      }
+    }
+    return resp;
+  }
+
+  /**
+   * 查询指定账户的信息，并封装成页面响应对象返回。
+   *
+   * @param accId 账户的ID，用于查询特定账户的信息。
+   * @return 返回一个包含账户信息和角色信息的页面响应对象（AccountPageResp）。
    */
   @Override
   public AccountPageResp getAccInfo(Integer accId) {
-
+    // 创建账户页面响应对象
     AccountPageResp resp = new AccountPageResp();
+    // 从数据库获取账户信息，并将其属性复制到响应对象中
     BeanUtils.copyProperties(accountDao.getById(accId), resp);
+    // 获取账户对应的角色信息
     Role role = userRoleDao.getRoleByUserId(accId);
+    // 创建角色响应对象，并将角色信息属性复制到其中
     RoleResp roleResp = new RoleResp();
     BeanUtils.copyProperties(role, roleResp);
+    // 将角色响应对象设置到账户页面响应对象中
     resp.setRoleResp(roleResp);
     return resp;
   }
@@ -164,9 +208,9 @@ public class AccountServiceImpl implements AccountService {
    * @param accountReq
    * @return
    */
-  @SneakyThrows
+  @Transactional
   @Override
-  public AccountAddResp addAccount(AccountReq accountReq) {
+  public AccountAddResp addAccount(AccountReq accountReq) throws Exception {
     if (accountReq.getRoleId() == null || accountReq.getRoleId() == 0)
       throw new BusinessException("请选择角色");
     // 用户名不能重复

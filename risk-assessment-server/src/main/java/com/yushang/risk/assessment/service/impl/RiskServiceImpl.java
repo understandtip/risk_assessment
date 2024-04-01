@@ -247,33 +247,39 @@ public class RiskServiceImpl implements RiskService {
   }
 
   /**
-   * 处理风险对象,转换为RiskResp
+   * 处理风险对象，将其转换为RiskResp对象。
    *
-   * @param risk
+   * @param risk 输入的风险对象。
+   * @return 转换后的RiskResp对象，包含了风险的详细信息及其子风险列表和对应的风险等级信息。
    */
   private RiskResp dealRiskToRiskResp(Risk risk) {
     RiskResp riskResp = new RiskResp();
+    // 使用BeanUtils工具类将risk对象的属性值复制到riskResp对象中
     BeanUtils.copyProperties(risk, riskResp);
+    // 生成风险ID字符串，并确保其长度为4位，不足4位前面补0
     String s = String.format("%04d", risk.getId());
     riskResp.setRiskId(RiskConstant.RISK_ID_PRE + s);
-    // 判断有没有子风险
+
+    // 检查当前风险是否有子风险
     boolean b = riskDao.checkChild(risk.getId());
     if (b) {
-      // 查出子风险
+      // 如果有子风险，则查询子风险信息
       List<Risk> childRisk = riskDao.getChild(risk.getId());
       List<RiskResp> childRespList = new ArrayList<>();
-      // 异步查询子风险(包含递归)
+      // 异步处理每个子风险，将其转换为RiskResp对象并添加到列表中
       childRisk.forEach(
           child ->
               CompletableFuture.runAsync(
                   () -> childRespList.add(dealRiskToRiskResp(child)), threadPoolTaskExecutor));
 
+      // 设置子风险列表到riskResp对象中
       riskResp.setChildrenRiskList(childRespList);
     }
-    // 查询风险对应分数情况
+
+    // 查询当前风险对应的等级分数情况
     List<RiskGrade> riskGradeList = riskGradeDao.getGradeByRiskId(risk.getId());
     List<Grade> gradeList = gradeDao.list();
-    // 查询出等级名称
+    // 处理每个风险等级，将其转换为GradeVo对象，并收集到列表中
     List<GradeVo> gradeVoList =
         riskGradeList.stream()
             .map(
@@ -281,6 +287,7 @@ public class RiskServiceImpl implements RiskService {
                   GradeVo gradeVo = new GradeVo();
                   gradeVo.setId(riskGrade.getId());
                   String gradeName = "";
+                  // 查找等级名称
                   for (Grade grade : gradeList) {
                     if (grade.getId().equals(riskGrade.getGradeId())) {
                       gradeName = grade.getName();
@@ -292,6 +299,7 @@ public class RiskServiceImpl implements RiskService {
                   return gradeVo;
                 })
             .collect(Collectors.toList());
+    // 设置风险等级列表到riskResp对象中
     riskResp.setGradeVoList(gradeVoList);
     return riskResp;
   }

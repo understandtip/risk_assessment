@@ -6,6 +6,7 @@ import com.yushang.risk.assessment.domain.vo.response.BsRiskResp;
 import com.yushang.risk.assessment.service.BsCategoryService;
 import com.yushang.risk.assessment.service.adapter.BsRiskAdapter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -35,7 +36,7 @@ public class BsCategoryServiceImpl implements BsCategoryService {
    * @return 包含风险纬度、风险分类和风险信息的响应对象
    */
   @Override
-  // @Cacheable(cacheNames = "BSRiskList", key = "#categoryId")
+  @Cacheable(cacheNames = "BSRiskList", key = "#categoryId")
   public BsRiskResp getBSRisk(Integer categoryId) {
     BsRiskResp resp = new BsRiskResp();
     try {
@@ -131,12 +132,14 @@ public class BsCategoryServiceImpl implements BsCategoryService {
       Map<Integer, List<Integer>> riskAndCategoryIdMap,
       Map<Integer, List<Integer>> latitudeAndRiskCategoryIdMap,
       Map<Integer, List<BsRisk>> riskPidMap) {
-    List<BsRiskResp.CategoryLatitude> l1 = new ArrayList<>();
+    List<BsRiskResp.CategoryLatitude> categoryLatitudes = new ArrayList<>();
     latitudeList.forEach(
         bsRiskLatitude -> {
-          BsRiskResp.CategoryLatitude o1 = new BsRiskResp.CategoryLatitude();
-          o1.setLatitudeName(bsRiskLatitude.getName());
-          List<BsRiskResp.RiskCategory> l2 = new ArrayList<>();
+          // BsRiskResp.CategoryLatitude
+          BsRiskResp.CategoryLatitude categoryLatitude = new BsRiskResp.CategoryLatitude();
+          categoryLatitude.setLatitudeName(bsRiskLatitude.getName());
+          // BsRiskResp.RiskCategory
+          List<BsRiskResp.RiskCategory> riskCategoryList = new ArrayList<>();
 
           // 获取当前风险纬度关联的风险分类ID列表
           List<Integer> riskCategoryIds =
@@ -152,9 +155,11 @@ public class BsCategoryServiceImpl implements BsCategoryService {
 
           riskCategories.forEach(
               rc -> {
-                BsRiskResp.RiskCategory o2 = new BsRiskResp.RiskCategory();
-                o2.setRiskCategoryName(rc.getName());
-                List<BsRiskResp.Risk> l3 = new ArrayList<>();
+                // BsRiskResp.RiskCategory
+                BsRiskResp.RiskCategory riskCategory = new BsRiskResp.RiskCategory();
+                riskCategory.setRiskCategoryName(rc.getName());
+                // BsRiskResp.Risk
+                List<BsRiskResp.Risk> riskArrayList = new ArrayList<>();
 
                 // 获取当前风险分类关联的风险ID列表
                 List<Integer> riskIds =
@@ -173,15 +178,15 @@ public class BsCategoryServiceImpl implements BsCategoryService {
                       BsRiskResp.Risk risk = new BsRiskResp.Risk();
                       BsRiskAdapter.buildBsRiskResp(risk, r);
                       BsRiskAdapter.buildRsRiskChild(riskPidMap, risk);
-                      l3.add(risk);
+                      riskArrayList.add(risk);
                     });
-                o2.setRiskList(l3);
-                l2.add(o2);
-                o1.setRiskCategoryList(l2);
+                riskCategory.setRiskList(riskArrayList);
+                riskCategoryList.add(riskCategory);
+                categoryLatitude.setRiskCategoryList(riskCategoryList);
               });
-          l1.add(o1);
+          categoryLatitudes.add(categoryLatitude);
         });
-    resp.setCategoryLatitudeList(l1);
+    resp.setCategoryLatitudeList(categoryLatitudes);
   }
 
   /**

@@ -30,6 +30,9 @@ public class SUserRecord implements Serializable, Cloneable {
   /** 漏洞id */
   @ApiModelProperty(notes = "漏洞id")
   private Integer bugId;
+
+  @ApiModelProperty(notes = "用户自定义的漏洞信息")
+  private String extraBug;
   /** 逻辑删除;1:删除 0:未删除 */
   @ApiModelProperty(notes = "逻辑删除 1:删除   0:未删除")
   @TableLogic

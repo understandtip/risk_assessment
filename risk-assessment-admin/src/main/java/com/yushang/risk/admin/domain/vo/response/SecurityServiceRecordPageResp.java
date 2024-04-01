@@ -44,5 +44,8 @@ public class SecurityServiceRecordPageResp {
     /** 危害 */
     @ApiModelProperty(notes = "危害")
     private String harm;
+
+    @ApiModelProperty(value = "用户自定义的漏洞信息")
+    private String extraBug;
   }
 }

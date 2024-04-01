@@ -33,7 +33,7 @@ public class AccountAdapter {
    * @return
    */
   public static LoginUserResp buildLoginUserResp(
-      Account user, String token, List<String> permissions) {
+      Account user, String token, List<String> permissions, Integer roleId) {
     return LoginUserResp.builder()
         .id(user.getId())
         .username(user.getUsername())
@@ -43,6 +43,7 @@ public class AccountAdapter {
         .loginTime(LocalDateTime.now())
         .permissionList(permissions)
         .token(token)
+        .roleId(roleId)
         .build();
   }
 

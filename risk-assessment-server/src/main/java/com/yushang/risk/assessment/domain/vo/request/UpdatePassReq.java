@@ -18,7 +18,7 @@ public class UpdatePassReq {
   private String password;
 
   @ApiModelProperty(notes = "新密码")
-  @NotNull
+  @Pattern(regexp = "^[A-Z][a-zA-Z0-9]{7,15}$", message = "密码格式错误")
   private String newPassword;
 
   @ApiModelProperty(notes = "验证码")

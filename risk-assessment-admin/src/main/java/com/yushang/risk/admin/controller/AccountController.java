@@ -68,7 +68,8 @@ public class AccountController {
   @PostMapping("/addAccount")
   @ApiOperation("添加账户信息")
   @PreAuthorize("@ss.hasPermi('sys:acc:add')")
-  public ApiResult<AccountAddResp> addAccount(@RequestBody @Validated AccountReq accountReq) {
+  public ApiResult<AccountAddResp> addAccount(@RequestBody @Validated AccountReq accountReq)
+      throws Exception {
     AccountAddResp account = accountService.addAccount(accountReq);
     return ApiResult.success(account);
   }

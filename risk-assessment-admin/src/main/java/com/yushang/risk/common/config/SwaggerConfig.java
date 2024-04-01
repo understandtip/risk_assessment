@@ -47,7 +47,7 @@ public class SwaggerConfig {
                 .version("v1.0")
                 .description("risk_admin接口文档")
                 // 联系人信息
-                .contact(new Contact("周亮平", "http://www.baidu.cn", "2916806233@qq.com"))
+                .contact(new Contact("羽觞", "https://www.yushang.jx.cn", "123@qq.com"))
                 .build())
         .select()
         // 指定接口的位置

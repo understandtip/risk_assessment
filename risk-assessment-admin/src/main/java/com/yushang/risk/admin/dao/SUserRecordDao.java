@@ -33,9 +33,10 @@ public class SUserRecordDao extends ServiceImpl<SUserRecordMapper, SUserRecord> 
         records.stream().collect(Collectors.groupingBy(SUserRecord::getUserId));
     Map<Integer, List<Integer>> map = new HashMap<>();
     collect.forEach(
-        (k, v) -> {
-          List<Integer> bugIds = v.stream().map(SUserRecord::getBugId).collect(Collectors.toList());
-          map.put(k, bugIds);
+        (uid, recordList) -> {
+          List<Integer> bugIds =
+              recordList.stream().map(SUserRecord::getBugId).collect(Collectors.toList());
+          map.put(uid, bugIds);
         });
     return map;
   }
@@ -48,5 +49,25 @@ public class SUserRecordDao extends ServiceImpl<SUserRecordMapper, SUserRecord> 
    */
   public boolean removeByUserId(Integer userId) {
     return this.lambdaUpdate().eq(SUserRecord::getUserId, userId).remove();
+  }
+
+  /**
+   * 根据用户id查询用户自定义的漏洞信息
+   *
+   * @param userIds
+   * @return
+   */
+  public Map<Integer, List<String>> getExtraBugByUids(List<Integer> userIds) {
+    List<SUserRecord> records = this.lambdaQuery().in(SUserRecord::getUserId, userIds).list();
+    Map<Integer, List<SUserRecord>> collect =
+        records.stream().collect(Collectors.groupingBy(SUserRecord::getUserId));
+    Map<Integer, List<String>> map = new HashMap<>();
+    collect.forEach(
+        (uid, recordList) -> {
+          List<String> extraBugs =
+              recordList.stream().map(SUserRecord::getExtraBug).collect(Collectors.toList());
+          map.put(uid, extraBugs);
+        });
+    return map;
   }
 }

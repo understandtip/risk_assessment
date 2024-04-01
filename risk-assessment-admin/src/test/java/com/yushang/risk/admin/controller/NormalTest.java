@@ -4,6 +4,7 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.yushang.risk.admin.domain.dto.Server;
+import com.yushang.risk.admin.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
@@ -12,6 +13,10 @@ import com.itextpdf.text.pdf.draw.LineSeparator;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.security.SecureRandom;
+import java.util.regex.Pattern;
+
+import static org.apache.fontbox.afm.AFMParser.CHARACTERS;
 
 /**
  * @Author：zlp @Package：com.yushang.risk.admin.controller @Project：risk_assessment
@@ -302,8 +307,35 @@ public class NormalTest {
 
   @Test
   void test01() throws Exception {
-    Server server = new Server();
-    server.copyTo();
-    System.out.println("server = " + server);
+    for (int i = 0; i < 100; i++) {
+      String s = UserServiceImpl.generateRandomString();
+      System.out.println("UserServiceImpl.generateRandomString() = " + s);
+      Pattern pattern = Pattern.compile("^[A-Z][a-zA-Z0-9]{7,15}$");
+      System.out.println("pattern.matcher(s).matches() = " + pattern.matcher(s).matches());
+    }
+  }
+
+  @Test
+  void test02() {
+    // 使用正则验证randomString
+    Pattern pattern = Pattern.compile("^[A-Z][a-zA-Z0-9]{7,15}$");
+    StringBuilder randomString;
+    do {
+      int length = 8 + new SecureRandom().nextInt(8);
+      randomString = new StringBuilder(length);
+      SecureRandom random = new SecureRandom();
+      for (int i = 0; i < length; i++) {
+        int randomIndex = random.nextInt(CHARACTERS.length());
+        char randomChar = CHARACTERS.charAt(randomIndex);
+        randomString.append(randomChar);
+      }
+    } while (pattern.matcher(randomString).matches());
+  }
+
+  @Test
+  void test03() {
+    do {
+      System.out.println(1);
+    } while (true);
   }
 }

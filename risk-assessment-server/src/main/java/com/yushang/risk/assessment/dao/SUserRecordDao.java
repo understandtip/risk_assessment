@@ -1,5 +1,6 @@
 package com.yushang.risk.assessment.dao;
 
+import com.alibaba.fastjson.JSON;
 import com.yushang.risk.domain.entity.SUser;
 import com.yushang.risk.domain.entity.SUserRecord;
 import com.yushang.risk.assessment.domain.vo.request.SecurityServiceBugBugReq;
@@ -25,6 +26,19 @@ public class SUserRecordDao extends ServiceImpl<SUserRecordMapper, SUserRecord> 
    * @param bugReq
    */
   public void saveBatch(SUser sUser, SecurityServiceBugBugReq bugReq) {
+    StringBuilder extraBug = new StringBuilder();
+    if (!bugReq.getAddBugs().isEmpty()) {
+      extraBug.append("[");
+      bugReq
+          .getAddBugs()
+          .forEach(
+              addBug -> {
+                extraBug.append(JSON.toJSONString(addBug)).append(",");
+              });
+      extraBug.append("]");
+      // 取出extraBug倒数第二个字符
+      extraBug.deleteCharAt(extraBug.length() - 2);
+    }
     Integer userId = sUser.getId();
     List<SUserRecord> collect =
         bugReq.getBugIds().stream()
@@ -33,9 +47,11 @@ public class SUserRecordDao extends ServiceImpl<SUserRecordMapper, SUserRecord> 
                   SUserRecord record = new SUserRecord();
                   record.setUserId(userId);
                   record.setBugId(id);
+                  record.setExtraBug(extraBug.toString());
                   return record;
                 })
             .collect(Collectors.toList());
+
     this.saveBatch(collect);
   }
 }

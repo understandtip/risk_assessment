@@ -3,9 +3,11 @@ package com.yushang.risk.assessment.controller;
 import com.mysql.cj.x.protobuf.MysqlxCrud;
 import com.yushang.risk.assessment.domain.entity.BsAttackAvoid;
 import com.yushang.risk.assessment.domain.entity.BsCategory;
+import com.yushang.risk.assessment.domain.entity.BsThreatAction;
 import com.yushang.risk.assessment.domain.vo.response.*;
 import com.yushang.risk.assessment.service.BsCategoryService;
 import com.yushang.risk.assessment.service.BsRiskService;
+import com.yushang.risk.assessment.service.BsThreatActionService;
 import com.yushang.risk.common.domain.vo.ApiResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,6 +31,7 @@ import java.util.Map;
 public class BsRiskController {
   @Resource private BsCategoryService bsCategoryService;
   @Resource private BsRiskService bsRiskService;
+  @Resource private BsThreatActionService bsThreatActionService;
 
   @GetMapping("/getBSRisk")
   @ApiOperation("业务风险数据")
@@ -83,6 +86,13 @@ public class BsRiskController {
   @ApiOperation("所有攻击工具")
   public ApiResult<List<BsAllAttackToolInfoResp>> getAllAttackTool() {
     List<BsAllAttackToolInfoResp> resp = bsRiskService.getAllAttackTool();
+    return ApiResult.success(resp);
+  }
+
+  @GetMapping("/getThreatInfo")
+  @ApiOperation("威胁行为者")
+  public ApiResult<List<BsAllThreatActionInfoResp>> getThreatInfo() {
+    List<BsAllThreatActionInfoResp> resp = bsThreatActionService.getThreatInfo();
     return ApiResult.success(resp);
   }
 }
